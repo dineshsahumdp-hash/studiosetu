@@ -1,0 +1,942 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIM STUDIO - Equipment Tracking</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { 
+        background: radial-gradient(circle at top left, #070d1e 0%, #030712 100%);
+        color: #e2e8f0; 
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        min-height: 100vh; 
+        display: flex; 
+        overflow-x: hidden;
+    }
+
+    .sidebar { 
+        width: 260px; 
+        min-width: 260px; 
+        min-height: 100vh; 
+        background-color: #03060f; 
+        display: flex; 
+        flex-direction: column; 
+        justify-content: space-between; 
+        padding: 16px; 
+        border-right: 1px solid #0f172a; 
+        position: sticky;
+        top: 0;
+        height: 100vh;
+        z-index: 20; 
+    }
+    
+    .nav-scroll { height: calc(100vh - 135px); overflow-y: auto; padding-right: 4px; }
+    .nav-scroll::-webkit-scrollbar { width: 4px; }
+    .nav-scroll::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+    
+    .nav-btn { width: 100%; text-align: left; padding: 10px 14px; border-radius: 10px; background: transparent; color: #94a3b8; border: none; font-size: 11.5px; font-weight: 600; cursor: pointer; margin-bottom: 3px; display: flex; align-items: center; gap: 10px; transition: 0.2s; text-decoration: none; }
+    .nav-btn:hover, .nav-btn.active { background: linear-gradient(to right, rgba(34, 211, 238, 0.15), rgba(99, 102, 241, 0.1)); color: #22d3ee; border: 1px solid rgba(34, 211, 238, 0.3); }
+
+    .fine-input {
+        height: 36px !important; padding: 6px 12px !important; font-size: 12px !important;
+        border-radius: 8px !important; background-color: #080f21 !important;
+        border: 1px solid #1a2846 !important; color: #ffffff !important; outline: none !important;
+        transition: all 0.2s ease-in-out;
+    }
+    .fine-input:focus { border-color: #06b6d4 !important; box-shadow: 0 0 10px rgba(6, 182, 212, 0.2); }
+    .bg-studio-glass { background-color: rgba(8, 16, 36, 0.85); backdrop-filter: blur(14px); }
+    .glow-cyan { box-shadow: 0 0 25px rgba(34, 211, 238, 0.08); }
+    .glow-indigo { box-shadow: 0 0 25px rgba(99, 102, 241, 0.08); }
+
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #030712; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 6px; }
+
+    /* 📅 वही पुराना वाइट कैलेंडर कोड */
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+
+    <!-- 📸 SIDEBAR NAVIGATION (EQUIPMENT TRACKING) -->
+<aside class="sidebar w-68 min-h-screen flex flex-col justify-between p-4 shrink-0 border-r border-slate-900 shadow-2xl z-10 no-print select-none bg-slate-950">
+    <div>
+        <!-- 🏢 डायनामिक स्टूडियो हेडर -->
+        <div class="flex items-center gap-3 px-3 py-4 mb-4 border-b border-slate-900">
+            <span class="text-xl animate-pulse">📸</span>
+            <div class="leading-none overflow-hidden">
+                <h1 class="text-base font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400 truncate" id="sidebar_studio_heading" title="{{ session.get('studio_name', 'HIM STUDIO') }}">
+                    {{ session.get('studio_name', 'HIM STUDIO') }}
+                </h1>
+                <span class="text-[9px] text-slate-500 font-bold uppercase tracking-wider block mt-1">Premium Web ERP</span>
+            </div>
+        </div>
+        
+        <!-- 🧭 मेन्यू नेविगेशन बार -->
+        <nav id="sidebar-nav" class="space-y-1 text-xs font-bold tracking-wide max-h-[78vh] overflow-y-auto pr-1 nav-scroll">
+            {% if session.get('studio_id')|int == 1 %}
+            <a href="/saas_master" class="nav-btn flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-900/60 transition" id="btn_saas_master">
+                <span>👑</span> SaaS Master Control
+            </a>
+            {% endif %}
+
+            <a href="/dashboard" class="nav-btn flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-900/60 transition" id="btn_dashboard">
+                <span>📊</span> Dashboard
+            </a>
+            <a href="/new_bill" class="nav-btn flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-900/60 transition" id="btn_new_bill">
+                <span>📄</span> New Bill
+            </a>
+            <a href="/all_bills" class="nav-btn flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-900/60 transition" id="btn_all_bills">
+                <span>📁</span> All Bills
+            </a>
+            <a href="/token_counter" class="nav-btn flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-900/60 transition" id="btn_token_counter">
+                <span>🎫</span> Daily Token Counter
+            </a>
+            <a href="/wedding" class="nav-btn flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-900/60 transition" id="btn_wedding">
+                <span>🎉</span> Event Booking
+            </a>
+            <a href="/stock" class="nav-btn flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-900/60 transition" id="btn_stock">
+                <span>📦</span> Item / Product (Stock)
+            </a>
+            <a href="/credit_ledger" class="nav-btn flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-900/60 transition" id="btn_credit">
+                <span>💳</span> Credit Ledger
+            </a>
+            <a href="/purchases" class="nav-btn flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-900/60 transition" id="btn_purchases">
+                <span>🛒</span> Purchases
+            </a>
+            <a href="/studio_expenses" class="nav-btn flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-900/60 transition" id="btn_expenses">
+                <span>💸</span> Studio Expenses
+            </a>
+            <a href="/work_export" class="nav-btn flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-900/60 transition" id="btn_export">
+                <span>📦</span> Work Export Terminal
+            </a>
+            <a href="/material_stock" class="nav-btn flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-900/60 transition" id="btn_material">
+                <span>📦</span> Material Stock
+            </a>
+            <a href="/equipment_tracking" class="nav-btn active flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-cyan-400 border border-cyan-500/30 bg-cyan-950/20 hover:bg-cyan-900/40 transition" id="btn_equipment">
+                <span>📸</span> Equipment Tracking
+            </a>
+            <a href="/employee_corner" class="nav-btn flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-900/60 transition" id="btn_employee">
+                <span>👤</span> Employee Corner
+            </a>
+            <a href="/report" class="nav-btn flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-900/60 transition" id="btn_report">
+                <span>📈</span> Report
+            </a>
+            <a href="/change_password" class="nav-btn flex items-center gap-2.5 px-3 py-2.5 rounded-xl text-slate-300 hover:bg-slate-900/60 transition" id="btn_password">
+                <span>🔐</span> Profile & Security
+            </a>
+        </nav>
+    </div>
+
+    <!-- 🚪 डायरेक्ट एग्जिट / सेफ लॉगआउट -->
+    <div class="pt-3 border-t border-slate-900/80">
+        <a href="/logout" onclick="return confirm('क्या आप सिस्टम से बाहर (Logout) जाना चाहते हैं?')" class="w-full text-left px-3 py-2.5 text-rose-400 font-bold text-xs hover:bg-rose-950/30 rounded-xl transition cursor-pointer flex items-center gap-2.5 border border-rose-900/20">
+            <span>🚪</span> Exit System
+        </a>
+    </div>
+</aside>
+
+    <main class="flex-1 p-6 overflow-y-auto min-w-0 space-y-5">
+        
+        <div class="border-b border-slate-800 pb-3">
+            <h2 class="text-base font-black text-slate-100 uppercase tracking-wider flex items-center gap-2">
+                <span>🎬</span> EQUIPMENT TRACKING & INVENTORY MANAGEMENT
+            </h2>
+            <span class="text-xs text-slate-400 font-mono">Camera, Lens & Gear Rental with Direct Client Search & Live Stock Settlement</span>
+        </div>
+
+        <div class="grid grid-cols-12 gap-5 w-full items-start">
+            
+            <div class="col-span-8 space-y-5">
+                
+                <div class="bg-studio-glass rounded-2xl p-5 border border-slate-800 shadow-xl glow-cyan space-y-4">
+                    <span class="text-xs font-black tracking-widest text-cyan-400 uppercase flex items-center gap-2">
+                        <span>🎬</span> ORDER DISPATCH PORTAL ENGINE
+                    </span>
+
+                    <div class="grid grid-cols-3 gap-3 text-xs">
+                        <div>
+                            <label class="block text-slate-300 font-bold mb-1.5">Operation Purpose *:</label>
+                            <select id="eq_purpose" onchange="applyEquipmentSecurityLocks()" class="fine-input w-full font-bold text-cyan-300 cursor-pointer">
+                                <option value="Rent">Rent</option>
+                                <option value="Studio Work">Studio Work</option>
+                                <option value="Advance Booking">Advance Booking / Reserved</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-slate-300 font-bold mb-1.5">Client Name *:</label>
+                            <input type="text" id="eq_pname" autocomplete="off" class="fine-input w-full font-bold">
+                        </div>
+                        <div>
+                            <label class="block text-slate-300 font-bold mb-1.5">Mobile Number *:</label>
+                            <input type="text" id="eq_pmobile" maxlength="10" autocomplete="off" oninput="this.value=this.value.replace(/\D/g,'')" class="fine-input w-full font-mono text-cyan-300">
+                        </div>
+                        <div>
+                            <label class="block text-slate-300 font-bold mb-1.5">Issue Date:</label>
+                            <input type="date" id="eq_issue_dt" onchange="recalculateRentalDays(); checkItemConflictAlert();" class="fine-input w-full font-bold cursor-pointer text-slate-200">
+                        </div>
+                        <div>
+                            <label class="block text-slate-300 font-bold mb-1.5">Return Date:</label>
+                            <input type="date" id="eq_return_dt" onchange="recalculateRentalDays(); checkItemConflictAlert();" class="fine-input w-full font-bold cursor-pointer text-slate-200">
+                        </div>
+                        <div>
+                            <label class="block text-slate-300 font-bold mb-1.5">Reference / Notes:</label>
+                            <input type="text" id="eq_ref" autocomplete="off" class="fine-input w-full text-slate-200">
+                        </div>
+                    </div>
+
+                    <div class="p-4 bg-[#040816]/90 rounded-xl border border-slate-800 space-y-3">
+                        <div class="flex justify-between items-center">
+                            <span class="text-xs font-black tracking-wider text-cyan-400 uppercase">🛒 CART ADD PRO SYSTEM MATRIX</span>
+                            <span id="lbl_calc_days" class="text-xs font-mono font-bold text-cyan-400 bg-cyan-950 px-2.5 py-1 rounded border border-cyan-800">Total Duration: 1 Day(s)</span>
+                        </div>
+
+                        <div id="eq_clash_alert_box" class="hidden p-2.5 rounded-lg bg-amber-950/80 border border-amber-500/70 text-amber-300 text-xs font-bold space-y-1">
+                            <div class="flex items-center gap-2">
+                                <span class="text-base">⚠️</span>
+                                <span id="eq_clash_alert_msg">कैमरा टकराव सूचना</span>
+                            </div>
+                            <span class="text-[10.5px] text-slate-400 block pl-6 font-mono">(नोट: यह केवल चेतावनी है। आप चाहें तो रेंट जारी रख सकते हैं।)</span>
+                        </div>
+                        
+                        <div class="grid grid-cols-12 gap-2.5 text-xs items-end">
+                            <div class="col-span-5">
+                                <label class="block text-slate-400 font-semibold mb-1">Select Available Product:</label>
+                                <select id="eq_item_combo" onchange="onAssetSelectionChange(); checkItemConflictAlert();" class="fine-input w-full font-bold text-cyan-300 cursor-pointer"></select>
+                            </div>
+                            <div class="col-span-3">
+                                <label class="block text-slate-400 font-semibold mb-1">Serial No:</label>
+                                <input type="text" id="eq_item_ser" readonly class="fine-input w-full text-slate-400 font-mono font-bold bg-[#02050f]">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-slate-400 font-semibold mb-1">Rent / Day (₹):</label>
+                                <input type="number" id="eq_item_price" autocomplete="off" class="fine-input w-full text-emerald-400 font-black text-right">
+                            </div>
+                            <div class="col-span-2">
+                                <button onclick="addItemToRentalCart()" class="w-full h-[36px] bg-cyan-600 hover:bg-cyan-500 text-white font-black rounded-lg text-xs uppercase cursor-pointer shadow-lg transition flex items-center justify-center gap-1">
+                                    <span>➕</span> ADD ITEM
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="border border-slate-800/80 rounded-xl max-h-36 overflow-y-auto bg-slate-950/60 mt-2">
+                            <table class="min-w-full text-xs text-center border-collapse">
+                                <thead class="bg-slate-950 text-slate-400 font-bold uppercase border-b border-slate-800 sticky top-0">
+                                    <tr>
+                                        <th class="p-2 w-12">#</th>
+                                        <th class="p-2 text-left pl-3">Product Name</th>
+                                        <th class="p-2 w-28">Serial No</th>
+                                        <th class="p-2 w-28 text-right pr-3">Per Day (₹)</th>
+                                        <th class="p-2 w-16">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="rentalCartTableBody" class="divide-y divide-slate-900 text-slate-300 font-mono text-[11.5px]"></tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-12 gap-3 text-xs items-end pt-1">
+                        <div class="col-span-4">
+                            <label class="block text-slate-300 font-bold mb-1">Total Expected Rent (₹):</label>
+                            <input type="number" id="eq_rent" autocomplete="off" class="fine-input w-full text-emerald-400 font-black text-right text-sm">
+                        </div>
+                        <div class="col-span-4">
+                            <label class="block text-slate-300 font-bold mb-1">Advance Amount Paid (₹):</label>
+                            <input type="number" id="eq_adv" autocomplete="off" class="fine-input w-full text-cyan-400 font-bold text-right text-sm">
+                        </div>
+                        <div class="col-span-4">
+                            <button onclick="saveMasterRentalEntry()" class="w-full h-[36px] bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black rounded-xl text-xs uppercase cursor-pointer shadow-lg transition tracking-wider flex items-center justify-center gap-1.5">
+                                <span>💾</span> SAVE HANDOVER
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-studio-glass rounded-2xl p-5 border border-slate-800 shadow-xl space-y-3">
+                    <div class="flex justify-between items-center flex-wrap gap-2">
+                        <span class="text-xs font-black tracking-widest text-cyan-400 uppercase block">
+                            📊 LIVE HANDOVER STATEMENT RECORDS (DOUBLE CLICK ROW TO SETTLE)
+                        </span>
+                        <div class="flex items-center gap-2">
+                            <input type="text" id="eq_search_input" autocomplete="off" oninput="onEquipmentSearchInput()" placeholder="Search Name / Mobile / Camera..." class="fine-input w-64 text-xs font-bold text-cyan-300">
+                            <button onclick="document.getElementById('eq_search_input').value=''; refreshEquipmentGrid();" class="h-[36px] px-3 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-lg cursor-pointer">
+                                🔄 Clear
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="overflow-hidden rounded-xl border border-slate-800/80 min-h-[160px] max-h-[300px] overflow-y-auto bg-slate-950/40">
+                        <table class="min-w-full text-xs text-center border-collapse">
+                            <thead class="bg-slate-950 text-slate-400 font-black uppercase sticky top-0 border-b border-slate-800 text-[10.5px]">
+                                <tr>
+                                    <th class="p-2.5 w-16">TYPE</th>
+                                    <th class="p-2.5 text-left pl-3">PRODUCTS ALLOCATED</th>
+                                    <th class="p-2.5 w-24">SERIAL NO</th>
+                                    <th class="p-2.5 text-left pl-3">CLIENT NAME</th>
+                                    <th class="p-2.5 w-24">MOBILE</th>
+                                    <th class="p-2.5 w-20">ISSUE</th>
+                                    <th class="p-2.5 w-20">RETURN</th>
+                                    <th class="p-2.5 w-20 text-right pr-2">RENT</th>
+                                    <th class="p-2.5 w-20 text-right pr-2">PAID</th>
+                                    <th class="p-2.5 w-20 text-right pr-2">BAL</th>
+                                    <th class="p-2.5 w-28">STATUS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="equipmentGridTableBody" class="divide-y divide-slate-800/60 bg-slate-900/10 text-slate-300 font-mono text-[11px] cursor-pointer"></tbody>
+                        </table>
+                    </div>
+
+                    <div class="bg-slate-950 p-3 rounded-xl border border-slate-800 flex justify-between items-center font-mono text-xs">
+                        <span id="lbl_eq_total_rent" class="text-cyan-400 font-bold">Total Revenue: ₹ 0.00</span>
+                        <span id="lbl_eq_total_bal" class="text-rose-400 font-bold">Total Outstanding Receivables: ₹ 0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-span-4 bg-studio-glass rounded-2xl p-5 border border-slate-800 shadow-xl glow-indigo space-y-4">
+                <span class="text-xs font-black tracking-widest text-indigo-400 uppercase block border-b border-slate-800 pb-2.5">
+                    📦 MASTER INVENTORY STOCK CONTROL
+                </span>
+
+                <div class="space-y-3 text-xs">
+                    <div>
+                        <label class="block text-slate-300 font-semibold mb-1">Product / Item Name *:</label>
+                        <input type="text" id="e_ast_name" autocomplete="off" class="fine-input w-full font-bold">
+                    </div>
+                    <div>
+                        <label class="block text-slate-300 font-semibold mb-1">Serial Number:</label>
+                        <input type="text" id="e_ast_ser" autocomplete="off" class="fine-input w-full text-slate-300 font-mono">
+                    </div>
+                    <div>
+                        <label class="block text-slate-300 font-semibold mb-1">Rent Price Per Day (₹):</label>
+                        <input type="number" id="e_ast_rent" autocomplete="off" class="fine-input w-full text-emerald-400 font-bold text-right">
+                    </div>
+                    <div>
+                        <label class="block text-slate-300 font-semibold mb-1">Total Quantity in Stock:</label>
+                        <input type="number" id="e_ast_qty" autocomplete="off" min="1" class="fine-input w-full font-bold text-center">
+                    </div>
+                    <button onclick="saveProductToInventory()" class="w-full h-[38px] bg-indigo-600 hover:bg-indigo-500 text-white font-black rounded-xl text-xs uppercase cursor-pointer shadow-lg transition mt-2 flex items-center justify-center gap-1.5">
+                        <span>📥</span> REGISTER PRODUCT
+                    </button>
+                </div>
+
+                <div class="pt-3 border-t border-slate-800 space-y-2">
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs font-bold text-slate-400 uppercase block">📋 Active Inventory Stock:</span>
+                        <span class="text-[9px] text-slate-500 font-mono">(Click 🗑️ to Delete)</span>
+                    </div>
+                    <div class="border border-slate-900 rounded-xl min-h-[160px] max-h-[280px] overflow-y-auto bg-slate-950 p-2 space-y-1.5 text-xs font-mono" id="assetStockListbox"></div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <div id="equipment_settlement_modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center z-50 no-print">
+        <div class="bg-slate-900 border border-slate-800 rounded-2xl w-[560px] p-6 space-y-4 shadow-2xl relative glow-cyan">
+            
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <div class="flex items-center gap-2">
+                    <h3 class="text-sm font-black text-cyan-400 uppercase tracking-wider">
+                        💼 Equipment Return & Settlement
+                    </h3>
+                    <span id="pop_lock_badge" class="hidden px-2 py-0.5 rounded text-[10px] font-black bg-emerald-950 text-emerald-400 border border-emerald-700">
+                        🔒 LOCKED (READ ONLY)
+                    </span>
+                </div>
+                <button onclick="closeEquipmentSettlementModal()" class="text-slate-500 hover:text-white font-bold text-sm cursor-pointer">✕</button>
+            </div>
+
+            <div class="bg-slate-950 p-4 rounded-xl space-y-2 text-xs border border-slate-900">
+                <p><strong>Client Name :</strong> <span id="pop_eq_pname" class="font-bold text-white"></span></p>
+                <p><strong>Mobile Number :</strong> <span id="pop_eq_mob" class="font-mono text-cyan-300"></span></p>
+                <p><strong>Products Allocated :</strong> <span id="pop_eq_cam" class="font-bold text-cyan-300"></span></p>
+                <p><strong>Serial Number(s) :</strong> <span id="pop_eq_ser" class="font-mono text-slate-400"></span></p>
+                
+                <div class="p-2.5 bg-slate-900 border border-slate-800 rounded-lg space-y-1 font-mono text-[11px] mt-2">
+                    <p class="text-slate-300">🗓️ Actual Days Elapsed: <span id="pop_eq_days" class="text-white font-bold">1</span> Day(s)</p>
+                    <p id="pop_eq_penalty_badge" class="hidden text-rose-400 font-bold">⚠️ Late Return Extra Day(s) Auto Calculated!</p>
+                </div>
+            </div>
+
+            <div class="space-y-3 text-xs">
+                <div>
+                    <label class="block text-slate-400 font-bold mb-1">Actual Return Date:</label>
+                    <input type="date" id="pop_eq_rdate" onchange="recalculateSettlementPenalty()" class="fine-input w-full font-bold text-center text-slate-200">
+                </div>
+                
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-slate-400 font-bold mb-1">Final Total Rent (₹):</label>
+                        <input type="number" id="pop_eq_rent" autocomplete="off" class="fine-input w-full text-emerald-400 font-black text-right">
+                    </div>
+                    <div>
+                        <label class="block text-slate-400 font-bold mb-1">Total Paid So Far (₹):</label>
+                        <input type="number" id="pop_eq_adv" class="fine-input w-full text-cyan-400 font-bold text-right" readonly>
+                    </div>
+                </div>
+
+                <div id="pop_payment_box" class="p-3 bg-[#050b1a] rounded-xl border border-slate-800 space-y-2">
+                    <span class="text-xs font-bold text-amber-400 uppercase block">💵 Add New Settlement Payment (Now):</span>
+                    <div class="grid grid-cols-2 gap-3">
+                        <div>
+                            <label class="block text-slate-400 text-[11px] mb-1">Cash Received (₹):</label>
+                            <input type="number" id="pop_add_cash" autocomplete="off" class="fine-input w-full text-emerald-400 font-black text-right font-mono">
+                        </div>
+                        <div>
+                            <label class="block text-slate-400 text-[11px] mb-1">UPI Received (₹):</label>
+                            <input type="number" id="pop_add_upi" autocomplete="off" class="fine-input w-full text-cyan-400 font-black text-right font-mono">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="pop_stock_box" class="flex items-center gap-2 p-3 bg-slate-950 rounded-xl border border-slate-800">
+                    <input type="checkbox" id="pop_chk_return_stock" class="w-4 h-4 text-cyan-500 rounded cursor-pointer">
+                    <label for="pop_chk_return_stock" class="text-slate-200 font-bold cursor-pointer select-none">
+                        📦 Mark Items Returned to Studio (Stock Recovered)
+                    </label>
+                </div>
+            </div>
+
+            <button id="btn_settle_eq_stock" onclick="executePopupUpdatesWithStockRecovery()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2.5 rounded-xl text-xs uppercase cursor-pointer transition shadow-lg">
+                💾 Save Settlement & Update Stock
+            </button>
+            
+            <button id="btn_close_locked_pop" onclick="closeEquipmentSettlementModal()" class="hidden w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold py-2.5 rounded-xl text-xs uppercase cursor-pointer transition">
+                ✕ Close Record
+            </button>
+        </div>
+    </div>
+
+    <script>
+    let rentalItemsCart = [];
+    let masterStudioAssets = [];
+    let activeEquipmentRecord = null;
+    let searchDebounce = null;
+
+    window.addEventListener('DOMContentLoaded', () => {
+        const today = new Date().toISOString().split('T')[0];
+        if (document.getElementById('eq_issue_dt')) document.getElementById('eq_issue_dt').value = today;
+        if (document.getElementById('eq_return_dt')) document.getElementById('eq_return_dt').value = today;
+
+        updateAssetDropdowns();
+        refreshEquipmentGrid();
+    });
+
+    function getCalculatedDays() {
+        const iDate = document.getElementById('eq_issue_dt') ? document.getElementById('eq_issue_dt').value : '';
+        const rDate = document.getElementById('eq_return_dt') ? document.getElementById('eq_return_dt').value : '';
+        if (!iDate || !rDate) return 1;
+
+        const d1 = new Date(iDate);
+        const d2 = new Date(rDate);
+        const diffTime = d2 - d1;
+        let days = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+        return days <= 0 ? 1 : days;
+    }
+
+    function recalculateRentalDays() {
+        const days = getCalculatedDays();
+        const lbl = document.getElementById('lbl_calc_days');
+        if (lbl) lbl.innerText = `Total Duration: ${days} Day(s)`;
+        renderCartItems();
+    }
+
+    function applyEquipmentSecurityLocks() {
+        const purpose = document.getElementById('eq_purpose').value;
+        const mob = document.getElementById('eq_pmobile');
+        const rent = document.getElementById('eq_rent');
+        const adv = document.getElementById('eq_adv');
+        const itemPrice = document.getElementById('eq_item_price');
+
+        if (purpose === "Studio Work") {
+            if (mob) { mob.value = "INTERNAL"; mob.disabled = true; }
+            if (rent) { rent.value = ""; rent.disabled = true; }
+            if (adv) { adv.value = ""; adv.disabled = true; }
+            if (itemPrice) { itemPrice.value = ""; itemPrice.disabled = true; }
+        } else {
+            if (mob) { mob.disabled = false; if (mob.value === "INTERNAL") mob.value = ""; }
+            if (rent) rent.disabled = false;
+            if (adv) adv.disabled = false;
+            if (itemPrice) itemPrice.disabled = false;
+            renderCartItems();
+        }
+    }
+
+    async function updateAssetDropdowns() {
+        try {
+            const res = await fetch('/api/get_studio_assets');
+            const data = await res.json();
+            
+            if (data.status === 'success') {
+                masterStudioAssets = data.data;
+                
+                const combo = document.getElementById('eq_item_combo');
+                const listbox = document.getElementById('assetStockListbox');
+                
+                if (combo) combo.innerHTML = '';
+                if (listbox) listbox.innerHTML = '';
+
+                const alreadySelected = rentalItemsCart.map(i => i.product);
+
+                masterStudioAssets.forEach(item => {
+                    const name = item.asset_name;
+                    const avail = parseInt(item.available_stock_qty || 0);
+                    const total = parseInt(item.total_stock_qty || 1);
+
+                    if (listbox) {
+                        const isOut = avail < total;
+                        const itemColor = isOut ? "text-slate-500 font-normal" : "text-slate-200 font-bold";
+                        listbox.innerHTML += `
+                            <div class="flex justify-between items-center ${itemColor} p-1.5 border-b border-slate-900/60">
+                                <div class="truncate max-w-[160px]">
+                                    <span>• ${name}</span>
+                                    <span class="text-[9.5px] font-mono block ${avail > 0 ? 'text-cyan-400' : 'text-rose-400'}">${avail}/${total} In-Studio</span>
+                                </div>
+                                <button onclick="deleteProductFromStock(${item.id}, '${name.replace(/'/g, "\\'")}')" class="text-rose-500 hover:text-rose-400 p-1 font-bold text-xs cursor-pointer" title="Delete Product">
+                                    🗑️
+                                </button>
+                            </div>`;
+                    }
+
+                    // केवल वही आइटम कार्ट में दिखेगा जो उपलब्ध है (avail > 0)
+                    if (combo && avail > 0 && !alreadySelected.includes(name)) {
+                        const opt = document.createElement('option');
+                        opt.value = name;
+                        opt.innerText = `${name} (${avail}/${total} Avail)`;
+                        combo.appendChild(opt);
+                    }
+                });
+
+                if (combo && combo.options.length > 0) {
+                    combo.selectedIndex = 0;
+                    onAssetSelectionChange();
+                    checkItemConflictAlert();
+                } else if (combo) {
+                    const serEl = document.getElementById('eq_item_ser');
+                    const priceEl = document.getElementById('eq_item_price');
+                    if (serEl) serEl.value = '';
+                    if (priceEl) priceEl.value = '';
+                }
+            }
+        } catch (err) { console.error(err); }
+    }
+
+    async function deleteProductFromStock(id, name) {
+        if (!confirm(`क्या आप पक्का '${name}' को इन्वेंट्री से डिलीट करना चाहते हैं?`)) return;
+
+        try {
+            const res = await fetch(`/api/delete_studio_asset/${id}`, { method: 'DELETE' });
+            const data = await res.json();
+            alert(data.message);
+            if (data.status === 'success') updateAssetDropdowns();
+        } catch (err) { alert("🚨 Server error!"); }
+    }
+
+    function onAssetSelectionChange() {
+        const combo = document.getElementById('eq_item_combo');
+        if (!combo) return;
+        const selectedName = combo.value;
+        const match = masterStudioAssets.find(a => a.asset_name === selectedName);
+        if (match) {
+            document.getElementById('eq_item_ser').value = match.serial_no || '';
+            const rentVal = parseFloat(match.default_rent || 0);
+            document.getElementById('eq_item_price').value = rentVal > 0 ? rentVal.toFixed(2) : '';
+        }
+    }
+
+    async function checkItemConflictAlert() {
+        const prod = document.getElementById('eq_item_combo') ? document.getElementById('eq_item_combo').value : '';
+        const issueDate = document.getElementById('eq_issue_dt') ? document.getElementById('eq_issue_dt').value : '';
+        const alertBox = document.getElementById('eq_clash_alert_box');
+        const alertMsg = document.getElementById('eq_clash_alert_msg');
+
+        if (!prod || !issueDate) {
+            if (alertBox) alertBox.classList.add('hidden');
+            return;
+        }
+
+        try {
+            const res = await fetch('/api/check_equipment_availability', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ item_name: prod, issue_date: issueDate })
+            });
+            const json = await res.json();
+            if (json.status === 'success' && json.warnings && json.warnings.length > 0) {
+                if (alertMsg) alertMsg.innerText = json.warnings.map(w => w.message).join(' | ');
+                if (alertBox) alertBox.classList.remove('hidden');
+            } else {
+                if (alertBox) alertBox.classList.add('hidden');
+            }
+        } catch (e) {
+            if (alertBox) alertBox.classList.add('hidden');
+        }
+    }
+
+    async function saveProductToInventory() {
+        const name = document.getElementById('e_ast_name').value.trim();
+        const ser = document.getElementById('e_ast_ser').value.trim();
+        const rent = parseFloat(document.getElementById('e_ast_rent').value) || 0;
+        const qty = parseInt(document.getElementById('e_ast_qty').value) || 1;
+
+        if (!name) { alert("Product Name is mandatory!"); return; }
+
+        try {
+            const res = await fetch('/api/save_studio_asset', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ asset_name: name, serial_no: ser, default_rent: rent, total_stock_qty: qty })
+            });
+            const data = await res.json();
+            if (data.status === 'success') {
+                document.getElementById('e_ast_name').value = '';
+                document.getElementById('e_ast_ser').value = '';
+                document.getElementById('e_ast_rent').value = '';
+                document.getElementById('e_ast_qty').value = '';
+                updateAssetDropdowns();
+            } else alert(data.message);
+        } catch(e) { alert("Database Error!"); }
+    }
+
+    function addItemToRentalCart() {
+        const combo = document.getElementById('eq_item_combo');
+        if (!combo) return;
+        const prod = combo.value;
+        const ser = document.getElementById('eq_item_ser').value.trim();
+        const purpose = document.getElementById('eq_purpose').value;
+        const price = purpose === "Studio Work" ? 0 : (parseFloat(document.getElementById('eq_item_price').value) || 0);
+
+        if (!prod) return;
+
+        rentalItemsCart.push({ product: prod, serial: ser, price: price });
+        renderCartItems();
+    }
+
+    function removeSelectedCartItem(index) {
+        rentalItemsCart.splice(index, 1);
+        renderCartItems();
+    }
+
+    function renderCartItems() {
+        const tbody = document.getElementById('rentalCartTableBody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+        const days = getCalculatedDays();
+        let perDayTotal = 0;
+
+        rentalItemsCart.forEach((item, i) => {
+            perDayTotal += item.price;
+            tbody.innerHTML += `
+                <tr class="hover:bg-slate-900/60">
+                    <td class="p-2 text-slate-500">#${i + 1}</td>
+                    <td class="p-2 text-left pl-3 text-slate-200 font-bold">${item.product}</td>
+                    <td class="p-2 font-mono">${item.serial || '-'}</td>
+                    <td class="p-2 text-right pr-3 text-emerald-400 font-bold">₹${item.price.toFixed(2)}</td>
+                    <td class="p-2"><button onclick="removeSelectedCartItem(${i})" class="text-rose-500 font-bold hover:text-rose-400 cursor-pointer">✕</button></td>
+                </tr>`;
+        });
+
+        const calculatedTotalRent = perDayTotal * days;
+        const rentInp = document.getElementById('eq_rent');
+        if (rentInp) {
+            rentInp.value = calculatedTotalRent > 0 ? calculatedTotalRent.toFixed(2) : '';
+            if (document.getElementById('eq_purpose').value === "Studio Work") rentInp.disabled = true;
+        }
+
+        updateAssetDropdowns();
+    }
+
+    async function saveMasterRentalEntry() {
+        const purpose = document.getElementById('eq_purpose').value;
+        const pname = document.getElementById('eq_pname').value.trim();
+        const mob = document.getElementById('eq_pmobile').value.trim();
+        const iDate = document.getElementById('eq_issue_dt').value;
+        const rDate = document.getElementById('eq_return_dt').value;
+        const refNotes = document.getElementById('eq_ref').value.trim();
+
+        if (!pname) { alert("Client Name field is required!"); return; }
+        if (purpose === "Rent" && (mob.length !== 10 || isNaN(mob))) {
+            alert("Security Error: Please enter a valid 10-Digit numeric Mobile Number!");
+            return;
+        }
+        if (rentalItemsCart.length === 0) { alert("Cart is Empty!"); return; }
+
+        const rentVal = purpose === "Studio Work" ? 0 : (parseFloat(document.getElementById('eq_rent').value) || 0);
+        const advVal = purpose === "Studio Work" ? 0 : (parseFloat(document.getElementById('eq_adv').value) || 0);
+        let balVal = rentVal - advVal;
+        if (purpose === "Studio Work") balVal = 0.0;
+
+        const payload = {
+            options_type: purpose,
+            person_name: pname + (refNotes ? ` (Ref: ${refNotes})` : ''),
+            mobile: mob,
+            commitment_date: mob,
+            issue_date: iDate,
+            return_date: rDate,
+            per_day_rent: rentVal,
+            advance_amount: advVal,
+            balance_amount: balVal,
+            items: rentalItemsCart
+        };
+
+        try {
+            const res = await fetch('/api/save_equipment_handover', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if (data.status === 'success') {
+                alert("✅ Handover Dispatched Successfully!");
+                rentalItemsCart = [];
+                document.getElementById('eq_pname').value = '';
+                document.getElementById('eq_pmobile').value = '';
+                document.getElementById('eq_ref').value = '';
+                document.getElementById('eq_rent').value = '';
+                document.getElementById('eq_adv').value = '';
+                document.getElementById('eq_purpose').value = 'Rent';
+                applyEquipmentSecurityLocks();
+                recalculateRentalDays();
+                refreshEquipmentGrid();
+                updateAssetDropdowns();
+            } else alert(data.message);
+        } catch(e) { alert("Dispatched Error!"); }
+    }
+
+    function onEquipmentSearchInput() {
+        clearTimeout(searchDebounce);
+        searchDebounce = setTimeout(() => {
+            refreshEquipmentGrid();
+        }, 300);
+    }
+
+    // 🎯 लाइव ग्रिड और सही स्टेटस बैज
+    async function refreshEquipmentGrid() {
+        try {
+            const searchInput = document.getElementById('eq_search_input');
+            const searchQ = searchInput ? searchInput.value.trim() : '';
+            const url = searchQ ? `/api/search_equipment_logs?q=${encodeURIComponent(searchQ)}` : '/api/get_equipment_logs';
+
+            const res = await fetch(url);
+            const data = await res.json();
+            if (data.status === 'success') {
+                const tbody = document.getElementById('equipmentGridTableBody');
+                if (!tbody) return;
+                tbody.innerHTML = '';
+                let totRent = 0, totBal = 0;
+
+                if (!data.data || data.data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="11" class="p-6 text-slate-500 text-center font-bold">No Handover Records Found</td></tr>`;
+                    document.getElementById('lbl_eq_total_rent').innerText = `Total Revenue: ₹ 0.00`;
+                    document.getElementById('lbl_eq_total_bal').innerText = `Total Outstanding Receivables: ₹ 0.00`;
+                    return;
+                }
+
+                data.data.forEach((r, idx) => {
+                    const balAmt = parseFloat(r.balance_amount || 0);
+                    const rentAmt = parseFloat(r.per_day_rent || 0);
+                    const paidAmt = parseFloat(r.advance_amount || 0);
+                    const mobileDisplay = r.mobile || r.commitment_date || '-';
+                    
+                    let statusBadge = "";
+                    let balColor = "text-slate-400";
+                    let rowGlow = "";
+
+                    if (r.options_type === "Studio Work") {
+                        if (r.status === 'Closed') {
+                            statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-800">Closed (Returned)</span>`;
+                        } else {
+                            statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-cyan-950 text-cyan-400 border border-cyan-800 animate-pulse">🎬 In-Studio Work (Active)</span>`;
+                        }
+                    } else {
+                        if (r.status === 'Settled' || (balAmt <= 0 && r.status !== 'Open')) {
+                            statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-emerald-950 text-emerald-400 border border-emerald-800">🟢 Settled (₹0 Due)</span>`;
+                        } else if (r.status === 'Returned_Due') {
+                            balColor = "text-rose-400 font-black";
+                            rowGlow = "bg-rose-950/20";
+                            statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-amber-950 text-amber-300 border border-amber-800 animate-pulse">📦 Returned (Due: ₹${balAmt.toFixed(2)})</span>`;
+                        } else {
+                            balColor = "text-rose-400 font-black";
+                            rowGlow = "bg-rose-950/20";
+                            statusBadge = `<span class="px-2 py-0.5 rounded text-[10px] font-bold bg-rose-950 text-rose-300 border border-rose-800">🔴 Out (Due: ₹${balAmt.toFixed(2)})</span>`;
+                        }
+                    }
+
+                    totRent += rentAmt;
+                    totBal += balAmt;
+
+                    const tr = document.createElement('tr');
+                    tr.className = `${rowGlow || (idx % 2 === 0 ? "bg-slate-900/40" : "bg-slate-950/30")} hover:bg-slate-900/80 transition select-none`;
+                    tr.onclick = () => openEquipmentSettlementModal(r);
+                    tr.innerHTML = `
+                        <td class="p-2.5 font-bold text-cyan-300">${r.options_type}</td>
+                        <td class="p-2.5 text-left pl-3 text-white font-bold">${r.camera_name}</td>
+                        <td class="p-2.5 font-mono text-slate-400">${r.serial_no || '-'}</td>
+                        <td class="p-2.5 text-left pl-3 text-slate-200 font-bold">${r.person_name}</td>
+                        <td class="p-2.5 font-mono text-cyan-400">${mobileDisplay}</td>
+                        <td class="p-2.5 text-slate-400">${r.issue_date}</td>
+                        <td class="p-2.5 text-slate-400">${r.return_date}</td>
+                        <td class="p-2.5 text-right pr-2">₹${rentAmt.toFixed(2)}</td>
+                        <td class="p-2.5 text-right pr-2 text-emerald-400">₹${paidAmt.toFixed(2)}</td>
+                        <td class="p-2.5 text-right pr-2 ${balColor}">₹${balAmt.toFixed(2)}</td>
+                        <td class="p-2.5 text-center">${statusBadge}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+
+                document.getElementById('lbl_eq_total_rent').innerText = `Total Revenue: ₹ ${totRent.toFixed(2)}`;
+                document.getElementById('lbl_eq_total_bal').innerText = `Total Outstanding Receivables: ₹ ${totBal.toFixed(2)}`;
+            }
+        } catch(e) { console.error(e); }
+    }
+
+    function recalculateSettlementPenalty() {
+        if (!activeEquipmentRecord) return;
+        const originalIssue = activeEquipmentRecord.issue_date;
+        const actualReturn = document.getElementById('pop_eq_rdate').value;
+
+        if (originalIssue && actualReturn) {
+            const d1 = new Date(originalIssue);
+            const d2 = new Date(actualReturn);
+            let days = Math.ceil((d2 - d1) / (1000 * 60 * 60 * 24)) + 1;
+            if (days <= 0) days = 1;
+
+            document.getElementById('pop_eq_days').innerText = days;
+
+            const origRent = parseFloat(activeEquipmentRecord.per_day_rent) || 0;
+            const origDays = Math.max(1, Math.ceil((new Date(activeEquipmentRecord.return_date) - new Date(originalIssue)) / (1000 * 60 * 60 * 24)) + 1);
+            const perDayCost = origRent / origDays;
+
+            if (days > origDays && activeEquipmentRecord.options_type !== "Studio Work") {
+                const newTotalRent = perDayCost * days;
+                document.getElementById('pop_eq_rent').value = newTotalRent.toFixed(2);
+                document.getElementById('pop_eq_penalty_badge').classList.remove('hidden');
+            } else {
+                document.getElementById('pop_eq_penalty_badge').classList.add('hidden');
+            }
+        }
+    }
+
+    // 🎯 100% वर्किंग पॉपअप ओपन और स्मार्ट लॉक लॉजिक
+    function openEquipmentSettlementModal(r) {
+        activeEquipmentRecord = r;
+
+        document.getElementById('pop_eq_pname').innerText = r.person_name;
+        document.getElementById('pop_eq_mob').innerText = r.mobile || r.commitment_date || '-';
+        document.getElementById('pop_eq_cam').innerText = r.camera_name;
+        document.getElementById('pop_eq_ser').innerText = r.serial_no || '-';
+        
+        const today = new Date().toISOString().split('T')[0];
+        document.getElementById('pop_eq_rdate').value = r.return_date || today;
+        document.getElementById('pop_eq_rent').value = parseFloat(r.per_day_rent || 0).toFixed(2);
+        document.getElementById('pop_eq_adv').value = parseFloat(r.advance_amount || 0).toFixed(2);
+
+        document.getElementById('pop_add_cash').value = '';
+        document.getElementById('pop_add_upi').value = '';
+        document.getElementById('pop_chk_return_stock').checked = true;
+
+        const balAmt = parseFloat(r.balance_amount || 0);
+        // 🔒 पूरा सेटल होने पर ही लॉक होगा
+        const isFullySettled = (r.status === 'Settled' || r.status === 'Closed' || (balAmt <= 0 && r.options_type !== 'Studio Work' && r.status !== 'Open'));
+
+        const lockBadge = document.getElementById('pop_lock_badge');
+        const paymentBox = document.getElementById('pop_payment_box');
+        const stockBox = document.getElementById('pop_stock_box');
+        const saveBtn = document.getElementById('btn_settle_eq_stock');
+        const closeBtn = document.getElementById('btn_close_locked_pop');
+
+        if (isFullySettled) {
+            // 🔒 READ-ONLY MODE (Locked)
+            if (lockBadge) lockBadge.classList.remove('hidden');
+            if (paymentBox) paymentBox.classList.add('hidden');
+            if (stockBox) stockBox.classList.add('hidden');
+            if (saveBtn) saveBtn.classList.add('hidden');
+            if (closeBtn) closeBtn.classList.remove('hidden');
+
+            document.getElementById('pop_eq_rdate').disabled = true;
+            document.getElementById('pop_eq_rent').disabled = true;
+        } else {
+            // 🔓 UNLOCKED MODE (Payment Pending / Open)
+            if (lockBadge) lockBadge.classList.add('hidden');
+            if (paymentBox) paymentBox.classList.toggle('hidden', r.options_type === "Studio Work");
+            if (stockBox) stockBox.classList.remove('hidden');
+            if (saveBtn) saveBtn.classList.remove('hidden');
+            if (closeBtn) closeBtn.classList.add('hidden');
+
+            document.getElementById('pop_eq_rdate').disabled = false;
+            document.getElementById('pop_eq_rent').disabled = (r.options_type === "Studio Work");
+        }
+
+        recalculateSettlementPenalty();
+        document.getElementById('equipment_settlement_modal').classList.remove('hidden');
+    }
+
+    function closeEquipmentSettlementModal() {
+        document.getElementById('equipment_settlement_modal').classList.add('hidden');
+    }
+
+    // 🎯 सेटलमेंट और स्टॉक रिटर्न सेव करना
+    async function executePopupUpdatesWithStockRecovery() {
+        if (!activeEquipmentRecord) return;
+        const rVal = parseFloat(document.getElementById('pop_eq_rent').value) || 0;
+        const currentAdv = parseFloat(document.getElementById('pop_eq_adv').value) || 0;
+        const addCash = parseFloat(document.getElementById('pop_add_cash').value) || 0;
+        const addUpi = parseFloat(document.getElementById('pop_add_upi').value) || 0;
+        const rDate = document.getElementById('pop_eq_rdate').value;
+        const isStockReturned = document.getElementById('pop_chk_return_stock').checked;
+
+        const totalPaid = currentAdv + addCash + addUpi;
+
+        try {
+            const res = await fetch('/api/settle_equipment_return', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    id: activeEquipmentRecord.id,
+                    options_type: activeEquipmentRecord.options_type,
+                    camera_name: activeEquipmentRecord.camera_name,
+                    return_date: rDate,
+                    rent_val: rVal,
+                    adv_val: totalPaid,
+                    recover_stock: isStockReturned
+                })
+            });
+            const data = await res.json();
+            if (data.status === 'success') {
+                alert("✅ Settlement & Stock Status Updated!");
+                closeEquipmentSettlementModal();
+                updateAssetDropdowns();
+                refreshEquipmentGrid();
+            } else alert(data.message);
+        } catch(e) { alert("Settle Error!"); }
+    }
+(function handleUserInactivity() {
+    let idleTimer;
+    const IDLE_TIME_LIMIT = 30 * 60 * 1000; // ठीक 30 मिनट
+
+    function resetUserTimer() {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => {
+            alert("30 मिनट तक कोई गतिविधि न होने के कारण सुरक्षा कारणों से यह खाता लॉगआउट हो गया है।");
+            window.location.href = '/logout';
+        }, IDLE_TIME_LIMIT);
+    }
+
+    const trackedEvents = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'click'];
+    trackedEvents.forEach(evt => {
+        window.addEventListener(evt, resetUserTimer, { passive: true });
+    });
+
+    resetUserTimer();
+})();
+
+</script>
+</body>
+</html>

@@ -1,0 +1,911 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIM STUDIO - Lab & Outsource Terminal</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'studio-glass': 'rgba(11, 18, 38, 0.7)',
+                        'studio-card': '#070d1e',
+                        'studio-border': '#172340',
+                        'studio-sidebar': '#03060f'
+                    },
+                    spacing: {
+                        '68': '17rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { box-sizing: border-box; }
+        .glow-cyan { box-shadow: 0 0 20px rgba(6, 182, 212, 0.12); }
+        .glow-indigo { box-shadow: 0 0 20px rgba(99, 102, 241, 0.12); }
+        
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #03060f; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 8px; }
+
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+
+        .fine-input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.75rem;
+            border-radius: 0.75rem;
+            background-color: #0a1224;
+            border: 1px solid #1a2947;
+            color: #ffffff;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .fine-input:focus { border-color: #06b6d4; }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            width: 100%;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            color: #94a3b8;
+            font-size: 0.75rem;
+            font-weight: 700;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .nav-btn:hover {
+            background-color: rgba(15, 23, 42, 0.6);
+            color: #f8fafc;
+        }
+        .nav-btn.active {
+            background: linear-gradient(to right, rgba(6, 182, 212, 0.2), rgba(99, 102, 241, 0.1));
+            color: #22d3ee;
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            font-weight: 800;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-[#03060f] text-slate-200 min-h-screen font-sans m-0 p-0 overflow-x-hidden">
+
+    <div class="flex flex-row min-h-screen w-full">
+
+        <!-- ========================================== -->
+        <!-- 🧭 SIDEBAR NAVIGATION                      -->
+        <!-- ========================================== -->
+        <div class="bg-studio-sidebar w-68 min-h-screen flex flex-col justify-between p-4 shrink-0 border-r border-slate-900 shadow-2xl z-10 no-print">
+            <div>
+                <div class="flex items-center gap-3 px-3 py-4 mb-4 border-b border-slate-900">
+                    <span class="text-xl animate-pulse">📸</span>
+                    <div class="leading-none">
+                        <h1 class="text-base font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400">HIM STUDIO</h1>
+                        <span class="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Premium Web ERP</span>
+                    </div>
+                </div>
+                
+                <nav id="sidebar-nav" class="space-y-1 text-xs font-bold tracking-wide max-h-[78vh] overflow-y-auto pr-1 nav-scroll">
+                    <a href="/dashboard" class="nav-btn" id="btn_dashboard"><span>📊</span> Dashboard</a>
+                    <a href="/" class="nav-btn" id="btn_new_bill"><span>📄</span> New Bill</a>
+                    <a href="/all_bills" class="nav-btn" id="btn_all_bills"><span>📁</span> All Bills</a>
+                    <a href="/token_counter" class="nav-btn" id="btn-token-counter"><span>🎫</span> Daily Token Counter</a>
+                    <a href="/wedding" class="nav-btn" id="btn_wedding"><span>💍</span> Event Booking</a>
+                    <a href="/stock" class="nav-btn" id="btn_stock"><span>📦</span> Item / Product (Stock)</a>
+                    <a href="/credit_ledger" class="nav-btn" id="btn_credit"><span>💳</span> Credit Ledger</a>
+                    <a href="/purchases" class="nav-btn" id="btn_purchases"><span>🛒</span> Purchases</a>
+                    <a href="/studio_expenses" class="nav-btn" id="btn_expenses"><span>💸</span> Studio Expenses</a>
+                    <a href="/work_export" class="nav-btn" id="btn_export"><span>📦</span> Work Export Terminal</a>
+                    <a href="/material_stock" class="nav-btn" id="btn_material"><span>📦</span> Material Stock</a>
+                    <a href="/equipment_tracking" class="nav-btn" id="btn_equipment"><span>📸</span> Equipment Tracking</a>
+                    <a href="/employee_corner" class="nav-btn" id="btn_employee"><span>👤</span> Employee Corner</a>
+                    <a href="/report" class="nav-btn" id="btn_report"><span>📈</span> Report</a>
+                    <a href="/change_password" class="nav-btn" id="btn_password"><span>🔐</span> Profile & Security</a>
+                </nav>
+            </div>
+
+            <button class="text-left px-4 py-3 text-rose-400 font-bold text-xs hover:bg-rose-950/20 rounded-xl transition cursor-pointer flex items-center gap-2">
+                <span>❌</span> Exit System
+            </button>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 📄 MAIN CONTENT AREA                        -->
+        <!-- ========================================== -->
+        <main class="flex-1 p-6 overflow-y-auto bg-[#040816]">
+            <div class="max-w-full mx-auto space-y-6">
+                
+                <!-- MASTER LAB REGISTRATION FORM -->
+                <div class="bg-studio-glass rounded-2xl p-5 border border-studio-border shadow-xl glow-cyan w-full">
+                    <span class="text-xs font-black tracking-widest text-cyan-400 uppercase mb-4 block">🏢 Register Lab / Printing Vendor Partner</span>
+                    <div class="grid grid-cols-1 md:grid-cols-12 gap-3 text-xs items-end bg-[#050b1a]/90 p-4 rounded-xl border border-[#0f1b33] w-full">
+                        <div class="col-span-4">
+                            <label class="block text-slate-400 font-semibold mb-1.5 text-xs">Lab / Vendor Name *:</label>
+                            <input type="text" id="lab_vendor_name" class="fine-input font-bold">
+                        </div>
+                        <div class="col-span-3">
+                            <label class="block text-slate-400 font-semibold mb-1.5 text-xs">Mobile No *:</label>
+                            <input type="text" id="lab_vendor_mobile" maxlength="10" class="fine-input font-mono text-cyan-300 font-bold">
+                        </div>
+                        <div class="col-span-3">
+                            <label class="block text-slate-400 font-semibold mb-1.5 text-xs">City / Address:</label>
+                            <input type="text" id="lab_vendor_address" class="fine-input">
+                        </div>
+                        <div class="col-span-2">
+                            <button type="button" onclick="saveMasterLabVendor()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2 rounded-xl text-xs uppercase cursor-pointer shadow-lg transition tracking-wider">💾 Register Lab</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- MASTER LAB PARTNERS GRID -->
+                <div class="bg-studio-glass rounded-2xl p-5 border border-studio-border shadow-xl space-y-4 w-full">
+                    <span class="text-xs text-cyan-400 font-bold uppercase tracking-wider block">📋 Master Lab Partners List (Double-click any Lab row to open Ledger Matrix)</span>
+                    <div class="overflow-hidden rounded-xl border border-[#0f1b33] max-h-[50vh] overflow-y-auto w-full">
+                        <table class="min-w-full text-xs text-center border-collapse">
+                            <thead class="bg-[#050b1c] text-slate-400 font-black uppercase sticky top-0 z-10 border-b border-[#142342] text-[11px]">
+                                <tr>
+                                    <th class="py-3 px-3 w-16">ID</th>
+                                    <th class="py-3 px-4 text-left pl-6">LAB / VENDOR PARTNER</th>
+                                    <th class="py-3 px-4 w-52 font-mono">MOBILE NO</th>
+                                    <th class="py-3 px-4 text-left pl-6">CITY / ADDRESS</th>
+                                </tr>
+                            </thead>
+                            <tbody id="masterLabTableBody" class="divide-y divide-[#0f1c36] bg-[#060d1f]/60 text-slate-300 font-mono text-xs cursor-pointer"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- ================= 14-COLUMN OUTSOURCE LEDGER MODAL ================= -->
+    <div id="modal_lab_portal" class="fixed inset-0 bg-black/85 backdrop-blur-sm items-center justify-center p-3" style="display: none; z-index: 999999;">
+        <div class="bg-[#0a1224] border-2 border-cyan-500/40 rounded-2xl w-full max-w-[1400px] p-6 space-y-4 shadow-2xl relative glow-cyan max-h-[96vh] overflow-y-auto text-xs">
+            
+            <!-- Header Bar -->
+            <div class="flex justify-between items-center border-b border-[#172545] pb-3">
+                <div>
+                    <h3 class="text-sm font-black text-cyan-400 uppercase tracking-wider">📊 OUTSOURCE JOB LEDGER — <span id="pop_lab_title" class="text-white"></span></h3>
+                    <span id="pop_lab_subtitle" class="text-[11px] text-slate-400 font-mono"></span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="printLabStatement()" class="bg-cyan-600/20 hover:bg-cyan-600 text-cyan-400 hover:text-white border border-cyan-500/30 px-3 py-1.5 rounded-lg text-xs font-black uppercase transition cursor-pointer">🖨️ Print Statement</button>
+                    <button type="button" onclick="closeLabPortal()" class="text-slate-400 hover:text-white font-bold text-lg cursor-pointer">✕</button>
+                </div>
+            </div>
+
+            <!-- 14-Column Input Control Form Deck -->
+            <div class="bg-[#040816] p-4 rounded-xl border border-[#0d1833] space-y-3">
+                <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block">📝 Outsource Job Input & Modification Deck</span>
+                
+                <!-- Row 1 Inputs -->
+                <div class="grid grid-cols-12 gap-2.5 text-xs">
+                    <div class="col-span-2">
+                        <label class="text-slate-400 font-bold block mb-1">Customer Name *</label>
+                        <input type="text" id="sub_cname" class="fine-input font-bold">
+                    </div>
+                    <div class="col-span-1">
+                        <label class="text-slate-400 font-bold block mb-1">Mobile *</label>
+                        <input type="text" id="sub_mobile" maxlength="10" class="fine-input text-cyan-300 font-mono">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="text-slate-400 font-bold block mb-1">Address / Location</label>
+                        <input type="text" id="sub_address" class="fine-input">
+                    </div>
+                    <div class="col-span-3">
+                        <label class="text-slate-400 font-bold block mb-1">Work Description *</label>
+                        <input type="text" id="sub_wtype" class="fine-input text-slate-200 font-bold">
+                    </div>
+                    <div class="col-span-1">
+                        <label class="text-cyan-400 font-bold block mb-1">Rec. Date</label>
+                        <input type="date" id="sub_wrec_date" class="fine-input font-mono cursor-pointer">
+                    </div>
+                    <div class="col-span-1">
+                        <label class="text-slate-400 font-bold block mb-1">Customer Total (₹)</label>
+                        <input type="number" id="sub_total" oninput="calcSubBal()" class="fine-input text-right font-bold font-mono">
+                    </div>
+                    <div class="col-span-1">
+                        <label class="text-slate-400 font-bold block mb-1">Cust. Adv (₹)</label>
+                        <input type="number" id="sub_adv" oninput="calcSubBal()" class="fine-input text-emerald-400 text-right font-bold font-mono">
+                    </div>
+                    <div class="col-span-1">
+                        <label class="text-rose-400 font-bold block mb-1">Cust. Bal (₹)</label>
+                        <span id="sub_bal_lbl" class="block fine-input text-rose-400 font-black text-right font-mono leading-6">0.00</span>
+                    </div>
+                </div>
+
+                <!-- Row 2 Inputs -->
+                <div class="grid grid-cols-12 gap-2.5 text-xs items-end pt-1">
+                    <div class="col-span-1">
+                        <label class="text-slate-400 font-bold block mb-1">Sent Date</label>
+                        <input type="date" id="sub_sent_date" class="fine-input font-mono cursor-pointer">
+                    </div>
+                    <div class="col-span-1">
+                        <label class="text-slate-400 font-bold block mb-1">Exp. Return</label>
+                        <input type="date" id="sub_exp_date" class="fine-input font-mono cursor-pointer">
+                    </div>
+                    <div class="col-span-2">
+                        <label class="text-slate-400 font-bold block mb-1">Tracking / Bus No</label>
+                        <input type="text" id="sub_tracking_no" class="fine-input">
+                    </div>
+                    
+                    <!-- 👁️ Lab Cost with 5-Second Privacy Blur -->
+                    <div class="col-span-1">
+                        <div class="flex items-center justify-between mb-1">
+                            <label class="text-slate-400 font-bold">Lab Cost</label>
+                            <button type="button" onclick="togglePrivacyBlur()" title="Show/Hide Rate (5 Secs)" class="text-cyan-400 hover:text-cyan-300 font-bold text-xs cursor-pointer">👁️</button>
+                        </div>
+                        <input type="number" id="sub_lab_cost" class="fine-input text-slate-200 text-right font-mono privacy-blur" style="filter: blur(5px);">
+                    </div>
+
+                    <div class="col-span-1">
+                        <label class="text-slate-400 font-bold block mb-1">Paid to Lab (₹)</label>
+                        <input type="number" id="sub_lab_paid" class="fine-input text-emerald-400 text-right font-mono privacy-blur" style="filter: blur(5px);">
+                    </div>
+
+                    <div class="col-span-1">
+                        <label class="text-slate-400 font-bold block mb-1">Pay Date</label>
+                        <input type="date" id="sub_pay_date" class="fine-input font-mono cursor-pointer">
+                    </div>
+
+                    <div class="col-span-1">
+                        <label class="text-slate-400 font-bold block mb-1">Delivery Status</label>
+                        <select id="sub_status" class="fine-input font-bold text-cyan-300 cursor-pointer">
+                            <option value="Pending">Pending</option>
+                            <option value="In Processing">In Processing</option>
+                            <option value="Received at Studio">Received at Studio</option>
+                            <option value="Delivered">Delivered</option>
+                        </select>
+                    </div>
+
+                    <div class="col-span-2">
+                        <label class="text-slate-400 font-bold block mb-1">Remarks</label>
+                        <input type="text" id="sub_remark" class="fine-input">
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="col-span-2 flex gap-1.5">
+                        <button id="btn_save_sub" onclick="processSubFormSave()" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2 rounded-xl text-xs uppercase cursor-pointer">💾 Save</button>
+                        <button id="btn_clear_sub" onclick="clearSubFormFields()" class="bg-slate-700 hover:bg-slate-600 text-white font-bold px-2.5 py-2 rounded-xl text-xs uppercase cursor-pointer">Clear</button>
+                        
+                        <input type="file" id="real_file_input" class="hidden" onchange="handleFileSelected(this)">
+                        <button id="btn_attach_sub" onclick="document.getElementById('real_file_input').click()" class="bg-sky-600 hover:bg-sky-500 text-white font-bold px-2.5 py-2 rounded-xl text-xs uppercase cursor-pointer">📎 Attach</button>
+                        <button id="btn_folder_sub" onclick="openCustomerFolderExplorer()" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 font-bold px-2.5 py-2 rounded-xl text-xs uppercase cursor-pointer">📂 Folder</button>
+                    </div>
+                </div>
+
+                <div id="attach_file_name_indicator" class="text-xs text-emerald-400 font-mono hidden pt-1 font-bold"></div>
+            </div>
+
+            <!-- Search Bar -->
+            <div class="flex justify-between items-center bg-[#050b1c] p-3 rounded-xl border border-[#0f1b33]">
+                <div class="flex items-center gap-2.5">
+                    <span class="text-xs font-bold text-cyan-400">🔍 Search Job:</span>
+                    <input type="text" id="sub_search_query" oninput="filterSubGridData()" class="fine-input w-80">
+                </div>
+                <span class="text-xs text-slate-500 font-mono">Live Fast Filter</span>
+            </div>
+
+            <!-- 14-Columns Matrix Grid -->
+            <div class="overflow-hidden rounded-xl border border-[#0f1b33] max-h-60 overflow-y-auto bg-[#050b1c]">
+                <table class="min-w-full text-xs text-center border-collapse font-mono">
+                    <thead class="bg-[#060d22] text-slate-400 font-bold border-b border-[#142342] sticky top-0 z-10 text-[11px]">
+                        <tr>
+                            <th class="p-2.5 w-12">S.NO</th>
+                            <th class="p-2.5 text-left pl-3">CUST NAME</th>
+                            <th class="p-2.5 w-28">MOBILE</th>
+                            <th class="p-2.5 text-left pl-3">WORK DESCRIPTION</th>
+                            <th class="p-2.5 w-24 text-cyan-300">REC. DATE</th>
+                            <th class="p-2.5 w-24 text-right pr-3">CUST. TOTAL</th>
+                            <th class="p-2.5 w-24 text-right pr-3 text-emerald-400">CUST. ADV</th>
+                            <th class="p-2.5 w-24 text-right pr-3 text-rose-400">CUST. BAL</th>
+                            <th class="p-2.5 w-24">SENT DATE</th>
+                            <th class="p-2.5 w-24 text-right pr-3 text-slate-300">LAB COST</th>
+                            <th class="p-2.5 w-24 text-right pr-3 text-emerald-400">LAB PAID</th>
+                            <th class="p-2.5 w-24">STATUS</th>
+                            <th class="p-2.5 w-16 text-emerald-400">ATTACH</th>
+                            <th class="p-2.5 w-28">TRACKING / BUS</th>
+                            <th class="p-2.5 w-20">WA</th>
+                        </tr>
+                    </thead>
+                    <tbody id="subLedgerTableBody" class="divide-y divide-[#0f1c36] text-slate-300 cursor-pointer"></tbody>
+                </table>
+            </div>
+
+            <!-- Live Summary Report Bar -->
+            <div class="bg-[#040816] p-3.5 rounded-xl border border-[#0f1b33] flex justify-between items-center font-mono text-xs">
+                <span id="lbl_rep_cust_due" class="text-rose-400 font-bold">Cust. Total Balance Due: ₹ 0.00</span>
+                <span id="lbl_rep_lab_total" class="text-slate-300 font-bold">Lab Total Cost: ₹ 0.00 | Paid: ₹ 0.00</span>
+                <span id="lbl_rep_lab_due" class="text-slate-400 font-bold">Lab Pending Dues: ₹ 0.00</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= 📂 IN-BROWSER JOB FILE EXPLORER MODAL ================= -->
+    <div id="modal_job_explorer" class="fixed inset-0 bg-black/85 backdrop-blur-sm items-center justify-center p-4" style="display: none; z-index: 9999999;">
+        <div class="bg-[#0a1224] border border-slate-700 rounded-2xl w-full max-w-xl p-6 space-y-4 shadow-2xl relative text-xs">
+            <div class="flex justify-between items-center border-b border-[#172545] pb-3">
+                <div>
+                    <h3 class="text-sm font-bold text-slate-100 uppercase tracking-wider">📂 Job Workspace Files — <span id="exp_folder_title" class="text-cyan-400"></span></h3>
+                    <span class="text-[11px] text-slate-400 font-mono">Customer Saved Media & Documents</span>
+                </div>
+                <button type="button" onclick="closeJobExplorer()" class="text-slate-400 hover:text-white font-bold text-lg cursor-pointer">✕</button>
+            </div>
+
+            <!-- Files List Grid -->
+            <div class="overflow-hidden rounded-xl border border-[#0f1b33] max-h-64 overflow-y-auto bg-[#050b1c]">
+                <table class="min-w-full text-center border-collapse font-mono text-xs">
+                    <thead class="bg-[#060d22] text-slate-400 font-bold border-b border-[#142342] sticky top-0 text-[11px]">
+                        <tr>
+                            <th class="p-2.5 text-left pl-4">File Name</th>
+                            <th class="p-2.5 w-28">Size</th>
+                            <th class="p-2.5 w-28">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="jobFilesTableBody" class="divide-y divide-[#0f1c36] text-slate-300"></tbody>
+                </table>
+            </div>
+
+            <button type="button" onclick="closeJobExplorer()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold py-2.5 rounded-xl text-xs uppercase cursor-pointer">Close Window</button>
+        </div>
+    </div>
+
+    <!-- ================= JAVASCRIPT MASTER LOGIC ENGINE ================= -->
+    <script>
+        let activeMasterVendor = null;
+        let activeSubEditingId = null;
+        let activeSubEditingSno = null;
+        let subGridMasterData = [];
+        let blurTimer = null;
+        let currentExplorerContext = null;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadMasterLabVendors();
+        });
+
+        // 1. Load Master Lab Partners
+        async function loadMasterLabVendors() {
+            try {
+                const res = await fetch('/api/get_master_lab_vendors');
+                const data = await res.json();
+                if (data.status === 'success') {
+                    const tbody = document.getElementById('masterLabTableBody');
+                    if (!tbody) return;
+                    tbody.innerHTML = '';
+                    if (!data.data || data.data.length === 0) {
+                        tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-slate-500 text-center font-bold">No Lab Partners Registered</td></tr>`;
+                        return;
+                    }
+                    data.data.forEach((row, idx) => {
+                        const tr = document.createElement('tr');
+                        tr.className = (idx % 2 === 0 ? "bg-[#070e22]/50" : "bg-[#050a1a]/30") + " hover:bg-[#0e1b3d]/70 transition cursor-pointer select-none text-xs";
+                        tr.onclick = () => openLabPortal(row);
+tr.innerHTML = `
+    <td class="py-3 px-3 font-bold text-slate-500">#${idx + 1}</td>
+    <td class="py-3 px-4 text-left pl-6 font-bold text-slate-200">${row.vendor_name}</td>
+    <td class="py-3 px-4 font-mono text-slate-400">${row.mobile}</td>
+    <td class="py-3 px-4 text-left pl-6 text-slate-400">${row.address || '-'}</td>
+`;
+                        tbody.appendChild(tr);
+                    });
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        // 2. Save Master Lab Vendor
+        async function saveMasterLabVendor() {
+            const vname = document.getElementById('lab_vendor_name').value.trim();
+            const mob = document.getElementById('lab_vendor_mobile').value.trim();
+            const addr = document.getElementById('lab_vendor_address').value.trim();
+
+            if (!vname || mob.length !== 10) {
+                alert("Please enter a valid vendor name and 10-digit mobile number!");
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/save_master_lab_vendor', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ vendor_name: vname, mobile: mob, address: addr })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    document.getElementById('lab_vendor_name').value = '';
+                    document.getElementById('lab_vendor_mobile').value = '';
+                    document.getElementById('lab_vendor_address').value = '';
+                    loadMasterLabVendors();
+                } else alert(data.message);
+            } catch(e) { alert("Server Error!"); }
+        }
+
+        // 3. Open 14-Column Ledger Portal
+        async function openLabPortal(row) {
+            activeMasterVendor = row;
+            document.getElementById('pop_lab_title').innerText = row.vendor_name;
+            document.getElementById('pop_lab_subtitle').innerText = `Partner #${row.id} | Mobile: ${row.mobile}`;
+            
+            const searchEl = document.getElementById('sub_search_query');
+            if (searchEl) searchEl.value = '';
+            clearSubFormFields();
+            applyPrivacyBlur();
+
+            const res = await fetch(`/api/get_lab_sub_records/${row.id}`);
+            const data = await res.json();
+            if (data.status === 'success') {
+                subGridMasterData = data.data || [];
+                renderSubLedgerGrid(subGridMasterData);
+            }
+            const modal = document.getElementById('modal_lab_portal');
+            if (modal) modal.style.setProperty('display', 'flex', 'important');
+        }
+
+        function closeLabPortal() {
+            if (blurTimer) clearTimeout(blurTimer);
+            const modal = document.getElementById('modal_lab_portal');
+            if (modal) modal.style.setProperty('display', 'none', 'important');
+            activeMasterVendor = null;
+        }
+
+        // Privacy Blur with 5-Seconds Auto Timer
+        function applyPrivacyBlur() {
+            const costEl = document.getElementById('sub_lab_cost');
+            const paidEl = document.getElementById('sub_lab_paid');
+            if (!costEl || !paidEl) return;
+            costEl.classList.add('privacy-blur');
+            paidEl.classList.add('privacy-blur');
+            costEl.style.filter = "blur(5px)";
+            paidEl.style.filter = "blur(5px)";
+        }
+
+        function togglePrivacyBlur() {
+            const costEl = document.getElementById('sub_lab_cost');
+            const paidEl = document.getElementById('sub_lab_paid');
+            if (!costEl || !paidEl) return;
+
+            if (blurTimer) clearTimeout(blurTimer);
+            const isBlurred = costEl.classList.contains('privacy-blur');
+
+            if (isBlurred) {
+                costEl.classList.remove('privacy-blur');
+                paidEl.classList.remove('privacy-blur');
+                costEl.style.filter = "none";
+                paidEl.style.filter = "none";
+
+                blurTimer = setTimeout(() => {
+                    applyPrivacyBlur();
+                }, 5000);
+            } else {
+                applyPrivacyBlur();
+            }
+        }
+
+        // Calculation
+        function calcSubBal() {
+            const tot = parseFloat(document.getElementById('sub_total').value) || 0;
+            const adv = parseFloat(document.getElementById('sub_adv').value) || 0;
+            const bal = Math.max(0, tot - adv);
+            document.getElementById('sub_bal_lbl').innerText = bal.toFixed(2);
+        }
+
+        // Filter
+        function filterSubGridData() {
+            const q = document.getElementById('sub_search_query').value.trim().toLowerCase();
+            if (!q) { renderSubLedgerGrid(subGridMasterData); return; }
+            const filtered = subGridMasterData.filter(r => 
+                (r.cust_name && r.cust_name.toLowerCase().includes(q)) || 
+                (r.mobile && r.mobile.includes(q)) || 
+                (r.tracking_no && r.tracking_no.toLowerCase().includes(q))
+            );
+            renderSubLedgerGrid(filtered);
+        }
+
+        // 4. Render Grid with Red Alert & Latest on Top
+        function renderSubLedgerGrid(records) {
+            const tbody = document.getElementById('subLedgerTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+
+            let gCustDue = 0, gLabCostTot = 0, gLabPaidTot = 0, gLabDueTot = 0;
+
+            records.forEach(r => {
+                const tot = parseFloat(r.total_amount || 0);
+                const adv = parseFloat(r.advance_amount || 0);
+                const bal = Math.max(0, tot - adv);
+                const lCost = parseFloat(r.lab_cost || 0);
+                const lPaid = parseFloat(r.lab_paid || 0);
+                const lDue = Math.max(0, lCost - lPaid);
+
+                gCustDue += bal;
+                gLabCostTot += lCost;
+                gLabPaidTot += lPaid;
+                gLabDueTot += lDue;
+            });
+
+            const displayRecords = records.map((r, idx) => ({ ...r, originalSno: idx + 1 }));
+            displayRecords.reverse().forEach((r) => {
+                const currentSno = r.originalSno;
+                const tot = parseFloat(r.total_amount || 0);
+                const adv = parseFloat(r.advance_amount || 0);
+                const bal = Math.max(0, tot - adv);
+                const lCost = parseFloat(r.lab_cost || 0);
+                const lPaid = parseFloat(r.lab_paid || 0);
+                const lDue = Math.max(0, lCost - lPaid);
+
+                // Red Alert Check
+                const isDelivered = (r.cust_delivery_status === 'Delivered');
+                const isUnpaidAlert = (isDelivered && lDue > 0);
+
+                const rowClass = isUnpaidAlert 
+                    ? "bg-rose-950/40 text-rose-200 hover:bg-rose-900/50 border-b border-rose-900/60" 
+                    : "hover:bg-slate-800/40 border-b border-slate-800/60";
+
+                const fileHint = r.has_file 
+                    ? `<span class="text-emerald-400 font-bold">📎 Yes</span>` 
+                    : `<span class="text-slate-600">-</span>`;
+
+                const tr = document.createElement('tr');
+                tr.className = `${rowClass} transition select-none cursor-pointer text-xs`;
+                tr.onclick = () => populateSubFormForEdit(r, currentSno);
+                
+                tr.innerHTML = `
+                    <td class="p-2.5 font-bold text-slate-500 text-center">${currentSno}</td>
+                    <td class="p-2.5 text-left pl-3 font-bold text-slate-200">${r.cust_name}</td>
+                    <td class="p-2.5 font-mono text-slate-400 text-center">${r.mobile}</td>
+                    <td class="p-2.5 text-left pl-3 text-slate-300">${r.work_type || '-'}</td>
+                    <td class="p-2.5 font-mono text-slate-400 text-center">${r.work_rec_date || '-'}</td>
+                    <td class="p-2.5 text-right pr-3 font-mono">₹ ${tot.toFixed(2)}</td>
+                    <td class="p-2.5 text-right pr-3 text-emerald-400 font-mono">₹ ${adv.toFixed(2)}</td>
+                    <td class="p-2.5 text-right pr-3 text-rose-400 font-bold font-mono">₹ ${bal.toFixed(2)}</td>
+                    <td class="p-2.5 font-mono text-center text-slate-400">${r.sent_lab_date || '-'}</td>
+                    <td class="p-2.5 text-right pr-3 text-slate-300 privacy-blur font-mono" style="filter: blur(5px);">₹ ${lCost.toFixed(2)}</td>
+                    <td class="p-2.5 text-right pr-3 text-emerald-400 privacy-blur font-mono" style="filter: blur(5px);">₹ ${lPaid.toFixed(2)}</td>
+                    <td class="p-2.5 font-bold text-center">${r.cust_delivery_status}</td>
+                    <td class="p-2.5 text-center">${fileHint}</td>
+                    <td class="p-2.5 text-center font-bold text-slate-300 font-mono">${r.tracking_no || '-'}</td>
+                    <td class="p-2.5 text-center">
+                        <button type="button" onclick="event.stopPropagation(); triggerClientWhatsApp('${r.mobile}', '${r.cust_name}', '${r.work_type}')" class="bg-slate-800 hover:bg-slate-700 border border-slate-700 text-slate-200 px-2 py-0.5 rounded text-[10px] font-bold">💬 WA</button>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+
+            document.getElementById('lbl_rep_cust_due').innerText = `Cust. Total Balance Due: ₹ ${gCustDue.toFixed(2)}`;
+            document.getElementById('lbl_rep_lab_total').innerText = `Lab Total Cost: ₹ ${gLabCostTot.toFixed(2)} | Paid: ₹ ${gLabPaidTot.toFixed(2)}`;
+            document.getElementById('lbl_rep_lab_due').innerText = `Lab Pending Dues: ₹ ${gLabDueTot.toFixed(2)}`;
+        }
+
+        // 5. Split Freezing Rules (Customer & Lab Lock)
+        function applyFreezeRules(r) {
+            const tot = parseFloat(r.total_amount || 0);
+            const adv = parseFloat(r.advance_amount || 0);
+            const bal = tot - adv;
+
+            const lCost = parseFloat(r.lab_cost || 0);
+            const lPaid = parseFloat(r.lab_paid || 0);
+            const payDate = (r.pay_date || '').trim();
+
+            const isDelivered = (r.cust_delivery_status === 'Delivered');
+            const isCustSettled = (bal <= 0);
+            const isLabSettled = (lCost > 0) && ((lCost - lPaid) <= 0) && (payDate !== '');
+
+            const custInputs = ['sub_cname', 'sub_mobile', 'sub_address', 'sub_wtype', 'sub_wrec_date', 'sub_total', 'sub_adv', 'sub_sent_date', 'sub_exp_date', 'sub_tracking_no'];
+            const labInputs = ['sub_lab_cost', 'sub_lab_paid', 'sub_pay_date', 'sub_remark'];
+
+            custInputs.concat(labInputs).forEach(id => {
+                const el = document.getElementById(id);
+                if (el) { el.disabled = false; el.classList.remove('opacity-40', 'bg-[#03060f]'); }
+            });
+
+            const statusEl = document.getElementById('sub_status');
+            const saveBtn = document.getElementById('btn_save_sub');
+            if (statusEl) statusEl.disabled = false;
+            if (saveBtn) saveBtn.disabled = false;
+
+            // Lock Customer Fields
+            if (isDelivered && isCustSettled) {
+                custInputs.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) { el.disabled = true; el.classList.add('opacity-40', 'bg-[#03060f]'); }
+                });
+            }
+
+            // Lock Lab Fields
+            if (isLabSettled) {
+                labInputs.forEach(id => {
+                    const el = document.getElementById(id);
+                    if (el) { el.disabled = true; el.classList.add('opacity-40', 'bg-[#03060f]'); }
+                });
+            }
+
+            // Completely Closed
+            if (isDelivered && isCustSettled && isLabSettled) {
+                if (statusEl) statusEl.disabled = true;
+                if (saveBtn) saveBtn.disabled = true;
+            }
+        }
+
+        // 6. Populate Form for Edit
+        function populateSubFormForEdit(r, sno) {
+            activeSubEditingId = r.id;
+            activeSubEditingSno = sno;
+            document.getElementById('sub_cname').value = r.cust_name || '';
+            document.getElementById('sub_mobile').value = r.mobile || '';
+            document.getElementById('sub_address').value = r.address || '';
+            document.getElementById('sub_wtype').value = r.work_type || '';
+            document.getElementById('sub_wrec_date').value = r.work_rec_date || '';
+            document.getElementById('sub_total').value = r.total_amount || 0;
+            document.getElementById('sub_adv').value = r.advance_amount || 0;
+            
+            calcSubBal();
+
+            document.getElementById('sub_sent_date').value = r.sent_lab_date || '';
+            document.getElementById('sub_exp_date').value = r.expected_date || '';
+            document.getElementById('sub_tracking_no').value = r.tracking_no || '';
+            document.getElementById('sub_lab_cost').value = r.lab_cost || 0;
+            document.getElementById('sub_lab_paid').value = r.lab_paid || 0;
+            document.getElementById('sub_pay_date').value = r.pay_date || '';
+            document.getElementById('sub_status').value = r.cust_delivery_status || 'Pending';
+            document.getElementById('sub_remark').value = r.remark || '';
+
+            applyPrivacyBlur();
+            applyFreezeRules(r);
+        }
+
+        // 7. Clear Form
+        function clearSubFormFields() {
+            activeSubEditingId = null;
+            activeSubEditingSno = null;
+            const ids = ['sub_cname', 'sub_mobile', 'sub_address', 'sub_wtype', 'sub_wrec_date', 'sub_total', 'sub_adv', 'sub_sent_date', 'sub_exp_date', 'sub_tracking_no', 'sub_lab_cost', 'sub_lab_paid', 'sub_pay_date', 'sub_remark'];
+            ids.forEach(id => {
+                const el = document.getElementById(id);
+                if (el) { el.disabled = false; el.value = ''; el.classList.remove('opacity-40', 'bg-[#03060f]'); }
+            });
+
+            document.getElementById('sub_wrec_date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('sub_bal_lbl').innerText = '0.00';
+            document.getElementById('sub_status').value = 'Pending';
+            document.getElementById('sub_status').disabled = false;
+            document.getElementById('btn_save_sub').disabled = false;
+
+            const fileInp = document.getElementById('real_file_input');
+            if (fileInp) fileInp.value = '';
+            const ind = document.getElementById('attach_file_name_indicator');
+            if (ind) { ind.innerText = ''; ind.className = 'hidden'; }
+
+            applyPrivacyBlur();
+        }
+
+        function handleFileSelected(input) {
+            const ind = document.getElementById('attach_file_name_indicator');
+            if (!ind) return;
+            if (input.files && input.files[0]) {
+                ind.innerText = `📎 Selected: ${input.files[0].name}`;
+                ind.className = "text-xs text-emerald-400 font-mono block";
+            } else {
+                ind.innerText = ''; ind.className = "hidden";
+            }
+        }
+
+        // 8. Save Sub-Record
+        async function processSubFormSave() {
+            if (!activeMasterVendor) {
+                alert("Please select a vendor partner first!");
+                return;
+            }
+
+            const cname = document.getElementById('sub_cname').value.trim();
+            const mob = document.getElementById('sub_mobile').value.trim();
+            const wtype = document.getElementById('sub_wtype').value.trim();
+            const tot = parseFloat(document.getElementById('sub_total').value) || 0;
+            const adv = parseFloat(document.getElementById('sub_adv').value) || 0;
+            const bal = Math.max(0, tot - adv);
+            const status = document.getElementById('sub_status').value;
+
+            if (!cname || mob.length !== 10) {
+                alert("Please enter customer name and 10-digit mobile number!");
+                return;
+            }
+
+            if (!wtype) {
+                alert("Please enter work description!");
+                return;
+            }
+
+            if (adv > tot) {
+                alert("Customer advance cannot exceed total amount!");
+                return;
+            }
+
+            // Delivery Balance Lock Rule
+            if (bal > 0 && status === 'Delivered') {
+                alert(`Delivery blocked! Customer has a pending balance of ₹ ${bal.toFixed(2)}. Please settle dues before marking as Delivered.`);
+                return;
+            }
+
+            const currentSno = activeSubEditingSno ? activeSubEditingSno : (subGridMasterData.length + 1);
+
+            const formData = new FormData();
+            formData.append('vendor_id', activeMasterVendor.id);
+            if (activeSubEditingId) formData.append('sub_id', activeSubEditingId);
+            formData.append('sno', currentSno);
+            formData.append('cust_name', cname);
+            formData.append('mobile', mob);
+            formData.append('address', document.getElementById('sub_address').value.trim());
+            formData.append('work_type', wtype);
+            formData.append('work_rec_date', document.getElementById('sub_wrec_date').value);
+            formData.append('total_amount', tot);
+            formData.append('advance_amount', adv);
+            formData.append('sent_lab_date', document.getElementById('sub_sent_date').value);
+            formData.append('expected_date', document.getElementById('sub_exp_date').value);
+            formData.append('tracking_no', document.getElementById('sub_tracking_no').value.trim());
+            formData.append('lab_cost', parseFloat(document.getElementById('sub_lab_cost').value) || 0);
+            formData.append('lab_paid', parseFloat(document.getElementById('sub_lab_paid').value) || 0);
+            formData.append('pay_date', document.getElementById('sub_pay_date').value);
+            formData.append('cust_delivery_status', status);
+            formData.append('remark', document.getElementById('sub_remark').value.trim());
+
+            const fileInp = document.getElementById('real_file_input');
+            if (fileInp && fileInp.files && fileInp.files[0]) {
+                formData.append('attached_file', fileInp.files[0]);
+            }
+
+            try {
+                const res = await fetch('/api/save_lab_sub_record', {
+                    method: 'POST',
+                    body: formData
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    clearSubFormFields();
+                    openLabPortal(activeMasterVendor);
+                } else alert(data.message);
+            } catch(e) { alert("Server connection error!"); }
+        }
+
+        // 9. Open Job Workspace Files Modal (View Only)
+        async function openCustomerFolderExplorer() {
+            if (!activeMasterVendor) {
+                alert("Please select a vendor partner first!");
+                return;
+            }
+
+            const cname = document.getElementById('sub_cname').value.trim() || 'Customer';
+            const sno = activeSubEditingSno || 1;
+
+            currentExplorerContext = {
+                vendor_name: activeMasterVendor.vendor_name,
+                cust_name: cname,
+                sno: sno
+            };
+
+            document.getElementById('exp_folder_title').innerText = `#${sno}_${cname}`;
+            await refreshJobFilesList();
+
+            const modal = document.getElementById('modal_job_explorer');
+            if (modal) modal.style.setProperty('display', 'flex', 'important');
+        }
+
+        function closeJobExplorer() {
+            const modal = document.getElementById('modal_job_explorer');
+            if (modal) modal.style.setProperty('display', 'none', 'important');
+        }
+
+        async function refreshJobFilesList() {
+    if (!currentExplorerContext || !activeMasterVendor) return;
+    try {
+        const vendorId = activeMasterVendor.id;
+        const sno = currentExplorerContext.sno;
+        const custName = encodeURIComponent(currentExplorerContext.cust_name);
+
+        // ✅ सही बैकएंड रूट को कॉल करें
+        const res = await fetch(`/api/get_job_workspace_files?vendor_id=${vendorId}&sno=${sno}&cust_name=${custName}`);
+        const data = await res.json();
+        
+        const tbody = document.getElementById('jobFilesTableBody');
+        if (!tbody) return;
+        tbody.innerHTML = '';
+
+        if (data.status === 'success' && data.files && data.files.length > 0) {
+            data.files.forEach(f => {
+                const tr = document.createElement('tr');
+                const downloadUrl = `/download_job_file?vendor=${encodeURIComponent(f.vendor_name)}&folder=${encodeURIComponent(f.folder_name)}&file=${encodeURIComponent(f.file_name)}`;
+                
+                tr.innerHTML = `
+                    <td class="p-2.5 text-left pl-4 text-slate-200 font-bold truncate max-w-[200px]">${f.file_name}</td>
+                    <td class="p-2.5 text-slate-400">${f.size}</td>
+                    <td class="p-2.5">
+                        <a href="${downloadUrl}" target="_blank" class="bg-cyan-600 hover:bg-cyan-500 text-white border border-cyan-500 px-3 py-1 rounded-lg text-xs font-bold inline-block">👁️ View / ⬇️</a>
+                    </td>
+                `;
+                tbody.appendChild(tr);
+            });
+        } else {
+            tbody.innerHTML = `<tr><td colspan="3" class="py-6 text-slate-500 text-center font-bold">No files found in this workspace folder</td></tr>`;
+        }
+    } catch (e) {
+        console.error("Job files fetch error:", e);
+    }
+}
+
+        function triggerClientWhatsApp(mobile, name, workType) {
+    const cleanMob = String(mobile || '').replace(/[^0-9]/g, '');
+    if (cleanMob.length !== 10) { 
+        alert("कृपया 10 अंकों का वैध मोबाइल नंबर दर्ज करें!"); 
+        return; 
+    }
+
+    // वर्तमान में जो स्टूडियो लॉगिन है, उसका नाम डाइनैमिक रूप से आएगा
+    const currentStudioName = "{{ session.get('studio_name', 'HIM STUDIO') }}";
+
+    const msg = `Hello ${name},\n\nYour order [${workType || 'Photography / Album Work'}] has arrived from the lab and is ready for pickup at *${currentStudioName}*.\n\nThank you!\n*${currentStudioName}* 📸`;
+    const encodedMsg = encodeURIComponent(msg);
+
+    // यह चेक करेगा कि डिवाइस मोबाइल है या कंप्यूटर (Desktop)
+    const isMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+
+    if (isMobileDevice) {
+        // 📱 मोबाइल के लिए: सीधे फोन का व्हाट्सएप ऐप खुलेगा
+        window.location.href = `whatsapp://send?phone=91${cleanMob}&text=${encodedMsg}`;
+    } else {
+        // 💻 कंप्यूटर (Desktop) के लिए: सीधे WhatsApp Web / Desktop खुलेगा
+        window.open(`https://web.whatsapp.com/send?phone=91${cleanMob}&text=${encodedMsg}`, '_blank');
+    }
+}
+
+        // 11. Print Statement
+        function printLabStatement() {
+            if (!activeMasterVendor) return;
+            window.open(`/print_lab_statement/${activeMasterVendor.id}`, '_blank');
+        }
+
+        // Dynamic Sidebar Active Link Script
+        document.addEventListener("DOMContentLoaded", () => {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll("#sidebar-nav a.nav-btn");
+
+            navLinks.forEach(link => {
+                const href = link.getAttribute("href");
+                link.classList.remove("active");
+
+                if (href === currentPath || (href !== "/" && currentPath.startsWith(href))) {
+                    link.classList.add("active");
+                }
+            });
+        });
+
+(function handleUserInactivity() {
+    let idleTimer;
+    const IDLE_TIME_LIMIT = 30 * 60 * 1000; // ठीक 30 मिनट
+
+    function resetUserTimer() {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => {
+            alert("30 मिनट तक कोई गतिविधि न होने के कारण सुरक्षा कारणों से यह खाता लॉगआउट हो गया है।");
+            window.location.href = '/logout';
+        }, IDLE_TIME_LIMIT);
+    }
+
+    const trackedEvents = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'click'];
+    trackedEvents.forEach(evt => {
+        window.addEventListener(evt, resetUserTimer, { passive: true });
+    });
+
+    resetUserTimer();
+})();
+
+    </script>
+</body>
+</html>

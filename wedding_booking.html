@@ -1,0 +1,1130 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIM STUDIO - Wedding Booking Management</title>
+    
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .bg-studio-gradient { background: linear-gradient(135deg, #050814 0%, #0b1124 100%); }
+        .bg-studio-glass { background-color: rgba(11, 18, 38, 0.6); backdrop-filter: blur(14px); }
+        .bg-studio-sidebar { background-color: #03060f; }
+        .glow-cyan { box-shadow: 0 0 20px rgba(34, 211, 238, 0.15); }
+        .glow-indigo { box-shadow: 0 0 20px rgba(99, 102, 241, 0.15); }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #03060f; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-studio-gradient text-slate-200 flex min-h-screen font-sans overflow-hidden">
+
+    <!-- SIDEBAR NAVIGATION -->
+    <div class="bg-studio-sidebar w-68 min-h-screen flex flex-col justify-between p-4 shrink-0 border-r border-slate-900 shadow-2xl z-10 no-print">
+        <div>
+            <div class="flex items-center gap-3 px-3 py-4 mb-4 border-b border-slate-900">
+                <span class="text-xl animate-pulse">📸</span>
+                <div class="leading-none">
+                    <h1 class="text-base font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400">HIM STUDIO</h1>
+                    <span class="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Premium Web ERP</span>
+                </div>
+            </div>
+            
+            <nav id="sidebar-nav" class="space-y-1 text-xs font-bold tracking-wide max-h-[78vh] overflow-y-auto pr-1 nav-scroll">
+                <a href="/" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer" id="btn_dashboard"><span>📊</span> Dashboard</a>
+                <a href="/new_bill" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer" id="btn_new_bill"><span>📄</span> New Bill</a>
+                <a href="/all_bills" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer" id="btn_all_bills"><span>📁</span> All Bills</a>
+                <a href="/token_counter" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer" id="btn-token-counter"><span>🎫</span> Daily Token Counter</a>
+                <a href="/wedding" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer" id="btn_wedding"><span>💍</span> Event Booking</a>
+                <a href="/stock" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer" id="btn_stock"><span>📦</span> Item / Product (Stock)</a>
+                <a href="/credit_ledger" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer" id="btn_credit"><span>💳</span> Credit Ledger</a>
+                <a href="/purchases" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer"><span>🛒</span> Purchases</a>
+                <a href="/expenses" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer"><span>💸</span> Studio Expenses</a>
+                <a href="/work_export" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer"><span>📦</span> Work Export Terminal</a>
+                <a href="/material_stock" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer"><span>📦</span> Material Stock</a>
+                <a href="/equipment" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer"><span>📸</span> Equipment Tracking</a>
+                <a href="/employees" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer"><span>👤</span> Employee Corner</a>
+                <a href="/reports" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer"><span>📈</span> Report</a>
+                <a href="/change_password" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer"><span>🔐</span> Profile & Security</a>
+            </nav>
+        </div>
+        <a href="/" class="text-left px-4 py-3 text-rose-400 font-bold text-xs hover:bg-rose-950/20 rounded-xl transition cursor-pointer flex items-center gap-2"><span>❌</span> Exit System</a>
+    </div>
+
+    <!-- MAIN VIEWS CONTAINER -->
+<div class="flex-1 p-6 flex flex-col justify-between overflow-y-auto">
+    <div id="view-wedding" class="w-full space-y-4 px-2">
+        <div class="bg-studio-glass rounded-2xl p-6 border border-slate-800/80 shadow-xl relative glow-cyan w-full">
+            
+            <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-6 border-b border-slate-800/80 pb-3">
+                <span class="text-xs font-black tracking-widest text-cyan-400 uppercase">💍 HIM STUDIO - Wedding Booking Management System</span>
+                <div class="flex items-center gap-2">
+                    <span class="text-[11px] text-indigo-400 font-bold uppercase">Current Booking Serial:</span>
+                    <span id="wed_next_bill_no" class="px-3 py-1 bg-indigo-500/10 text-indigo-400 font-black text-xs rounded-xl border border-indigo-500/30 tracking-widest">LOADING...</span>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-x-8 gap-y-4 text-xs w-full">
+                <div class="flex items-center">
+                    <label class="w-32 text-slate-400 font-semibold">Customer Name *:</label>
+                    <input type="text" id="wed_name" class="flex-1 p-2 bg-slate-900/60 border border-slate-700/60 rounded-xl text-white focus:outline-none focus:border-cyan-500 font-bold">
+                </div>
+                <div class="flex items-center">
+                    <label class="w-32 text-slate-400 font-semibold">Mobile Number *:</label>
+                    <input type="text" id="wed_mob" maxlength="10" placeholder="10 अंकों का नंबर" oninput="this.value=this.value.replace(/\D/g,'')" class="flex-1 p-2 bg-slate-900/60 border border-slate-700/60 rounded-xl text-white focus:outline-none focus:border-cyan-500 font-mono">
+                </div>
+                <div class="flex items-center">
+                    <label class="w-32 text-slate-400 font-semibold">Cust. Address:</label>
+                    <input type="text" id="wed_address" class="flex-1 p-2 bg-slate-900/60 border border-slate-700/60 rounded-xl text-white focus:outline-none focus:border-cyan-500">
+                </div>
+                <div class="flex items-center">
+                    <label class="w-32 text-slate-400 font-semibold">Event Location:</label>
+                    <input type="text" id="wed_location" class="flex-1 p-2 bg-slate-900/60 border border-slate-700/60 rounded-xl text-white focus:outline-none focus:border-cyan-500">
+                </div>
+            </div>
+
+            <!-- 📅 4-DAYS EVENT SCHEDULE MANAGEMENT -->
+            <div class="mt-5 border-t border-slate-800/60 pt-4 space-y-3 w-full">
+                <span class="text-xs font-bold text-cyan-400 uppercase tracking-wider block">📅 4-DAYS EVENT SCHEDULE MANAGEMENT</span>
+                
+                <div class="grid grid-cols-12 gap-3 items-center text-xs">
+                    <span class="col-span-2 text-slate-400 font-semibold">Day 1 Date *:</span>
+                    <div class="col-span-3">
+                        <input type="date" id="wed_d1_date" onchange="autofillWeddingDates()" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none cursor-pointer">
+                    </div>
+                    <span class="col-span-1 text-center text-slate-400">Event:</span>
+                    <input type="text" id="wed_d1_event" placeholder="उदा. सगाई" class="col-span-6 p-2 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none">
+                </div>
+                <div class="grid grid-cols-12 gap-3 items-center text-xs">
+                    <span class="col-span-2 text-slate-400 font-semibold">Day 2 Date:</span>
+                    <div class="col-span-3 flex gap-1 items-center">
+                        <input type="date" id="wed_d2_date" class="flex-1 p-2 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none cursor-pointer">
+                        <button type="button" onclick="clearWeddingDay(2)" class="bg-rose-950/40 border border-rose-900 text-rose-400 rounded-lg px-2.5 py-1.5 font-bold hover:bg-rose-900 hover:text-white transition cursor-pointer">✕</button>
+                    </div>
+                    <span class="col-span-1 text-center text-slate-400">Event:</span>
+                    <input type="text" id="wed_d2_event" class="col-span-6 p-2 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none">
+                </div>
+                <div class="grid grid-cols-12 gap-3 items-center text-xs">
+                    <span class="col-span-2 text-slate-400 font-semibold">Day 3 Date:</span>
+                    <div class="col-span-3 flex gap-1 items-center">
+                        <input type="date" id="wed_d3_date" class="flex-1 p-2 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none cursor-pointer">
+                        <button type="button" onclick="clearWeddingDay(3)" class="bg-rose-950/40 border border-rose-900 text-rose-400 rounded-lg px-2.5 py-1.5 font-bold hover:bg-rose-900 hover:text-white transition cursor-pointer">✕</button>
+                    </div>
+                    <span class="col-span-1 text-center text-slate-400">Event:</span>
+                    <input type="text" id="wed_d3_event" class="col-span-6 p-2 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none">
+                </div>
+                <div class="grid grid-cols-12 gap-3 items-center text-xs">
+                    <span class="col-span-2 text-slate-400 font-semibold">Day 4 Date:</span>
+                    <div class="col-span-3 flex gap-1 items-center">
+                        <input type="date" id="wed_d4_date" class="flex-1 p-2 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none cursor-pointer">
+                        <button type="button" onclick="clearWeddingDay(4)" class="bg-rose-950/40 border border-rose-900 text-rose-400 rounded-lg px-2.5 py-1.5 font-bold hover:bg-rose-900 hover:text-white transition cursor-pointer">✕</button>
+                    </div>
+                    <span class="col-span-1 text-center text-slate-400">Event:</span>
+                    <input type="text" id="wed_d4_event" class="col-span-6 p-2 bg-slate-900 border border-slate-700 rounded-xl text-white focus:outline-none">
+                </div>
+            </div>
+
+            <div class="mt-5 grid grid-cols-3 gap-4 border-t border-slate-800/60 pt-4 text-xs w-full">
+                <div>
+                    <label class="block text-slate-400 font-semibold mb-1">Total Budget (₹):</label>
+                    <input type="number" id="wed_tot" value="0" oninput="liveWeddingCalc()" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-xl text-right font-bold text-white focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-slate-400 font-semibold mb-1">Discount (₹):</label>
+                    <input type="number" id="wed_disc" value="0" oninput="liveWeddingCalc()" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-xl text-right font-bold text-amber-400 focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-slate-400 font-semibold mb-1">Advance Paid (₹):</label>
+                    <input type="number" id="wed_adv" value="0" oninput="liveWeddingCalc()" class="w-full p-2 bg-slate-900 border border-slate-700 rounded-xl text-right font-bold text-emerald-400 focus:outline-none">
+                </div>
+                <div class="col-span-3 bg-slate-950/80 p-3 rounded-xl border border-slate-900 flex justify-between items-center font-mono">
+                    <span class="text-rose-400 font-bold uppercase tracking-wider">ESTIMATED BALANCE DUE:</span>
+                    <span id="wed_live_bal" class="text-sm text-rose-400 font-black">₹ 0.00</span>
+                </div>
+            </div>
+
+            <button onclick="saveWeddingEventToDb()" class="mt-4 bg-gradient-to-r from-cyan-600 to-indigo-600 text-white font-black text-xs py-3 px-6 rounded-xl shadow-lg cursor-pointer transform active:scale-95 transition">
+                🚀 Save Wedding Framework Details
+            </button>
+        </div>
+
+        <div class="bg-studio-glass rounded-2xl p-4 border border-slate-800/80 shadow-xl glow-indigo w-full space-y-3 mt-4">
+            <div class="flex items-center justify-between">
+                <span class="text-xs font-black tracking-widest text-indigo-400 uppercase">📋 ACTIVE WEDDING SCHEDULE LIST</span>
+                <div class="w-72">
+                    <input type="text" id="wedding_search_input" oninput="filterWeddingGrid(this.value)" placeholder="🔍 नाम या मोबाइल से खोजें..." class="w-full p-2 text-xs bg-slate-950 border border-slate-800 rounded-xl text-white focus:outline-none">
+                </div>
+            </div>
+            <div class="overflow-hidden rounded-xl border border-slate-900 max-h-56 overflow-y-auto w-full">
+                <table class="min-w-full text-xs text-center border-collapse w-full">
+                    <thead class="bg-slate-950 text-slate-400 font-black uppercase border-b border-slate-800 sticky top-0">
+                        <tr>
+                            <th class="p-2.5 w-20">BILL NO.</th>
+                            <th class="p-3 text-left pl-6">Customer Name</th>
+                            <th class="p-2.5 w-28">Mobile No.</th>
+                            <th class="p-2.5 w-28">Total Budget</th>
+                            <th class="p-2.5 w-28">Advance Paid</th>
+                            <th class="p-2.5 w-28">Remaining Balance</th>
+                        </tr>
+                    </thead>
+                    <tbody id="weddingGridBody" class="divide-y divide-slate-800/40 bg-slate-900/10 text-slate-300 font-mono cursor-pointer"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 💍 WEDDING ACTION POPUP (CLEAN MATRIX) -->
+<div id="wedding_action_popup" class="hidden fixed inset-0 bg-slate-950/85 backdrop-blur-md flex items-center justify-center z-50 no-print">
+    <div class="bg-studio-glass border border-slate-700/80 rounded-3xl w-[1280px] p-5 space-y-3 shadow-2xl relative glow-cyan max-h-[95vh] overflow-y-auto">
+        
+        <div class="flex justify-between items-center border-b border-slate-800/80 pb-2">
+            <div class="flex items-center gap-2">
+                <span class="text-base">👑</span>
+                <div>
+                    <h3 class="text-xs font-black text-amber-400 uppercase tracking-widest">WEDDING TERMINAL ACTION GATEWAY</h3>
+                    <span class="text-[9px] text-slate-400 font-mono">BILL REFERENCE #<span id="pop_wed_bill_no" class="text-cyan-400 font-bold">0</span></span>
+                    <!-- हिडन आईडी फील्ड -->
+                    <input type="hidden" id="pop_wed_hidden_id" value="">
+                </div>
+            </div>
+            <button type="button" onclick="closeWeddingPopup()" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-rose-900/50 text-slate-400 hover:text-rose-200 font-bold text-xs cursor-pointer transition flex items-center justify-center border border-slate-700">✕</button>
+        </div>
+
+        <!-- 📅 Customer Details -->
+        <div class="grid grid-cols-5 gap-2.5 bg-slate-950/80 p-2.5 border border-slate-800 rounded-xl text-xs">
+            <div>
+                <label class="block text-slate-400 font-bold text-[10px] mb-0.5">Customer Name:</label>
+                <input type="text" id="pop_wed_name" class="w-full p-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white font-bold text-xs focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-slate-400 font-bold text-[10px] mb-0.5">Mobile Contact:</label>
+                <input type="text" id="pop_wed_mob" maxlength="10" class="w-full p-1.5 bg-slate-900 border border-slate-700 rounded-lg text-cyan-300 font-mono font-bold text-xs focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-slate-400 font-bold text-[10px] mb-0.5">Address:</label>
+                <input type="text" id="pop_wed_address" class="w-full p-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white text-xs focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-slate-400 font-bold text-[10px] mb-0.5">Event Location:</label>
+                <input type="text" id="pop_wed_location" class="w-full p-1.5 bg-slate-900 border border-slate-700 rounded-lg text-white text-xs focus:outline-none">
+            </div>
+            <div>
+                <label class="block text-cyan-400 font-bold text-[10px] mb-0.5">Booking Date:</label>
+                <input type="date" id="pop_wed_date" class="w-full p-1.5 bg-slate-900 border border-slate-700 rounded-lg text-cyan-300 font-bold text-xs focus:outline-none cursor-pointer">
+            </div>
+        </div>
+
+        <!-- 4-DAYS MATRIX GRID -->
+        <div class="p-3 bg-slate-950/80 border border-slate-800 rounded-xl space-y-2 text-xs">
+            <span class="text-[10px] text-cyan-400 font-black uppercase tracking-wider block">📅 4-Days Event Matrix (Expanded Camera, Cameraman & Description Grid)</span>
+            <div id="pop_days_container" class="space-y-2"></div>
+            <div class="pt-2 border-t border-slate-900">
+                <label class="block text-slate-400 font-bold text-[10px] mb-1">Description / Special Notes:</label>
+                <textarea id="pop_wed_project_desc" rows="2" placeholder="यहाँ पूरे वेडिंग ऑर्डर का विवरण या विशेष निर्देश लिखें..." class="w-full p-2 bg-slate-900 border border-slate-800 rounded-xl text-white text-xs focus:outline-none focus:border-amber-500"></textarea>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-12 gap-3 items-start">
+            <div class="col-span-7 p-3 bg-slate-950/80 border border-slate-800 rounded-xl space-y-2">
+                <span class="text-[10px] text-indigo-400 font-black uppercase tracking-wider block">🛒 Service Matrix Upgrade Terminal (Add Cart)</span>
+                <div class="flex gap-2 text-xs">
+                    <input list="pop_service_list" id="pop_service_cb" placeholder="सर्विस चुनें या नाम टाइप करें..." class="flex-1 p-1.5 bg-slate-900 border border-slate-700 rounded-lg font-bold text-cyan-400 text-xs focus:outline-none">
+                    <datalist id="pop_service_list">
+                        <option value="Drone Camera Shoot">
+                        <option value="Candid Album 12x30">
+                        <option value="Teaser Video 4K">
+                        <option value="Pre-Wedding Shoot">
+                        <option value="LED Wall Setup">
+                        <option value="Crane Shoot">
+                    </datalist>
+                    <input type="number" id="pop_service_amt" placeholder="Amount (₹)" class="w-24 p-1.5 bg-slate-900 border border-slate-700 rounded-lg text-right font-bold text-emerald-400 text-xs focus:outline-none">
+                    <button type="button" onclick="addServiceToPopCart()" class="bg-indigo-600 hover:bg-indigo-500 px-3 rounded-lg font-bold text-white cursor-pointer transition text-xs">＋ Add</button>
+                </div>
+                <div class="max-h-24 overflow-y-auto border border-slate-900 rounded-lg bg-slate-900/30">
+                    <table class="w-full text-[11px] text-center">
+                        <thead class="bg-slate-900 text-slate-400 font-bold uppercase sticky top-0">
+                            <tr>
+                                <th class="p-1 text-left pl-3">Service Description</th>
+                                <th class="p-1 w-24">Rate Amt</th>
+                                <th class="p-1 w-16">Remove</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pop_spec_tree_body" class="divide-y divide-slate-900"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="col-span-5 p-3 bg-slate-950/80 border border-slate-800 rounded-xl space-y-1.5">
+                <span class="text-[10px] text-emerald-400 font-black uppercase tracking-wider block">🕒 Installment Payment History Log</span>
+                <div class="max-h-28 overflow-y-auto rounded-lg border border-slate-900 text-[11px] bg-slate-900/30">
+                    <table class="w-full text-center">
+                        <thead class="bg-slate-900 text-slate-400 font-bold uppercase sticky top-0">
+                            <tr>
+                                <th class="p-1">Payment Date & Time</th>
+                                <th class="p-1 w-24">Paid Amt</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pop_pay_tree_body" class="divide-y divide-slate-900 font-mono text-emerald-400 font-bold"></tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div class="p-3.5 bg-slate-950/90 border border-slate-800 rounded-xl space-y-2.5">
+            <div class="grid grid-cols-4 gap-3 items-center text-xs">
+                <div>
+                    <label class="block text-slate-400 font-bold text-[10px] mb-0.5">Total Budget (₹):</label>
+                    <input type="number" id="pop_wed_tot" oninput="livePopCalc()" class="w-full p-1.5 bg-slate-900 border border-slate-700 rounded-lg text-right font-black text-white text-xs focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-slate-400 font-bold text-[10px] mb-0.5">Discount (₹):</label>
+                    <input type="number" id="pop_wed_disc" oninput="livePopCalc()" class="w-full p-1.5 bg-slate-900 border border-slate-700 rounded-lg text-right font-bold text-amber-400 text-xs focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-slate-400 font-bold text-[10px] mb-0.5">Total Collected (₹):</label>
+                    <span id="pop_wed_collected" class="block p-1.5 text-emerald-400 font-black text-xs bg-slate-900 border border-slate-700 rounded-lg text-center">₹ 0.00</span>
+                </div>
+                <div>
+                    <label class="block text-cyan-400 font-black text-[10px] mb-0.5">Add New Payment & Mode:</label>
+                    <div class="flex gap-1">
+                        <input type="number" id="pop_wed_new_pay" oninput="livePopCalc()" value="0" class="flex-1 p-1.5 bg-indigo-950/50 border border-indigo-900 rounded-lg text-right font-bold text-white text-xs focus:outline-none" placeholder="Amount">
+                        
+                        <!-- 💳 पेमेंट मोड ड्रॉपडाउन (Cash / UPI) -->
+                        <select id="pop_wed_pay_mode" class="p-1 bg-slate-900 border border-slate-700 rounded-lg text-cyan-300 font-bold text-[11px] focus:outline-none">
+                            <option value="CASH">💵 Cash</option>
+                            <option value="UPI">📱 UPI</option>
+                        </select>
+
+                        <button type="button" onclick="submitPartPaymentPopup()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-2.5 rounded-lg font-bold text-[10px] transition cursor-pointer">💾 Save</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="border-t border-slate-900 pt-1.5 flex justify-between items-center font-mono text-xs bg-slate-900/50 px-3 py-1.5 rounded-lg border border-slate-800/50">
+                <span class="text-rose-400 font-black uppercase text-[11px]">Calculated Due Remaining Amount:</span>
+                <span id="pop_wed_bal_lbl" class="text-sm text-rose-400 font-black tracking-wide">BAL. DUE : ₹ 0.00</span>
+            </div>
+        </div>
+
+        <datalist id="employee_sync_list"></datalist>
+        <datalist id="equipment_sync_list"></datalist>
+
+        <!-- 🛡️ ACTION BUTTON DECK (Modify, Cancel, Print, Deliver) -->
+        <div id="pop_action_btn_deck" class="flex gap-2.5 text-xs font-black uppercase pt-1">
+            <button type="button" onclick="requestAuthAndExecute('Modify')" class="flex-1 bg-amber-600 hover:bg-amber-500 text-white py-2.5 rounded-xl shadow-lg transition cursor-pointer tracking-wider">💾 Save & Modify</button>
+            <button type="button" onclick="requestAuthAndExecute('Cancel')" class="flex-1 bg-rose-700 hover:bg-rose-600 text-white py-2.5 rounded-xl shadow-lg transition cursor-pointer tracking-wider">❌ Cancel Booking</button>
+            <button type="button" onclick="triggerDirectPrintAction()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-slate-200 py-2.5 rounded-xl shadow-lg transition cursor-pointer tracking-wider border border-slate-700">🖨️ Print Bill (A4 Header)</button>
+            <button type="button" onclick="processUpdateWeddingData('Deliver')" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white py-2.5 rounded-xl shadow-lg transition cursor-pointer tracking-wider">🚚 Deliver & Lock</button>
+        </div>
+    </div>
+</div>
+
+<!-- 🔒 WEDDING ACTION MASTER PASSWORD SECURITY SHIELD MODAL -->
+<div id="weddingSecurityModal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-[9999] hidden flex items-center justify-center p-4 select-none">
+    <div class="bg-slate-900 border border-slate-700 w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 text-center">
+        <div class="w-14 h-14 bg-rose-950/80 border border-rose-700/60 rounded-2xl mx-auto flex items-center justify-center text-2xl shadow-inner">
+            🔐
+        </div>
+
+        <div>
+            <h3 class="text-sm font-black text-rose-400 uppercase tracking-wider" id="wedding_sec_title">Owner Authorization Required</h3>
+            <p class="text-[11px] text-slate-400 mt-1" id="wedding_sec_desc">बुकिंग मॉडिफाई या कैंसिल करने हेतु स्टूडियो का मुख्य पासवर्ड दर्ज करें</p>
+        </div>
+
+        <div>
+            <input type="password" id="wedding_sec_pwd" placeholder="स्टूडियो लॉगिन पासवर्ड" class="w-full p-3 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs outline-none focus:border-rose-500 text-center font-bold tracking-widest" autocomplete="off">
+        </div>
+
+        <div class="flex gap-2 pt-1">
+            <button type="button" onclick="closeWeddingSecModal()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition cursor-pointer">
+                रद्द करें
+            </button>
+            <button type="button" onclick="confirmWeddingSecAction()" id="btn_verify_wedding_sec" class="flex-1 py-2.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-black tracking-wide shadow-lg transition cursor-pointer">
+                पुष्टि करें
+            </button>
+        </div>
+
+        <div id="wedding_sec_error" class="text-[11px] text-rose-400 font-bold hidden"></div>
+    </div>
+</div>
+
+    <!-- JAVASCRIPT MASTER LOGIC ENGINE -->
+<script>
+    let globalWeddingMasterList = [];
+    let selectedBillNo = null;
+    let totalCollectedFromDb = 0.0;
+    let currentStatus = "Pending";
+    let currentWeddingRecord = null;
+    let popCartItems = [];
+
+    window.onload = function() {
+        renderWeddingGrid();
+        loadWeddingSyncLists();
+        fetchWeddingNextBillNo();
+    };
+
+    async function fetchWeddingNextBillNo() {
+    try {
+        const res = await fetch('/api/next_wedding_bill_no');
+        const data = await res.json();
+        const span = document.getElementById('wed_next_bill_no');
+        
+        if (span) {
+            // ✅ FIX: data.next_bill_no (Backend key) को चेक करें
+            const billNum = data.next_bill_no || data.next_bill || data.bill_no;
+            span.innerText = billNum ? `#${billNum}` : "#1";
+        }
+    } catch (err) {
+        console.error("Next bill fetch error:", err);
+        const span = document.getElementById('wed_next_bill_no');
+        if (span) span.innerText = "#1";
+    }
+}
+
+function liveWeddingCalc() {
+    const tot = parseFloat(document.getElementById('wed_tot').value) || 0;
+    const disc = parseFloat(document.getElementById('wed_disc').value) || 0;
+    const adv = parseFloat(document.getElementById('wed_adv').value) || 0;
+    document.getElementById('wed_live_bal').innerText = `₹ ${(tot - disc - adv).toFixed(2)}`;
+}
+
+    function autofillWeddingDates() {
+        const d1Str = document.getElementById('wed_d1_date').value;
+        if (!d1Str) return;
+        const [year, month, day] = d1Str.split('-').map(Number);
+        for (let i = 2; i <= 4; i++) {
+            const nextDate = new Date(year, month - 1, day + (i - 1));
+            const yyyy = nextDate.getFullYear();
+            const mm = String(nextDate.getMonth() + 1).padStart(2, '0');
+            const dd = String(nextDate.getDate()).padStart(2, '0');
+            const targetInput = document.getElementById(`wed_d${i}_date`);
+            if (targetInput && !targetInput.value) targetInput.value = `${yyyy}-${mm}-${dd}`;
+        }
+    }
+
+    function clearWeddingDay(dayNum) {
+        if(document.getElementById(`wed_d${dayNum}_date`)) document.getElementById(`wed_d${dayNum}_date`).value = "";
+        if(document.getElementById(`wed_d${dayNum}_event`)) document.getElementById(`wed_d${dayNum}_event`).value = "";
+    }
+
+    function clearWeddingForm() {
+        if(document.getElementById('wed_name')) document.getElementById('wed_name').value = '';
+        if(document.getElementById('wed_mob')) document.getElementById('wed_mob').value = '';
+        if(document.getElementById('wed_address')) document.getElementById('wed_address').value = '';
+        if(document.getElementById('wed_location')) document.getElementById('wed_location').value = '';
+        if(document.getElementById('wed_tot')) document.getElementById('wed_tot').value = '0';
+        if(document.getElementById('wed_disc')) document.getElementById('wed_disc').value = '0';
+        if(document.getElementById('wed_adv')) document.getElementById('wed_adv').value = '0';
+        for (let i = 1; i <= 4; i++) clearWeddingDay(i);
+        liveWeddingCalc();
+    }
+
+    async function saveWeddingEventToDb() {
+        try {
+            const name = document.getElementById('wed_name').value.trim();
+            const mob = document.getElementById('wed_mob').value.trim();
+            
+            if (!name || !mob) { 
+                alert("⚠️ कृपया ग्राहक का नाम और मोबाइल नंबर दर्ज करें!"); 
+                return; 
+            }
+
+            const today = new Date();
+            const todayFormatted = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+
+            const weddingData = {
+                customer_name: name, 
+                mobile: mob,
+                address: document.getElementById('wed_address') ? document.getElementById('wed_address').value.trim() : "",
+                venue_location: document.getElementById('wed_location') ? document.getElementById('wed_location').value.trim() : "",
+                
+                booking_date: todayFormatted,
+
+                wed_date_1: document.getElementById('wed_d1_date') ? document.getElementById('wed_d1_date').value : "",
+                wed_date_2: document.getElementById('wed_d2_date') ? document.getElementById('wed_d2_date').value : "",
+                wed_date_3: document.getElementById('wed_d3_date') ? document.getElementById('wed_d3_date').value : "",
+                wed_date_4: document.getElementById('wed_d4_date') ? document.getElementById('wed_d4_date').value : "",
+                
+                wed_event_1: document.getElementById('wed_d1_event') ? document.getElementById('wed_d1_event').value.trim() : "",
+                wed_event_2: document.getElementById('wed_d2_event') ? document.getElementById('wed_d2_event').value.trim() : "",
+                wed_event_3: document.getElementById('wed_d3_event') ? document.getElementById('wed_d3_event').value.trim() : "",
+                wed_event_4: document.getElementById('wed_d4_event') ? document.getElementById('wed_d4_event').value.trim() : "",
+                
+                total_deal_amount: parseFloat(document.getElementById('wed_tot').value) || 0,
+                discount_amount: parseFloat(document.getElementById('wed_disc').value) || 0,
+                advance_received: parseFloat(document.getElementById('wed_adv').value) || 0
+            };
+
+            const res = await fetch('/api/save_wedding_booking', {
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify(weddingData)
+            });
+            
+            const resData = await res.json();
+
+            if (resData.status === "success") {
+                alert("💍 वेडिंग बुकिंग सफलतापूर्वक सेव हो गई!");
+                clearWeddingForm();   
+                renderWeddingGrid();  
+                fetchWeddingNextBillNo();
+            } else {
+                alert("❌ एरर: " + (resData.message || "डेटा सेव नहीं हुआ"));
+            }
+        } catch (err) {
+            console.error("Save Error Details:", err);
+            alert("🚨 सर्वर एरर आया है!");
+        }
+    }
+
+    // 🎯 1. स्मार्ट नेक्स्ट-इवेंट फाइंडर (सगाई बीतते ही शादी पकड़ेगा)
+    function getNextUpcomingEvent(w) {
+        if (!w) return null;
+        const today = new Date(); 
+        today.setHours(0, 0, 0, 0);
+
+        const eventList = [
+            { day: 1, dateStr: w.wed_date_1, name: w.wed_event_1 || 'सगाई' },
+            { day: 2, dateStr: w.wed_date_2, name: w.wed_event_2 || 'हल्दी/संगीत' },
+            { day: 3, dateStr: w.wed_date_3, name: w.wed_event_3 || 'शादी/बारात' },
+            { day: 4, dateStr: w.wed_date_4, name: w.wed_event_4 || 'रिसेप्शन' }
+        ];
+
+        let nextEvent = null;
+        let minDays = Infinity;
+
+        eventList.forEach(ev => {
+            if (ev.dateStr && String(ev.dateStr).trim() !== '' && String(ev.dateStr) !== 'null') {
+                const cleanDate = String(ev.dateStr).split(' ')[0].trim();
+                const parts = cleanDate.split('-');
+                if (parts.length === 3) {
+                    const evDate = new Date(parts[0], parts[1] - 1, parts[2]);
+                    evDate.setHours(0, 0, 0, 0);
+                    
+                    const diffDays = Math.ceil((evDate - today) / (1000 * 60 * 60 * 24));
+                    
+                    if (diffDays >= 0 && diffDays < minDays) {
+                        minDays = diffDays;
+                        nextEvent = { ...ev, daysLeft: diffDays };
+                    }
+                }
+            }
+        });
+
+        return nextEvent;
+    }
+
+    function renderWeddingGrid() {
+        fetch('/api/get_wedding_bookings')
+            .then(res => res.json())
+            .then(res => {
+                let listData = [];
+                if (res.status === "success" && Array.isArray(res.data)) listData = res.data;
+                else if (Array.isArray(res)) listData = res;
+                else if (res.data && Array.isArray(res.data)) listData = res.data;
+
+                globalWeddingMasterList = listData;
+                renderWeddingGridData(globalWeddingMasterList);
+            })
+            .catch(err => console.error("Grid Load Error:", err));
+    }
+
+    // 🎯 2. सुरक्षित 6-कॉलम रेंडर ग्रिड (स्मार्ट अलर्ट के साथ)
+    function renderWeddingGridData(data) {
+        const tbody = document.getElementById('weddingGridBody');
+        if (!tbody) return;
+        tbody.innerHTML = "";
+        const records = Array.isArray(data) ? data : [];
+
+        if (records.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="6" class="p-4 text-slate-500 text-center">कोई वेडिंग बुकिंग रिकॉर्ड नहीं मिला!</td></tr>`;
+            return;
+        }
+
+        let urgentAlerts = [];
+
+        records.forEach(w => {
+            const tr = document.createElement('tr');
+            const recId = w.id || w.bill_no || 0;
+            tr.addEventListener('click', () => openWeddingActionPopup(recId));
+
+            const tot = parseFloat(w.total_deal_amount || w.total_amount || 0);
+            const adv = parseFloat(w.advance_received || w.advance_amount || 0);
+            const disc = parseFloat(w.discount_amount || 0);
+            const bal = parseFloat(w.balance_amount !== undefined ? w.balance_amount : (tot - disc - adv));
+
+            const nextEv = getNextUpcomingEvent(w);
+            let alertBadge = "";
+            let rowBgClass = "hover:bg-slate-800/60 border-b border-slate-800/40 transition cursor-pointer";
+
+            if (nextEv && w.status !== 'Delivered' && w.status !== 'Cancelled') {
+                if (nextEv.daysLeft <= 15) {
+                    rowBgClass = "bg-rose-950/40 hover:bg-rose-900/60 border-b border-rose-800/60 transition cursor-pointer text-rose-200";
+                    alertBadge = `<span class="inline-flex items-center px-1.5 py-0.5 text-[9px] bg-rose-600 text-white rounded font-black animate-pulse leading-none">🚨 ${nextEv.daysLeft === 0 ? 'TODAY' : nextEv.daysLeft + 'D LEFT'}: ${nextEv.name}</span>`;
+                }
+                if (nextEv.daysLeft <= 3) {
+                    urgentAlerts.push(`• #${recId} ${w.customer_name || 'Customer'} - ${nextEv.name} (${nextEv.daysLeft === 0 ? 'आज का दिन' : nextEv.daysLeft + ' दिन बाकी'})`);
+                }
+            }
+
+            tr.className = rowBgClass;
+            tr.innerHTML = `
+                <td class="p-2.5 font-bold text-cyan-400">
+                    <div class="flex items-center justify-center gap-1.5">
+                        <span>#${recId}</span>
+                        ${alertBadge}
+                    </div>
+                </td>
+                <td class="p-3 text-left pl-6 font-semibold">${w.customer_name || '-'}</td>
+                <td class="p-2.5 font-mono">${w.mobile || '-'}</td>
+                <td class="p-2.5 text-right pr-6">₹ ${tot.toFixed(2)}</td>
+                <td class="p-2.5 text-right pr-6 text-emerald-400">₹ ${adv.toFixed(2)}</td>
+                <td class="p-2.5 text-right pr-6 text-rose-400 font-bold">₹ ${bal.toFixed(2)}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+
+        if (urgentAlerts.length > 0 && !window.hasShownWeddingAlert) {
+            window.hasShownWeddingAlert = true;
+            alert("🚨 [HIM STUDIO URGENT EVENT ALERT] 🚨\n\nनिम्नलिखित प्रोग्राम नज़दीक हैं:\n" + urgentAlerts.join("\n"));
+        }
+    }
+
+    async function loadWeddingSyncLists() {
+        try {
+            const empRes = await fetch('/api/get_employees_list?status=Active');
+            const empData = await empRes.json();
+            const empDatalist = document.getElementById('employee_sync_list');
+            if (empDatalist && empData.status === 'success' && empData.data) {
+                empDatalist.innerHTML = '';
+                empData.data.forEach(emp => {
+                    const opt = document.createElement('option');
+                    opt.value = `${emp.name}`;
+                    empDatalist.appendChild(opt);
+                });
+            }
+
+            const eqRes = await fetch('/api/get_studio_assets');
+            const eqData = await eqRes.json();
+            const eqDatalist = document.getElementById('equipment_sync_list');
+            if (eqDatalist && eqData.status === 'success' && eqData.data) {
+                eqDatalist.innerHTML = '';
+                eqData.data.forEach(asset => {
+                    const opt = document.createElement('option');
+                    opt.value = `${asset.asset_name}`;
+                    eqDatalist.appendChild(opt);
+                });
+            }
+        } catch (err) {
+            console.error("Sync Lists Error:", err);
+        }
+    }
+
+    // 🎯 3. एक्शन पॉप-अप लोडर
+    function openWeddingActionPopup(billNo) {
+        fetch('/api/get_wedding_bookings')
+            .then(res => res.json())
+            .then(async res => {
+                let listData = [];
+                if (res.status === "success" && Array.isArray(res.data)) listData = res.data;
+                else if (Array.isArray(res)) listData = res;
+                else if (res.data && Array.isArray(res.data)) listData = res.data;
+
+                const booking = listData.find(w => String(w.id || w.bill_no) === String(billNo));
+                if (!booking) return;
+
+                currentWeddingRecord = booking; 
+                selectedBillNo = billNo;
+                currentStatus = booking.status || "Pending";
+                totalCollectedFromDb = parseFloat(booking.advance_received || booking.advance_amount || 0);
+
+                if (document.getElementById('pop_wed_hidden_id')) document.getElementById('pop_wed_hidden_id').value = booking.id || billNo;
+                document.getElementById('pop_wed_name').value = booking.customer_name || "";
+                document.getElementById('pop_wed_mob').value = booking.mobile || "";
+                document.getElementById('pop_wed_address').value = booking.address || "";
+                document.getElementById('pop_wed_location').value = booking.venue_location || "";
+                document.getElementById('pop_wed_project_desc').value = booking.wedding_details || "";
+                document.getElementById('pop_wed_tot').value = booking.total_deal_amount || booking.total_amount || 0;
+                document.getElementById('pop_wed_disc').value = booking.discount_amount || 0;
+
+                let existingDate = booking.booking_date || booking.created_at || '';
+                if (existingDate && existingDate !== 'null') {
+                    existingDate = String(existingDate).split(' ')[0].trim();
+                } else {
+                    const today = new Date();
+                    existingDate = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-${String(today.getDate()).padStart(2,'0')}`;
+                }
+                document.getElementById('pop_wed_date').value = existingDate;
+
+                await loadWeddingSyncLists();
+
+                renderPopupDaysMatrix(booking);
+
+                try {
+                    popCartItems = typeof booking.services === 'string' ? JSON.parse(booking.services) : (booking.services || []);
+                } catch(e) { popCartItems = []; }
+                renderPopCartTree();
+
+                let historyArr = [];
+                try {
+                    historyArr = typeof booking.payment_history === 'string' ? JSON.parse(booking.payment_history) : (booking.payment_history || []);
+                } catch(e) { historyArr = []; }
+
+                const payTreeBody = document.getElementById('pop_pay_tree_body');
+                if (payTreeBody) {
+                    payTreeBody.innerHTML = "";
+                    if (historyArr.length > 0) {
+                        historyArr.forEach(p => {
+                            payTreeBody.innerHTML += `
+                                <tr class="border-b border-slate-900">
+                                    <td class="p-1.5 font-mono text-cyan-400">${p.date_time || 'N/A'}</td>
+                                    <td class="p-1.5 font-bold text-emerald-400 text-right pr-4">+ ₹ ${parseFloat(p.amount || 0).toFixed(2)}</td>
+                                </tr>`;
+                        });
+                    } else {
+                        payTreeBody.innerHTML = `<tr><td colspan="2" class="p-3 text-slate-500 text-center">कोई पार्ट पेमेंट नहीं मिला</td></tr>`;
+                    }
+                }
+
+                livePopCalc();
+                document.getElementById('wedding_action_popup').classList.remove('hidden');
+            })
+            .catch(err => {
+                console.error("Popup Error:", err);
+                alert("🚨 डेटा लोड करने में समस्या आई!");
+            });
+    }
+
+    // 🎯 4. 4-Days मैट्रिक्स (ड्रॉपडाउन + डायरेक्ट ＋ बटन)
+    function renderPopupDaysMatrix(booking) {
+        const container = document.getElementById('pop_days_container');
+        if (!container) return;
+        container.innerHTML = '';
+
+        const days = [
+            { day: 1, date: booking.wed_date_1, event: booking.wed_event_1 || 'सगाई', cam: booking.wed_cam_1 || '', staff: booking.wed_staff_1 || '' },
+            { day: 2, date: booking.wed_date_2, event: booking.wed_event_2 || 'हल्दी / संगीत', cam: booking.wed_cam_2 || '', staff: booking.wed_staff_2 || '' },
+            { day: 3, date: booking.wed_date_3, event: booking.wed_event_3 || 'शादी / बारात', cam: booking.wed_cam_3 || '', staff: booking.wed_staff_3 || '' },
+            { day: 4, date: booking.wed_date_4, event: booking.wed_event_4 || 'रिसेप्शन', cam: booking.wed_cam_4 || '', staff: booking.wed_staff_4 || '' }
+        ];
+
+        days.forEach(d => {
+            container.innerHTML += `
+                <div class="bg-slate-900/60 p-2.5 rounded-xl border border-slate-800 grid grid-cols-12 gap-2 items-center text-xs">
+                    <span class="col-span-1 text-cyan-400 font-bold">Day ${d.day}:</span>
+                    <input type="date" id="pop_d${d.day}_date" value="${d.date || ''}" class="col-span-2 p-1.5 bg-slate-950 border border-slate-700 rounded-lg text-cyan-300 font-bold text-xs focus:outline-none cursor-pointer">
+                    <input type="text" id="pop_d${d.day}_event" value="${d.event || ''}" placeholder="Event Name" class="col-span-3 p-1.5 bg-slate-950 border border-slate-700 rounded-lg text-white text-xs focus:outline-none font-semibold">
+                    
+                    <!-- 📷 Camera Dropdown Select with Direct (+) Add -->
+                    <div class="col-span-3 flex gap-1">
+                        <input list="equipment_sync_list" id="pop_d${d.day}_cam" value="${d.cam || ''}" placeholder="📷 Camera (Sony, Drone)" class="flex-1 p-1.5 bg-slate-950 border border-slate-700 rounded-lg text-amber-300 font-bold text-xs focus:outline-none">
+                        <button type="button" onclick="appendCommaItem('pop_d${d.day}_cam')" title="Add More Camera" class="bg-amber-600 hover:bg-amber-500 text-white font-black px-2.5 rounded-lg text-xs cursor-pointer shadow transition">＋</button>
+                    </div>
+
+                    <!-- 👤 Staff Dropdown Select with Direct (+) Add -->
+                    <div class="col-span-3 flex gap-1">
+                        <input list="employee_sync_list" id="pop_d${d.day}_staff" value="${d.staff || ''}" placeholder="👤 Staff (Rahul, Amit)" class="flex-1 p-1.5 bg-slate-950 border border-slate-700 rounded-lg text-cyan-300 font-bold text-xs focus:outline-none">
+                        <button type="button" onclick="appendCommaItem('pop_d${d.day}_staff')" title="Add More Staff" class="bg-cyan-600 hover:bg-cyan-500 text-white font-black px-2.5 rounded-lg text-xs cursor-pointer shadow transition">＋</button>
+                    </div>
+                </div>
+            `;
+        });
+    }
+
+    // 🎯 5. बिना किसी ब्राउज़र प्रॉम्प्ट के सीधे इनपुट में कॉमा (,) लगाना
+    function appendCommaItem(inputId) {
+        const input = document.getElementById(inputId);
+        if (!input) return;
+
+        let currentVal = input.value.trim();
+        if (!currentVal) {
+            input.focus();
+            return;
+        }
+
+        if (!currentVal.endsWith(',')) {
+            input.value = currentVal + ', ';
+        }
+        input.focus();
+    }
+
+    function closeWeddingPopup() { 
+        const pop = document.getElementById('wedding_action_popup');
+        if (pop) pop.classList.add('hidden'); 
+    }
+
+    function renderPopCartTree() {
+        const tbody = document.getElementById('pop_spec_tree_body');
+        if (!tbody) return;
+        tbody.innerHTML = "";
+        if (popCartItems && popCartItems.length > 0) {
+            popCartItems.forEach((item, idx) => {
+                tbody.innerHTML += `
+                    <tr class="border-b border-slate-900 hover:bg-slate-900/30">
+                        <td class="p-1.5 text-left pl-3 text-slate-200 font-semibold">${item.name}</td>
+                        <td class="p-1.5 font-mono text-emerald-400">₹ ${parseFloat(item.price || 0).toFixed(2)}</td>
+                        <td class="p-1.5"><button type="button" onclick="removePopCartItem(${idx})" class="text-rose-500 font-bold cursor-pointer">✕</button></td>
+                    </tr>`;
+            });
+        } else {
+            tbody.innerHTML = `<tr><td colspan="3" class="p-3 text-slate-500 text-center">कोई सर्विस जोड़ी नहीं गई</td></tr>`;
+        }
+    }
+
+    function addServiceToPopCart() {
+        const nameEl = document.getElementById('pop_service_cb');
+        const amtEl = document.getElementById('pop_service_amt');
+        if (!nameEl || !amtEl) return;
+
+        const name = nameEl.value.trim();
+        const price = parseFloat(amtEl.value) || 0;
+        if (!name || price <= 0) { alert("कृपया वैध सर्विस और अमाउंट दर्ज करें!"); return; }
+
+        popCartItems.push({ name: name, price: price });
+        const totInput = document.getElementById('pop_wed_tot');
+        if (totInput) totInput.value = parseFloat(totInput.value || 0) + price;
+
+        nameEl.value = '';
+        amtEl.value = '';
+        renderPopCartTree();
+        livePopCalc();
+    }
+
+    function removePopCartItem(idx) {
+        if (!popCartItems || !popCartItems[idx]) return;
+        const item = popCartItems[idx];
+        popCartItems.splice(idx, 1);
+        const totInput = document.getElementById('pop_wed_tot');
+        if (totInput) totInput.value = Math.max(0, parseFloat(totInput.value || 0) - parseFloat(item.price || 0));
+        renderPopCartTree();
+        livePopCalc();
+    }
+
+    function livePopCalc() {
+        const t = parseFloat(document.getElementById('pop_wed_tot') ? document.getElementById('pop_wed_tot').value : 0) || 0;
+        const d = parseFloat(document.getElementById('pop_wed_disc') ? document.getElementById('pop_wed_disc').value : 0) || 0;
+        const newPay = parseFloat(document.getElementById('pop_wed_new_pay') ? document.getElementById('pop_wed_new_pay').value : 0) || 0;
+        
+        const colEl = document.getElementById('pop_wed_collected');
+        if (colEl) colEl.innerText = `₹ ${totalCollectedFromDb.toFixed(2)}`;
+
+        const balLbl = document.getElementById('pop_wed_bal_lbl');
+        if (balLbl) balLbl.innerText = `BAL. DUE : ₹ ${(t - d - (totalCollectedFromDb + newPay)).toFixed(2)}`;
+    }
+
+    async function submitPartPaymentPopup() {
+    const bookingId = document.getElementById('pop_wed_hidden_id').value; // या bill_no
+    const amount = document.getElementById('pop_wed_new_pay').value;
+    const paymentMode = document.getElementById('pop_wed_pay_mode').value; // 'CASH' या 'UPI'
+
+    if (!amount || parseFloat(amount) <= 0) {
+        alert("कृपया वैध (Valid) राशि दर्ज करें!");
+        return;
+    }
+
+    try {
+        const res = await fetch('/api/add_wedding_payment', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                id: bookingId, 
+                amount: parseFloat(amount), 
+                payment_mode: paymentMode  // यह सीधे आपके ऊपर वाले फ्लस्क रूट में जाएगा
+            })
+        });
+        
+        const data = await res.json();
+        if (data.status === 'success') {
+            alert(data.message);
+            location.reload(); // पेज रीफ्रेश होकर नया बैलेंस दिखाएगा
+        } else {
+            alert("एरर: " + data.message);
+        }
+    } catch (e) {
+        console.error("Wedding Payment Error:", e);
+    }
+}
+
+    // 🎯 6. अपडेट व सेव करना
+    async function processUpdateWeddingData(actionMode) {
+        if (!selectedBillNo) return;
+        const totVal = parseFloat(document.getElementById('pop_wed_tot').value) || 0;
+        const discVal = parseFloat(document.getElementById('pop_wed_disc').value) || 0;
+
+        const finalBalance = totVal - discVal - totalCollectedFromDb;
+
+        if (actionMode === 'Deliver' && finalBalance > 0) {
+            alert(`🚨 त्रुटि: अभी भी ₹ ${finalBalance.toFixed(2)} का बैलेंस बकाया है!\n\nवेडिंग बुकिंग को 'Delivered & Locked' तभी किया जा सकता है जब बैलेंस पूरा '0' हो जाए।`);
+            return;
+        }
+
+        const updateData = {
+            id: selectedBillNo,
+            customer_name: document.getElementById('pop_wed_name').value.trim(),
+            mobile: document.getElementById('pop_wed_mob').value.trim(),
+            address: document.getElementById('pop_wed_address').value.trim(),
+            venue_location: document.getElementById('pop_wed_location').value.trim(),
+            booking_date: document.getElementById('pop_wed_date') ? document.getElementById('pop_wed_date').value : '',
+            
+            total_deal_amount: totVal,
+            discount_amount: discVal,
+            advance_received: totalCollectedFromDb,
+            status: actionMode === 'Deliver' ? 'Delivered' : currentStatus,
+            services: popCartItems,
+            wedding_details: document.getElementById('pop_wed_project_desc').value.trim(),
+            
+            wed_date_1: document.getElementById('pop_d1_date') ? document.getElementById('pop_d1_date').value : '',
+            wed_date_2: document.getElementById('pop_d2_date') ? document.getElementById('pop_d2_date').value : '',
+            wed_date_3: document.getElementById('pop_d3_date') ? document.getElementById('pop_d3_date').value : '',
+            wed_date_4: document.getElementById('pop_d4_date') ? document.getElementById('pop_d4_date').value : '',
+            
+            wed_event_1: document.getElementById('pop_d1_event') ? document.getElementById('pop_d1_event').value : '',
+            wed_event_2: document.getElementById('pop_d2_event') ? document.getElementById('pop_d2_event').value : '',
+            wed_event_3: document.getElementById('pop_d3_event') ? document.getElementById('pop_d3_event').value : '',
+            wed_event_4: document.getElementById('pop_d4_event') ? document.getElementById('pop_d4_event').value : '',
+            
+            wed_cam_1: document.getElementById('pop_d1_cam') ? document.getElementById('pop_d1_cam').value : '',
+            wed_cam_2: document.getElementById('pop_d2_cam') ? document.getElementById('pop_d2_cam').value : '',
+            wed_cam_3: document.getElementById('pop_d3_cam') ? document.getElementById('pop_d3_cam').value : '',
+            wed_cam_4: document.getElementById('pop_d4_cam') ? document.getElementById('pop_d4_cam').value : '',
+            
+            wed_staff_1: document.getElementById('pop_d1_staff') ? document.getElementById('pop_d1_staff').value : '',
+            wed_staff_2: document.getElementById('pop_d2_staff') ? document.getElementById('pop_d2_staff').value : '',
+            wed_staff_3: document.getElementById('pop_d3_staff') ? document.getElementById('pop_d3_staff').value : '',
+            wed_staff_4: document.getElementById('pop_d4_staff') ? document.getElementById('pop_d4_staff').value : ''
+        };
+
+        try {
+            const res = await fetch('/api/update_wedding_full', {
+                method: 'POST', 
+                headers: { 'Content-Type': 'application/json' }, 
+                body: JSON.stringify(updateData)
+            });
+            const resData = await res.json();
+            if (resData.status === "success") {
+                alert("💍 वेडिंग बुकिंग सफलतापूर्वक अपडेट हो गई!");
+                closeWeddingPopup();
+                renderWeddingGrid();
+            } else {
+                alert("❌ " + resData.message);
+            }
+        } catch(e) {
+            alert("🚨 सर्वर त्रुटि!");
+        }
+    }
+
+// 🔒 WEDDING AUTHENTICATION SHIELD ENGINE
+    let pendingWeddingActionType = null;
+
+    function requestAuthAndExecute(actionType) {
+        pendingWeddingActionType = actionType;
+        const titleEl = document.getElementById('wedding_sec_title');
+        const descEl = document.getElementById('wedding_sec_desc');
+        const btnEl = document.getElementById('btn_verify_wedding_sec');
+
+        if (actionType === 'Cancel') {
+            if (titleEl) titleEl.innerText = "CANCEL WEDDING BOOKING";
+            if (descEl) descEl.innerText = "बुकिंग को रद्द (Cancel) करने हेतु मालिक का लॉगिन पासवर्ड दर्ज करें";
+            if (btnEl) {
+                btnEl.innerText = "रद्द की पुष्टि करें";
+                btnEl.className = "flex-1 py-2.5 bg-rose-700 hover:bg-rose-600 text-white rounded-xl text-xs font-black tracking-wide shadow-lg transition cursor-pointer";
+            }
+        } else {
+            if (titleEl) titleEl.innerText = "AUTHORIZE ORDER MODIFICATION";
+            if (descEl) descEl.innerText = "पुराने वेडिंग ऑर्डर में बदलाव सेव करने हेतु मालिक का पासवर्ड दर्ज करें";
+            if (btnEl) {
+                btnEl.innerText = "मॉडिफाई सुरक्षित करें";
+                btnEl.className = "flex-1 py-2.5 bg-amber-600 hover:bg-amber-500 text-white rounded-xl text-xs font-black tracking-wide shadow-lg transition cursor-pointer";
+            }
+        }
+
+        const pwdInput = document.getElementById('wedding_sec_pwd');
+        if (pwdInput) pwdInput.value = '';
+        const errBox = document.getElementById('wedding_sec_error');
+        if (errBox) errBox.classList.add('hidden');
+
+        const modal = document.getElementById('weddingSecurityModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            if (pwdInput) pwdInput.focus();
+        }
+    }
+
+    function closeWeddingSecModal() {
+        const modal = document.getElementById('weddingSecurityModal');
+        if (modal) modal.classList.add('hidden');
+        pendingWeddingActionType = null;
+    }
+
+    async function confirmWeddingSecAction() {
+        const pwdInput = document.getElementById('wedding_sec_pwd');
+        const pwd = pwdInput ? pwdInput.value.trim() : '';
+        const errMsg = document.getElementById('wedding_sec_error');
+        const btn = document.getElementById('btn_verify_wedding_sec');
+
+        if (!pwd) {
+            if (errMsg) {
+                errMsg.innerText = "कृपया मालिक का मुख्य पासवर्ड दर्ज करें!";
+                errMsg.classList.remove('hidden');
+            }
+            if (pwdInput) pwdInput.focus();
+            return;
+        }
+
+        if (btn) {
+            btn.disabled = true;
+            btn.innerText = "जाँच हो रही है...";
+        }
+        if (errMsg) errMsg.classList.add('hidden');
+
+        try {
+            const res = await fetch('/api/verify_master_password', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
+                body: JSON.stringify({ password: pwd })
+            });
+            const data = await res.json();
+
+            if (res.ok && data.status === 'success') {
+                const actionToRun = pendingWeddingActionType;
+                closeWeddingSecModal();
+                executeWeddingAction(actionToRun);
+            } else {
+                if (errMsg) {
+                    errMsg.innerText = data.message || "❌ गलत पासवर्ड! अनधिकृत कार्रवाई।";
+                    errMsg.classList.remove('hidden');
+                }
+                if (pwdInput) {
+                    pwdInput.value = '';
+                    pwdInput.focus();
+                }
+            }
+        } catch (e) {
+            if (errMsg) {
+                errMsg.innerText = "सर्वर से संपर्क नहीं हो पाया!";
+                errMsg.classList.remove('hidden');
+            }
+        } finally {
+            if (btn) {
+                btn.disabled = false;
+                btn.innerText = (pendingWeddingActionType === 'Cancel') ? "रद्द की पुष्टि करें" : "मॉडिफाई सुरक्षित करें";
+            }
+        }
+    }
+
+    async function executeWeddingAction(actionType) {
+        const hiddenId = document.getElementById('pop_wed_hidden_id')?.value || selectedBillNo;
+
+        if (actionType === 'Cancel') {
+            if (!confirm(`क्या आप वाकई बिल #${selectedBillNo} की वेडिंग बुकिंग रद्द (Cancel) करना चाहते हैं?`)) return;
+
+            try {
+                const res = await fetch('/api/cancel_wedding_booking', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ wedding_id: hiddenId })
+                });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    alert(`✅ बिल #${selectedBillNo} सफलतापूर्वक रद्द कर दिया गया है।`);
+                    closeWeddingPopup();
+                    renderWeddingGrid();
+                } else {
+                    alert(result.message || "रद्द करने में त्रुटि आई!");
+                }
+            } catch (e) {
+                alert("सर्वर एरर: बुकिंग रद्द नहीं हो सकी!");
+            }
+        } else if (actionType === 'Modify') {
+            processUpdateWeddingData('Modify');
+        }
+    }
+
+    window.addEventListener('keydown', (e) => {
+        const modal = document.getElementById('weddingSecurityModal');
+        if (modal && !modal.classList.contains('hidden')) {
+            if (e.key === 'Escape' || e.keyCode === 27) {
+                e.preventDefault();
+                e.stopPropagation();
+                return false;
+            }
+            if (e.key === 'Enter') {
+                confirmWeddingSecAction();
+            }
+        }
+    }, true);
+
+    function triggerDirectPrintAction() {
+        if (selectedBillNo) {
+            window.open(`/print_wedding/${selectedBillNo}`, '_blank');
+        }
+    }
+
+    function filterWeddingGrid(query) {
+        const q = query.toLowerCase();
+        const tbody = document.getElementById('weddingGridBody');
+        if (!tbody) return;
+        const rows = tbody.getElementsByTagName('tr');
+
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+            if (row.cells.length < 3) continue;
+            const nameText = row.cells[1] ? row.cells[1].innerText.toLowerCase() : '';
+            const mobileText = row.cells[2] ? row.cells[2].innerText.toLowerCase() : '';
+
+            if (nameText.includes(q) || mobileText.includes(q)) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        }
+    }
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll("#sidebar-nav a.nav-btn");
+
+        const activeClasses = [
+            "bg-gradient-to-r", 
+            "from-cyan-500/20", 
+            "to-indigo-500/10", 
+            "text-cyan-400", 
+            "border", 
+            "border-cyan-500/30", 
+            "font-extrabold", 
+            "shadow-sm"
+        ];
+
+        navLinks.forEach(link => {
+            const href = link.getAttribute("href");
+            if (href === currentPath || (href !== "/" && currentPath.startsWith(href))) {
+                link.classList.remove("text-slate-400");
+                link.classList.add(...activeClasses);
+            }
+        });
+    });
+
+(function handleUserInactivity() {
+    let idleTimer;
+    const IDLE_TIME_LIMIT = 30 * 60 * 1000; // ठीक 30 मिनट
+
+    function resetUserTimer() {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => {
+            alert("30 मिनट तक कोई गतिविधि न होने के कारण सुरक्षा कारणों से यह खाता लॉगआउट हो गया है।");
+            window.location.href = '/logout';
+        }, IDLE_TIME_LIMIT);
+    }
+
+    const trackedEvents = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'click'];
+    trackedEvents.forEach(evt => {
+        window.addEventListener(evt, resetUserTimer, { passive: true });
+    });
+
+    resetUserTimer();
+})();
+
+    </script>
+</body>
+</html>

@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ studio_title }} - EXPENSE REPORT</title>
+    <style>
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        body { margin: 0; padding: 15px; font-family: 'Segoe UI', Arial, sans-serif; background: #f8fafc; display: flex; flex-direction: column; align-items: center; }
+        #print_frame { background: #fff; width: 148mm; min-height: 210mm; padding: 12px; border: 1.5px solid #0f172a; border-radius: 4px; }
+        @page { size: A5 portrait; margin: 5mm; }
+        @media print { 
+            body { background: transparent !important; padding: 0 !important; } 
+            .no-print { display: none !important; } 
+            #print_frame { width: 100% !important; border: none !important; } 
+        }
+    </style>
+</head>
+<body>
+    <div id="print_frame">
+        <div style="text-align: center; border-bottom: 2px solid #0f172a; padding-bottom: 6px; margin-bottom: 10px;">
+            <h2 style="margin: 0; color: #0f172a; font-size: 18px; text-transform: uppercase;">{{ studio_title }}</h2>
+            <div style="font-size: 11px; font-weight: bold; color: #dc2626; margin-top: 2px;">EXPENSE AUDIT SHEET - {{ title_suffix }}</div>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; margin-top: 8px;">
+            <thead>
+                <tr style="background: #0f172a; color: white; font-size: 10.5px;">
+                    <th style="padding: 5px; border: 1px solid #0f172a; width: 8%;">#</th>
+                    <th style="padding: 5px; border: 1px solid #0f172a; width: 22%;">DATE</th>
+                    <th style="padding: 5px 8px; border: 1px solid #0f172a; text-align: left; width: 25%;">CATEGORY</th>
+                    <th style="padding: 5px 8px; border: 1px solid #0f172a; text-align: left; width: 25%;">NOTE</th>
+                    <th style="padding: 5px 8px; border: 1px solid #0f172a; text-align: right; width: 20%;">AMOUNT</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for exp in expenses %}
+                <tr style="text-align: center; font-size: 11px; border-bottom: 1px solid #cbd5e1;">
+                    <td style="padding: 6px 4px; border: 1px solid #cbd5e1;">{{ loop.index }}</td>
+                    <td style="padding: 6px 4px; border: 1px solid #cbd5e1;">{{ exp.exp_date }}</td>
+                    <td style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: left; font-weight: 600;">{{ exp.category }}</td>
+                    <td style="padding: 6px 8px; border: 1px solid #cbd5e1; text-align: left; color: #475569;">{{ exp.notes or '-' }}</td>
+                    <td style="padding: 6px 6px; border: 1px solid #cbd5e1; text-align: right; font-weight: bold; color: #dc2626;">₹{{ "%.2f"|format(exp.amount|float) }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="5" style="text-align:center; padding: 15px; color: #64748b;">कोई खर्च रिकॉर्ड नहीं मिला।</td></tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr style="background: #f1f5f9; font-weight: bold; font-size: 12px;">
+                    <td colspan="4" style="padding: 8px; text-align: right; border: 1px solid #cbd5e1;">TOTAL EXPENSE:</td>
+                    <td style="padding: 8px; text-align: right; border: 1px solid #cbd5e1; color: #dc2626;">₹{{ "%.2f"|format(total_expense) }}</td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div style="margin-top: 30px; display: flex; justify-content: space-between; font-size: 10px; color: #64748b; border-top: 1px dashed #94a3b8; padding-top: 8px;">
+            <span>Generated on: {{ current_time }}</span>
+            <span>Verified By: ____________________</span>
+        </div>
+    </div>
+
+    <div class="no-print" style="margin-top: 15px; display: flex; gap: 10px;">
+        <button onclick="window.print()" style="background: #0f172a; color: white; padding: 8px 18px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold;">🖨️ PRINT SHEET</button>
+        <button onclick="window.close()" style="background: #64748b; color: white; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer;">✕ CLOSE</button>
+    </div>
+    <script>window.onload = function() { setTimeout(function() { window.print(); }, 400); };</script>
+</body>
+</html>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ studio_title }} - Market Credit Statement</title>
+    <style>
+        * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        body { margin: 0; padding: 15px; font-family: 'Segoe UI', Arial, sans-serif; background: #f8fafc; display: flex; flex-direction: column; align-items: center; }
+        #print_frame { background: #fff; width: 148mm; min-height: 210mm; padding: 12px; border: 1.5px solid #0f172a; border-radius: 4px; }
+        @page { size: A5 portrait; margin: 5mm; }
+        @media print { 
+            body { background: transparent !important; padding: 0 !important; } 
+            .no-print { display: none !important; } 
+            #print_frame { width: 100% !important; border: none !important; } 
+        }
+    </style>
+</head>
+<body>
+    <div id="print_frame">
+        <div style="text-align: center; border-bottom: 2px solid #0f172a; padding-bottom: 6px; margin-bottom: 10px;">
+            <h2 style="margin: 0; color: #0f172a; font-size: 18px; text-transform: uppercase;">{{ studio_title }}</h2>
+            <div style="font-size: 11px; font-weight: bold; color: #0284c7; margin-top: 2px;">MARKET / PRIVATE CREDIT LEDGER STATEMENT</div>
+        </div>
+
+        <!-- Account Summary Box -->
+        <div style="border: 1px solid #cbd5e1; border-radius: 4px; padding: 6px 8px; margin-bottom: 8px; font-size: 11px; background: #f8fafc;">
+            <div style="display: flex; justify-content: space-between;">
+                <span><b>Lender / Party:</b> {{ account.lender_name }}</span>
+                <span><b>Account ID:</b> #{{ account.id }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 2px;">
+                <span><b>Date Taken:</b> {{ account.date_taken }}</span>
+                <span><b>PAN:</b> {{ account.pan_number or 'N/A' }}</span>
+            </div>
+            <div style="display: flex; justify-content: space-between; margin-top: 2px;">
+                <span><b>Remarks/Interest:</b> {{ account.notes or '-' }}</span>
+                <span><b>Status:</b> {% if account.outstanding_due <= 0 %}<b style="color: #16a34a;">SETTLED</b>{% else %}<b style="color: #dc2626;">ACTIVE DUE</b>{% endif %}</span>
+            </div>
+        </div>
+
+        <!-- Stats Overview -->
+        <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; margin-bottom: 10px; text-align: center; font-size: 11px;">
+            <div style="border: 1px solid #cbd5e1; padding: 4px; background: #fafafa;">
+                <span style="color: #64748b; font-size: 9px; display: block;">BORROWED AMOUNT</span>
+                <b>₹{{ "%.2f"|format(account.borrowed_amount|float) }}</b>
+            </div>
+            <div style="border: 1px solid #cbd5e1; padding: 4px; background: #fafafa; color: #16a34a;">
+                <span style="color: #64748b; font-size: 9px; display: block;">TOTAL PAID</span>
+                <b>₹{{ "%.2f"|format(account.total_paid|float) }}</b>
+            </div>
+            <div style="border: 1px solid #cbd5e1; padding: 4px; background: #fafafa; color: #dc2626;">
+                <span style="color: #64748b; font-size: 9px; display: block;">OUTSTANDING DUE</span>
+                <b>₹{{ "%.2f"|format(account.outstanding_due|float) }}</b>
+            </div>
+        </div>
+
+        <!-- Transactions History Table -->
+        <table style="width: 100%; border-collapse: collapse; margin-top: 4px;">
+            <thead>
+                <tr style="background: #0f172a; color: white; font-size: 10px;">
+                    <th style="padding: 5px; border: 1px solid #0f172a; width: 8%;">#</th>
+                    <th style="padding: 5px; border: 1px solid #0f172a; width: 30%;">DATE & TIME</th>
+                    <th style="padding: 5px 8px; border: 1px solid #0f172a; text-align: right; width: 27%;">AMOUNT</th>
+                    <th style="padding: 5px 8px; border: 1px solid #0f172a; text-align: left; width: 35%;">REMARKS / TYPE</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for h in history %}
+                {% set is_penalty = (h.amount_paid|float) < 0 %}
+                <tr style="text-align: center; font-size: 10.5px; border-bottom: 1px solid #cbd5e1;">
+                    <td style="padding: 5px 4px; border: 1px solid #cbd5e1;">{{ loop.index }}</td>
+                    <td style="padding: 5px 4px; border: 1px solid #cbd5e1;">{{ h.pay_date }}</td>
+                    <td style="padding: 5px 6px; border: 1px solid #cbd5e1; text-align: right; font-weight: bold; color: {% if is_penalty %}#dc2626{% else %}#16a34a{% endif %};">
+                        {% if is_penalty %}+ Late Fee {% else %}- Paid {% endif %}₹{{ "%.2f"|format(h.amount_paid|abs) }}
+                    </td>
+                    <td style="padding: 5px 8px; border: 1px solid #cbd5e1; text-align: left; color: #334155;">{{ h.remarks or '-' }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="4" style="text-align:center; padding: 12px; color: #64748b;">कोई भुगतान/पेनल्टी इतिहास दर्ज नहीं है।</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <div style="margin-top: 25px; display: flex; justify-content: space-between; font-size: 10px; color: #64748b; border-top: 1px dashed #94a3b8; padding-top: 6px;">
+            <span>Generated on: {{ current_time }}</span>
+            <span>Verified By: ____________________</span>
+        </div>
+    </div>
+
+    <div class="no-print" style="margin-top: 15px; display: flex; gap: 10px;">
+        <button onclick="window.print()" style="background: #0f172a; color: white; padding: 8px 18px; border-radius: 6px; border: none; cursor: pointer; font-weight: bold;">🖨️ PRINT STATEMENT</button>
+        <button onclick="window.close()" style="background: #64748b; color: white; padding: 8px 16px; border-radius: 6px; border: none; cursor: pointer;">✕ CLOSE</button>
+    </div>
+    <script>window.onload = function() { setTimeout(function() { window.print(); }, 400); };</script>
+</body>
+</html>

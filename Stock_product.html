@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIM STUDIO - Product Stock Management</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'studio-glass': 'rgba(11, 18, 38, 0.7)',
+                        'studio-card': '#070d1e',
+                        'studio-border': '#172340',
+                        'studio-sidebar': '#03060f'
+                    },
+                    spacing: {
+                        '68': '17rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glow-cyan { box-shadow: 0 0 20px rgba(6, 182, 212, 0.12); }
+        .glow-indigo { box-shadow: 0 0 20px rgba(99, 102, 241, 0.12); }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #03060f; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 8px; }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            width: 100%;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            color: #94a3b8;
+            font-size: 0.75rem;
+            font-weight: 700;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .nav-btn:hover {
+            background-color: rgba(15, 23, 42, 0.6);
+            color: #f8fafc;
+        }
+        .nav-btn.active {
+            background: linear-gradient(to right, rgba(6, 182, 212, 0.2), rgba(99, 102, 241, 0.1));
+            color: #22d3ee;
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            font-weight: 800;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-[#03060f] text-slate-200 min-h-screen font-sans m-0 p-0 overflow-x-hidden">
+
+    <div class="flex flex-row min-h-screen w-full">
+
+        <!-- ========================================== -->
+        <!-- 🧭 SIDEBAR NAVIGATION                      -->
+        <!-- ========================================== -->
+        <div class="bg-studio-sidebar w-68 min-h-screen flex flex-col justify-between p-4 shrink-0 border-r border-slate-900 shadow-2xl z-10 no-print">
+            <div>
+                <div class="flex items-center gap-3 px-3 py-4 mb-4 border-b border-slate-900">
+                    <span class="text-xl animate-pulse">📸</span>
+                    <div class="leading-none">
+                        <h1 class="text-base font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400">HIM STUDIO</h1>
+                        <span class="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Premium Web ERP</span>
+                    </div>
+                </div>
+                
+                <nav id="sidebar-nav" class="space-y-1 text-xs font-bold tracking-wide max-h-[78vh] overflow-y-auto pr-1 nav-scroll">
+                    <a href="/dashboard" class="nav-btn" id="btn_dashboard"><span>📊</span> Dashboard</a>
+                    <a href="/new_bill" class="nav-btn" id="btn_new_bill"><span>📄</span> New Bill</a>
+                    <a href="/all_bills" class="nav-btn" id="btn_all_bills"><span>📁</span> All Bills</a>
+                    <a href="/token_counter" class="nav-btn" id="btn-token-counter"><span>🎫</span> Daily Token Counter</a>
+                    <a href="/wedding" class="nav-btn" id="btn_wedding"><span>💍</span> Event Booking</a>
+                    <a href="/stock" class="nav-btn" id="btn_stock"><span>📦</span> Item / Product (Stock)</a>
+                    <a href="/credit_ledger" class="nav-btn" id="btn_credit"><span>💳</span> Credit Ledger</a>
+                    <a href="/purchases" class="nav-btn" id="btn_purchases"><span>🛒</span> Purchases</a>
+                    <a href="/studio_expenses" class="nav-btn" id="btn_expenses"><span>💸</span> Studio Expenses</a>
+                    <a href="/work_export" class="nav-btn" id="btn_export"><span>📦</span> Work Export Terminal</a>
+                    <a href="/material_stock" class="nav-btn" id="btn_material"><span>📦</span> Material Stock</a>
+                    <a href="/equipment_tracking" class="nav-btn" id="btn_equipment"><span>📸</span> Equipment Tracking</a>
+                    <a href="/employee_corner" class="nav-btn" id="btn_employee"><span>👤</span> Employee Corner</a>
+                    <a href="/report" class="nav-btn" id="btn_report"><span>📈</span> Report</a>
+                    <a href="/change_password" class="nav-btn" id="btn_password"><span>🔐</span> Profile & Security</a>
+                </nav>
+            </div>
+
+            <a href="/logout" class="text-left px-4 py-3 text-rose-400 font-bold text-xs hover:bg-rose-950/20 rounded-xl transition cursor-pointer flex items-center gap-2">
+                <span>❌</span> Exit System
+            </a>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 📄 MAIN CONTENT AREA                        -->
+        <!-- ========================================== -->
+        <main class="flex-1 p-6 overflow-y-auto bg-[#040816]">
+            <div class="max-w-full mx-auto space-y-6">
+
+                <!-- 🟢 TOP PANEL: Add Stock Item -->
+                <div class="bg-studio-glass rounded-2xl p-5 border border-studio-border shadow-xl glow-cyan">
+                    <div class="flex justify-between items-center mb-4">
+                        <span class="text-xs font-black tracking-wider text-cyan-400 uppercase flex items-center gap-2">
+                            <span>📦</span> HIM STUDIO - PRODUCT STOCK INVENTORY MANAGEMENT
+                        </span>
+                        <span class="text-[10px] text-amber-300 font-bold bg-amber-950/70 border border-amber-800/80 px-3 py-1 rounded-lg flex items-center gap-1.5 shadow-sm">
+                            <span>⚡</span> 5 या 5 से कम मात्रा होने पर ऑटो-अलर्ट होगा
+                        </span>
+                    </div>
+                    
+                    <div class="grid grid-cols-12 gap-3 text-xs items-end bg-[#050b1a]/90 p-4 rounded-xl border border-[#0f1b33]">
+                        <div class="col-span-4">
+                            <label class="block text-slate-400 font-semibold mb-1.5 text-xs">Product Name *:</label>
+                            <input type="text" id="stk_pname" placeholder="उदा. 8x12 Mount Frame" class="w-full py-2 px-3 bg-[#0a1224] border border-[#1a2947] rounded-xl text-white placeholder-slate-600 focus:outline-none focus:border-cyan-500 font-semibold text-xs transition">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-slate-400 font-semibold mb-1.5 text-xs">Quantity *:</label>
+                            <input type="number" id="stk_pqty" placeholder="0" class="w-full py-2 px-3 bg-[#0a1224] border border-[#1a2947] rounded-xl text-white text-center focus:outline-none focus:border-cyan-500 font-bold text-xs font-mono transition">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-slate-400 font-semibold mb-1.5 text-xs">Price (₹) *:</label>
+                            <input type="number" id="stk_pprice" placeholder="0.00" min="0" step="any" class="w-full py-2 px-3 bg-[#0a1224] border border-[#1a2947] rounded-xl text-emerald-400 font-bold text-right focus:outline-none focus:border-emerald-500 text-xs font-mono transition">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-slate-400 font-semibold mb-1.5 text-xs">Discount (₹):</label>
+                            <input type="number" id="stk_pdisc" value="0" min="0" step="any" class="w-full py-2 px-3 bg-[#0a1224] border border-[#1a2947] rounded-xl text-amber-400 font-bold text-right focus:outline-none focus:border-amber-500 text-xs font-mono transition">
+                        </div>
+                        <div class="col-span-2">
+                            <button type="button" onclick="saveStockItemToDb()" class="w-full bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black py-2 rounded-xl text-xs uppercase cursor-pointer transition shadow-md flex items-center justify-center gap-1.5">
+                                <span>💾</span> SAVE ITEM
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 🟢 BOTTOM PANEL: Live Grid Table -->
+                <div class="bg-studio-glass rounded-2xl p-5 border border-studio-border shadow-xl glow-indigo space-y-3">
+                    <div class="flex justify-between items-center px-1">
+                        <span class="text-xs font-black uppercase tracking-widest text-indigo-400 flex items-center gap-2">
+                            <span>📋</span> ACTIVE PRODUCT INVENTORY LIST (DOUBLE CLICK ROW TO QUICK UPDATE)
+                        </span>
+                        <button onclick="fetchStockData()" class="text-slate-400 hover:text-cyan-400 text-xs font-bold transition flex items-center gap-1">
+                            🔄 Refresh
+                        </button>
+                    </div>
+
+                    <div class="overflow-hidden rounded-xl border border-[#0f1b33] max-h-[66vh] overflow-y-auto">
+                        <table class="min-w-full text-xs text-center border-collapse">
+                            <thead class="bg-[#050b1c] text-slate-400 font-bold uppercase sticky top-0 z-10 border-b border-[#142342] text-[11px] tracking-wider">
+                                <tr>
+                                    <th class="py-3 px-3 w-16">ID</th>
+                                    <th class="py-3 px-4 text-left pl-5">PRODUCT NAME</th>
+                                    <th class="py-3 px-3 w-28">QUANTITY</th>
+                                    <th class="py-3 px-3 w-32 text-right">PRICE (₹)</th>
+                                    <th class="py-3 px-3 w-32 text-right">DISCOUNT (₹)</th>
+                                    <th class="py-3 px-3 w-36 text-right">TOTAL VALUE</th>
+                                    <th class="py-3 px-4 w-36">LAST UPDATED</th>
+                                </tr>
+                            </thead>
+                            <tbody id="stockTableBody" class="divide-y divide-[#0f1c36] bg-[#060d1f]/60 text-slate-300 font-mono"></tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- 📦 MODAL: UPDATE STOCK POPUP -->
+    <div id="updateStockModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm items-center justify-center z-[100] p-4 no-print" style="display: none;">
+        <div class="bg-[#0a1224] border border-cyan-500/40 rounded-2xl w-full max-w-[420px] p-6 space-y-4 shadow-2xl relative glow-cyan">
+            <div class="flex justify-between items-center border-b border-[#172545] pb-3">
+                <h3 id="stk_pop_title" class="text-xs font-black text-cyan-400 uppercase tracking-wider">📦 Update Product Stock</h3>
+                <button type="button" onclick="closeStockUpdateModal()" class="text-slate-400 hover:text-white font-bold text-sm cursor-pointer">✕</button>
+            </div>
+            
+            <input type="hidden" id="stk_pop_id" value="">
+            <input type="hidden" id="stk_pop_old_qty" value="0">
+
+            <div class="space-y-3 text-xs">
+                <div class="bg-[#050b1a] p-3 rounded-xl border border-[#1a2947] flex justify-between items-center">
+                    <span class="text-slate-400 font-semibold">Current Available Stock:</span>
+                    <span id="stk_pop_current_qty_display" class="text-cyan-400 font-bold font-mono text-sm">0</span>
+                </div>
+
+                <div>
+                    <label class="block text-slate-400 font-semibold mb-1 text-xs">Add New Stock Quantity (+):</label>
+                    <input type="number" id="stk_pop_add_qty" value="0" min="0" placeholder="0" class="w-full py-2 px-3 bg-[#050b1a] border border-[#1a2947] rounded-xl text-white font-bold focus:outline-none focus:border-cyan-500 text-center text-xs font-mono">
+                    <span class="text-[10px] text-slate-500 mt-0.5 block">यदि नया माल आया है तो संख्या जोड़ें (या 0 रखें)</span>
+                </div>
+                <div>
+                    <label class="block text-slate-400 font-semibold mb-1 text-xs">Update Unit Price (₹):</label>
+                    <input type="number" id="stk_pop_price" placeholder="0.00" min="0" step="any" class="w-full py-2 px-3 bg-[#050b1a] border border-[#1a2947] rounded-xl text-emerald-400 font-bold focus:outline-none focus:border-emerald-500 text-right text-xs font-mono">
+                </div>
+                <div>
+                    <label class="block text-slate-400 font-semibold mb-1 text-xs">Discount (₹):</label>
+                    <input type="number" id="stk_pop_disc" value="0" min="0" step="any" class="w-full py-2 px-3 bg-[#050b1a] border border-[#1a2947] rounded-xl text-amber-400 font-bold focus:outline-none focus:border-amber-500 text-right text-xs font-mono">
+                </div>
+            </div>
+
+            <div class="flex gap-2.5 pt-2">
+                <button type="button" onclick="submitStockUpdateModal()" class="flex-1 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-black py-2.5 rounded-xl text-xs uppercase cursor-pointer transition shadow-md">
+                    💾 Save Changes
+                </button>
+                <button type="button" onclick="closeStockUpdateModal()" class="bg-[#131f38] hover:bg-[#1b2b4d] text-slate-300 font-bold py-2.5 px-4 rounded-xl text-xs cursor-pointer">
+                    Cancel
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ========================================== -->
+<!-- ⚙️ JAVASCRIPT LOGIC ENGINE                 -->
+<!-- ========================================== -->
+<script>
+    function formatDesiDate(dateStr) {
+        if (!dateStr || dateStr === '-' || dateStr === 'N/A' || dateStr === 'None') return '-';
+        let clean = String(dateStr).trim().split(' ')[0];
+        if (clean.includes('-')) {
+            let p = clean.split('-');
+            if (p.length === 3) {
+                if (p[0].length === 4) return `${p[2]}/${p[1]}/${p[0]}`;
+                if (p[2].length === 4) return `${p[0]}/${p[1]}/${p[2]}`;
+            }
+        }
+        return clean;
+    }
+
+    async function fetchStockData() {
+        try {
+            const response = await fetch('/api/stock');
+            const data = await response.json();
+            const tbody = document.getElementById('stockTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            
+            // 1. डेटा एरे की जाँच (चाहे API एरे भेजे या {status: 'success', data: [...]})
+            const stockList = Array.isArray(data) ? data : (data.data || data.products || []);
+
+            if (stockList.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" class="py-6 text-center text-slate-500 font-bold text-xs">⚠️ कोई स्टॉक आइटम उपलब्ध नहीं है! कृपया ऊपर से नया आइटम जोड़ें।</td></tr>`;
+            } else {
+                stockList.forEach((item, idx) => {
+                    const qty = parseInt(item.pqty) || 0;
+                    const price = parseFloat(item.pprice || item.price || 0);
+                    const disc = parseFloat(item.pdisc || item.discount || 0);
+                    const totalVal = (qty * price) - disc;
+                    const desiDate = formatDesiDate(item.last_updated);
+
+                    const isNegative = qty < 0;
+                    const isLowStock = qty <= 5 && qty >= 0; // 🎯 5 या 5 से कम पर अलर्ट
+                    
+                    let rowBgClass = (idx % 2 === 0) ? "bg-[#070e22]/50 hover:bg-[#0e1b3d]/70 text-slate-300" : "bg-[#050a1a]/30 hover:bg-[#0e1b3d]/70 text-slate-300";
+                    let badgeHtml = '';
+
+                    if (isNegative) {
+                        rowBgClass = "bg-rose-950/60 hover:bg-rose-900/70 text-rose-200 font-semibold";
+                        badgeHtml = `<span class="ml-1.5 text-[8.5px] bg-rose-600 text-white font-black px-1.5 py-0.5 rounded animate-pulse">NEGATIVE (${qty})</span>`;
+                    } else if (isLowStock) {
+                        rowBgClass = "bg-amber-950/40 hover:bg-amber-900/60 text-amber-200";
+                        badgeHtml = `<span class="ml-1.5 text-[8.5px] bg-amber-600 text-white font-black px-1.5 py-0.5 rounded">LOW (<=5)</span>`;
+                    }
+
+                    const tr = document.createElement('tr');
+                    tr.className = `${rowBgClass} cursor-pointer transition select-none text-xs`;
+                    
+                    tr.onclick = function(e) {  // 👈 यहाँ dblclick की जगह onclick कर दिया गया है
+    e.preventDefault();
+    openStockUpdateModal(item.id, item.pname, qty, price, disc);
+};
+
+                    tr.innerHTML = `
+                        <td class="py-3 px-3 text-slate-400 font-bold">#${item.id}</td>
+                        <td class="py-3 px-4 text-left pl-5 font-bold ${isNegative ? 'text-rose-200' : (isLowStock ? 'text-amber-200' : 'text-white')}">
+                            ${item.pname} ${badgeHtml}
+                        </td>
+                        <td class="py-3 px-3 font-black ${qty <= 0 ? 'text-rose-400' : (qty <= 5 ? 'text-amber-400' : 'text-emerald-400')}">${qty}</td>
+                        <td class="py-3 px-3 text-right text-slate-300 font-mono">₹${price.toFixed(2)}</td>
+                        <td class="py-3 px-3 text-right text-amber-400 font-mono">₹${disc.toFixed(2)}</td>
+                        <td class="py-3 px-3 text-right font-bold text-cyan-400 font-mono">₹${totalVal.toFixed(2)}</td>
+                        <td class="py-3 px-4 font-mono text-slate-400 text-xs">${desiDate}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            }
+
+            // 🎯 2. Stock Alerts Render (Crash Proof inside fetch function)
+            const stockContainer = document.getElementById('stock_alert_container');
+            if (stockContainer) {
+                const lowStockItems = stockList.filter(i => (parseInt(i.pqty) || 0) <= 5);
+
+                if (stockList.length === 0) {
+                    stockContainer.innerHTML = `
+                        <div class="text-center py-4 text-slate-400">
+                            <p class="text-xs font-bold text-amber-400">⚠️ No Stock Added</p>
+                            <span class="text-[10px] text-slate-500">Please add stock in Item / Product Stock</span>
+                        </div>
+                    `;
+                } else if (lowStockItems.length > 0) {
+                    let html = '<div class="space-y-1.5 max-h-36 overflow-y-auto pr-1">';
+                    lowStockItems.forEach(item => {
+                        const q = parseInt(item.pqty) || 0;
+                        html += `
+                            <div class="flex justify-between items-center bg-rose-950/40 border-l-2 border-rose-500 px-2.5 py-1.5 rounded text-xs">
+                                <span class="text-rose-200 font-semibold">${item.pname}</span>
+                                <span class="text-rose-400 font-bold font-mono">Qty: ${q} Pcs</span>
+                            </div>
+                        `;
+                    });
+                    html += '</div>';
+                    stockContainer.innerHTML = html;
+                } else {
+                    stockContainer.innerHTML = `
+                        <div class="text-center py-4 text-emerald-400">
+                            <p class="text-xs font-bold">✅ Stock Full (स्टॉक पर्याप्त है)</p>
+                            <span class="text-[10px] text-slate-500">सभी प्रोडक्ट सुरक्षित मात्रा में हैं</span>
+                        </div>
+                    `;
+                }
+            }
+
+        } catch(e) {
+            console.error("Stock Fetch Error:", e);
+        }
+    }
+
+    async function saveStockItemToDb() {
+        const pname = document.getElementById('stk_pname').value.trim();
+        const pqtyInput = document.getElementById('stk_pqty').value.trim();
+        const ppriceInput = document.getElementById('stk_pprice').value.trim();
+        const pdiscInput = document.getElementById('stk_pdisc').value.trim() || '0';
+
+        if (!pname) {
+            alert('⚠️ कृपया प्रोडक्ट का नाम दर्ज करें!');
+            return;
+        }
+        if (pqtyInput === '' || isNaN(parseInt(pqtyInput))) {
+            alert('⚠️ कृपया मान्य स्टॉक संख्या (Quantity) दर्ज करें!');
+            return;
+        }
+        if (ppriceInput === '' || isNaN(parseFloat(ppriceInput)) || parseFloat(ppriceInput) < 0) {
+            alert('⚠️ कृपया मान्य मूल्य (Price) दर्ज करें!');
+            return;
+        }
+
+        const pqty = parseInt(pqtyInput);
+        const pprice = parseFloat(ppriceInput);
+        const pdisc = parseFloat(pdiscInput) || 0;
+
+        try {
+            const response = await fetch('/api/stock', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pname, pqty, pprice, pdisc })
+            });
+            const result = await response.json();
+            if (result.status === 'success') {
+                document.getElementById('stk_pname').value = '';
+                document.getElementById('stk_pqty').value = '';
+                document.getElementById('stk_pprice').value = '';
+                document.getElementById('stk_pdisc').value = '0';
+                fetchStockData();
+            } else {
+                alert('त्रुटि: ' + (result.error || result.message || 'Server Error'));
+            }
+        } catch(e) {
+            alert('🚨 सर्वर से संपर्क नहीं हो पाया!');
+        }
+    }
+
+    function openStockUpdateModal(id, name, qty, price, disc) {
+        document.getElementById('stk_pop_id').value = id;
+        document.getElementById('stk_pop_old_qty').value = qty;
+        document.getElementById('stk_pop_current_qty_display').innerText = qty;
+        document.getElementById('stk_pop_title').innerText = `📦 Update Stock: ${name}`;
+        document.getElementById('stk_pop_add_qty').value = 0;
+        document.getElementById('stk_pop_price').value = price;
+        document.getElementById('stk_pop_disc').value = disc || 0;
+        
+        const modal = document.getElementById('updateStockModal');
+        if (modal) {
+            modal.style.display = 'flex';
+        }
+    }
+
+    function closeStockUpdateModal() {
+        const modal = document.getElementById('updateStockModal');
+        if (modal) {
+            modal.style.display = 'none';
+        }
+    }
+
+    async function submitStockUpdateModal() {
+        const id = document.getElementById('stk_pop_id').value;
+        const oldQty = parseInt(document.getElementById('stk_pop_old_qty').value) || 0;
+        const addQty = parseInt(document.getElementById('stk_pop_add_qty').value) || 0;
+        
+        if (addQty < 0) {
+            alert('⚠️ नया स्टॉक जोड़ते समय माइनस (-) संख्या दर्ज न करें!');
+            return;
+        }
+
+        const newTotalQty = oldQty + addQty;
+        const pprice = parseFloat(document.getElementById('stk_pop_price').value) || 0;
+        const pdisc = parseFloat(document.getElementById('stk_pop_disc').value) || 0;
+
+        try {
+            const response = await fetch(`/api/stock/update/${id}`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ pqty: newTotalQty, pprice, pdisc })
+            });
+            const result = await response.json();
+            if (result.status === 'success') {
+                closeStockUpdateModal();
+                fetchStockData();
+            } else {
+                alert('स्टॉक अपडेट करने में त्रुटि: ' + (result.message || 'Server Error'));
+            }
+        } catch(e) {
+            alert('🚨 सर्वर से संपर्क नहीं हो पाया!');
+        }
+    }
+
+    window.addEventListener('DOMContentLoaded', fetchStockData);
+
+    // Sidebar active link script
+    document.addEventListener("DOMContentLoaded", () => {
+        const currentPath = window.location.pathname;
+        const navLinks = document.querySelectorAll("#sidebar-nav a.nav-btn");
+
+        navLinks.forEach(link => {
+            const href = link.getAttribute("href");
+            link.classList.remove("active");
+
+            if (href === currentPath || (href !== "/" && currentPath.startsWith(href))) {
+                link.classList.add("active");
+            }
+        });
+    });
+
+    // Inactivity Handler
+    (function handleUserInactivity() {
+        let idleTimer;
+        const IDLE_TIME_LIMIT = 30 * 60 * 1000;
+
+        function resetUserTimer() {
+            clearTimeout(idleTimer);
+            idleTimer = setTimeout(() => {
+                alert("30 मिनट तक कोई गतिविधि न होने के कारण सुरक्षा कारणों से यह खाता लॉगआउट हो गया है।");
+                window.location.href = '/logout';
+            }, IDLE_TIME_LIMIT);
+        }
+
+        const trackedEvents = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'click'];
+        trackedEvents.forEach(evt => {
+            window.addEventListener(evt, resetUserTimer, { passive: true });
+        });
+
+        resetUserTimer();
+    })();
+</script>
+</body>
+</html>

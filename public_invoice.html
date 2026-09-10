@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>डिजिटल बिल #{{ bill['bill_no'] }} - {{ studio.get('studio_name') or 'Studio' }}</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #eef2f5; margin: 0; padding: 20px; }
+        .invoice-card { max-width: 650px; margin: 0 auto; background: #ffffff; border-radius: 12px; box-shadow: 0 5px 20px rgba(0,0,0,0.08); overflow: hidden; }
+        .inv-header { background: #1a1e29; color: #ffffff; padding: 24px 20px; text-align: center; }
+        .inv-header h2 { margin: 0 0 6px; font-size: 24px; color: #00d2d3; text-transform: uppercase; letter-spacing: 0.5px; }
+        .inv-header .studio-meta { margin: 4px 0 0; color: #dcdde1; font-size: 13px; line-height: 1.4; }
+        .inv-header .sub-badge { display: inline-block; margin-top: 10px; background: rgba(0, 210, 211, 0.15); color: #00d2d3; border: 1px solid rgba(0, 210, 211, 0.35); padding: 3px 12px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+        .inv-body { padding: 25px; }
+        .info-grid { display: flex; justify-content: space-between; margin-bottom: 20px; font-size: 14px; color: #333; gap: 15px; }
+        .info-col { line-height: 1.5; }
+        .table-wrap { width: 100%; border-collapse: collapse; margin-top: 15px; font-size: 14px; }
+        .table-wrap th { background: #f8f9fa; padding: 10px; text-align: left; border-bottom: 2px solid #ddd; color: #555; }
+        .table-wrap td { padding: 10px; border-bottom: 1px solid #eee; }
+        .calc-box { margin-top: 25px; border-top: 2px dashed #ddd; padding-top: 15px; }
+        .calc-row { display: flex; justify-content: space-between; margin: 6px 0; font-size: 15px; }
+        .balance { color: #e74c3c; font-weight: bold; font-size: 18px; }
+        .print-btn { display: block; width: 100%; max-width: 240px; margin: 25px auto 10px; padding: 12px; background: #00d2d3; color: #000; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; text-align: center; font-size: 15px; }
+        @media print {
+            body { background: #fff; padding: 0; }
+            .invoice-card { box-shadow: none; max-width: 100%; border-radius: 0; }
+            .print-btn { display: none; }
+        }
+    </style>
+</head>
+<body>
+    <div class="invoice-card">
+        <!-- 🏢 डायनामिक स्टूडियो हेडर -->
+        <div class="inv-header">
+            <h2>{{ studio.get('studio_name') or 'STUDIO' }}</h2>
+            
+            <div class="studio-meta">
+                {% if studio.get('address') %}
+                    <div>📍 {{ studio['address'] }}</div>
+                {% endif %}
+                <div>
+                    {% if studio.get('mobile') %}
+                        <span>📞 {{ studio['mobile'] }}</span>
+                    {% endif %}
+                    {% if studio.get('whatsapp') and studio.get('whatsapp') != studio.get('mobile') %}
+                        <span style="margin-left: 10px;">💬 WA: {{ studio['whatsapp'] }}</span>
+                    {% endif %}
+                    {% if studio.get('email') %}
+                        <span style="margin-left: 10px;">✉️ {{ studio['email'] }}</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <span class="sub-badge">ऑर्डर एवं डिजिटल बिल रसीद</span>
+        </div>
+
+        <div class="inv-body">
+            <!-- 👤 ग्राहक एवं बिल विवरण -->
+            <div class="info-grid">
+                <div class="info-col">
+                    <strong>ग्राहक:</strong> {{ bill['customer_name'] }}<br>
+                    <strong>मोबाइल:</strong> {{ bill['mobile'] or bill.get('customer_mobile') or 'N/A' }}<br>
+                    <strong>पता:</strong> {{ bill['address'] or 'N/A' }}
+                </div>
+                <div class="info-col" style="text-align: right;">
+                    <strong>बिल नं:</strong> #{{ bill['bill_no'] }}<br>
+                    <strong>दिनांक:</strong> {{ bill['bill_date'] }}<br>
+                    <strong>डिलीवरी:</strong> {{ delivery_date if delivery_date else (bill['delivery_date'] or 'N/A') }}
+                </div>
+            </div>
+
+            <!-- 🛒 आइटम्स तालिका -->
+            <table class="table-wrap">
+                <thead>
+                    <tr>
+                        <th style="text-align:center;">क्र.</th>
+                        <th>कार्य विवरण</th>
+                        <th style="text-align:center;">मात्रा</th>
+                        <th style="text-align:right;">दर</th>
+                        <th style="text-align:right;">कुल</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for it in items %}
+                    <tr>
+                        <td style="text-align:center;">{{ loop.index }}</td>
+                        <td><strong>{{ it['item_name'] }}</strong></td>
+                        <td style="text-align:center;">{{ it['quantity'] }}</td>
+                        <td style="text-align:right;">₹{{ it['price'] }}</td>
+                        <td style="text-align:right;">₹{{ it['total'] }}</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="5" style="text-align:center; color:#888; padding:15px;">आइटम विवरण उपलब्ध नहीं है</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+
+            <!-- 💰 बिल राशि गणना -->
+            <div class="calc-box">
+                <div class="calc-row">
+                    <span>कुल राशि (Gross):</span> 
+                    <span>₹{{ "%.2f"|format(bill['total_amount']|float) }}</span>
+                </div>
+                
+                {# छूट शून्य से अधिक होने पर ही प्रदर्शित होगी #}
+                {% if bill.get('discount_amount') and bill['discount_amount']|float > 0 %}
+                <div class="calc-row">
+                    <span>छूट (Discount):</span> 
+                    <span style="color: #e67e22;">-₹{{ "%.2f"|format(bill['discount_amount']|float) }}</span>
+                </div>
+                {% endif %}
+
+                <div class="calc-row">
+                    <span>जमा राशि (Advance):</span> 
+                    <span style="color: #27ae60; font-weight: 600;">₹{{ "%.2f"|format(bill['advance_amount']|float) }}</span>
+                </div>
+                <div class="calc-row balance">
+                    <span>शेष बकाया (Balance):</span> 
+                    <span>₹{{ "%.2f"|format(bill['balance_amount']|float) }}</span>
+                </div>
+            </div>
+
+            <button class="print-btn" onclick="window.print()">📥 रसीद प्रिंट / डाउनलोड करें</button>
+        </div>
+    </div>
+</body>
+</html>

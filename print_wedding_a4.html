@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ (studio.name if studio else 'HIM STUDIO') }} - Wedding Invoice</title>
+    <style>
+        @page { size: A4; margin: 10mm; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; padding: 0; color: #1e293b; background: #fff; font-size: 12px; }
+        .invoice-box { max-width: 800px; margin: auto; padding: 20px; border: 1px solid #cbd5e1; border-radius: 6px; box-sizing: border-box; background: #fff; }
+        
+        /* Dynamic Header */
+        .header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #0284c7; padding-bottom: 8px; margin-bottom: 12px; }
+        .header-left h2 { margin: 0; color: #0f172a; font-size: 18px; font-weight: 700; text-transform: uppercase; }
+        .header-left p { margin: 2px 0 0 0; color: #64748b; font-size: 11px; font-weight: 600; }
+        .logo-area img { max-height: 45px; width: auto; }
+        
+        /* Section Heading */
+        .section-bar { background-color: #e0f2fe; color: #0369a1; font-weight: bold; font-size: 11px; text-transform: uppercase; padding: 5px 8px; border-bottom: 1px solid #bae6fd; margin-top: 12px; margin-bottom: 8px; letter-spacing: 0.5px; }
+
+        /* Grid Tables */
+        .grid-table { width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 12px; }
+        .grid-table th, .grid-table td { border: 1px solid #cbd5e1; padding: 6px 8px; text-align: left; vertical-align: middle; }
+        .grid-table th { background-color: #f1f5f9; color: #334155; font-weight: bold; font-size: 11px; text-transform: uppercase; }
+
+        /* Side-by-Side Layout */
+        .tables-row-flex { display: flex; gap: 15px; margin-bottom: 10px; }
+        .table-half { flex: 1; }
+
+        /* Totals Box */
+        .totals-container { width: 100%; margin-top: 15px; display: flex; justify-content: flex-end; }
+        .totals-box { width: 300px; border: 1px solid #cbd5e1; border-radius: 4px; background: #f8fafc; padding: 10px 12px; font-size: 12px; }
+        .totals-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px dashed #e2e8f0; color: #334155; }
+        .totals-row.final { font-weight: bold; font-size: 14px; color: #0f172a; border-bottom: none; border-top: 2px solid #0284c7; margin-top: 4px; padding-top: 6px; }
+        
+        .footer-note { margin-top: 20px; text-align: center; font-size: 11px; color: #64748b; border-top: 1px solid #e2e8f0; padding-top: 8px; }
+        @media print { img { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
+    </style>
+</head>
+<body>
+    <div class="invoice-box">
+        <!-- 🎯 1. Dynamic Multi-Studio Header -->
+        <div class="header">
+            <div class="header-left">
+                <h2>{{ (studio.name if studio and studio.name else 'HIM STUDIO') }} - WEDDING DIVISION</h2>
+                <p>{{ (studio.address if studio and studio.address else 'Ratanpur, Chhattisgarh | Professional Photography & Videography') }}</p>
+                {% if studio and studio.mobile %}<p style="color: #0284c7; font-size: 10px; margin-top: 1px;">Mob: {{ studio.mobile }}</p>{% endif %}
+            </div>
+            <div class="logo-area">
+                {% if studio and studio.logo_url %}
+                    <img src="{{ studio.logo_url }}" alt="Studio Logo">
+                {% else %}
+                    <img src="{{ url_for('static', filename='logo.png') }}" alt="Studio Logo">
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- 🎯 2. Customer, Bill No & Clean Date Grid -->
+        <table class="grid-table">
+            <tr>
+                <th style="width: 18%;">BILL NO:</th>
+                <td style="width: 32%; font-weight: bold; color: #0284c7; font-family: monospace; font-size: 13px;">#{{ booking.bill_no or booking.id }}</td>
+                <th style="width: 18%;">BOOKING DATE:</th>
+                <!-- समय काटकर केवल साफ़ तारीख दिखाने के लिए split फ़िल्टर -->
+                <td style="width: 32%; font-family: monospace; font-weight: 600;">
+                    {% set raw_d = (booking.booking_date or booking.created_at or 'N/A') %}
+                    {{ raw_d.split(' ')[0] }}
+                </td>
+            </tr>
+            <tr>
+                <th>CUSTOMER NAME:</th>
+                <td style="font-weight: 700;">{{ booking.customer_name }}</td>
+                <th>MOBILE NO:</th>
+                <td style="font-family: monospace;">{{ booking.mobile }}</td>
+            </tr>
+            <tr>
+                <th>VENUE LOCATION:</th>
+                <td>{{ booking.venue_location or '-' }}</td>
+                <th>ADDRESS:</th>
+                <td>{{ booking.address or '-' }}</td>
+            </tr>
+        </table>
+
+        <!-- Event Schedule & Camera/Staff Team -->
+        <div class="tables-row-flex">
+            <!-- Left Side: Event Schedule -->
+            <div class="table-half">
+                <div class="section-bar">Event Schedule</div>
+                <table class="grid-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 35px; text-align: center;">S.NO</th>
+                            <th>EVENT PROGRAM</th>
+                            <th style="width: 95px;">DATE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% set ns1 = namespace(idx=1) %}
+                        {% for i in [1, 2, 3, 4] %}
+                            {% set ev_date = booking.get('wed_date_' ~ i) %}
+                            {% if ev_date %}
+                            <tr>
+                                <td style="text-align: center;">{{ ns1.idx }}</td>
+                                <td style="font-weight: 600;">{{ booking.get('wed_event_' ~ i) or ('Wedding Event ' ~ i) }}</td>
+                                <td style="font-family: monospace;">{{ ev_date }}</td>
+                            </tr>
+                            {% set ns1.idx = ns1.idx + 1 %}
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Right Side: Camera Model & Cameraman -->
+            <div class="table-half">
+                <div class="section-bar">Camera & Staff (Cam Man)</div>
+                <table class="grid-table">
+                    <thead>
+                        <tr>
+                            <th>CAMERA MODEL</th>
+                            <th>CAMERAMAN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in [1, 2, 3, 4] %}
+                            {% set ev_date = booking.get('wed_date_' ~ i) %}
+                            {% if ev_date %}
+                            {% set cam = booking.get('wed_cam_' ~ i) %}
+                            {% set staff = booking.get('wed_staff_' ~ i) %}
+                            <tr>
+                                <td style="font-weight: 600; color: #0f172a;">{{ cam if cam else '-' }}</td>
+                                <td style="color: #0369a1; font-weight: 600;">{{ staff if staff else '-' }}</td>
+                            </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Description & Cart Items Section -->
+        <div class="tables-row-flex">
+            <div class="table-half">
+                <div class="section-bar">Description (Items & Sheets)</div>
+                <div style="border: 1px solid #cbd5e1; padding: 8px 10px; min-height: 50px; background: #fff; font-size: 11px;">
+                    {% if booking.wedding_details %}
+                        {% for part in booking.wedding_details.split(',') %}
+                            {% if part.strip() %}<div>▪ {{ part.strip() }}</div>{% endif %}
+                        {% endfor %}
+                    {% else %}
+                        <span style="color: #94a3b8;">-</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="table-half">
+                <div class="section-bar">Added Services / Packages</div>
+                <div style="border: 1px solid #cbd5e1; padding: 8px 10px; min-height: 50px; background: #fff; font-size: 11px;">
+                    {% if booking.services_list %}
+                        {% for s in booking.services_list %}
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 4px;">
+                                <span style="font-weight: 600; color: #0f172a;">{{ s.name }}</span>
+                                <span style="font-weight: bold; color: #0284c7;">₹ {{ s.price }}</span>
+                            </div>
+                        {% endfor %}
+                    {% else %}
+                        <span style="color: #94a3b8;">कोई अतिरिक्त सर्विस नहीं</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Totals Box -->
+        <div class="totals-container">
+            <div class="totals-box">
+                <div class="totals-row">
+                    <span>Total Deal Amount:</span>
+                    <strong>₹ {{ booking.total_deal_amount }}</strong>
+                </div>
+                <div class="totals-row">
+                    <span>Discount (-):</span>
+                    <strong style="color: #d97706;">₹ {{ booking.discount_amount or 0 }}</strong>
+                </div>
+                <div class="totals-row">
+                    <span>Total Advance Paid:</span>
+                    <strong style="color: #16a34a;">₹ {{ booking.computed_advance }}</strong>
+                </div>
+                <div class="totals-row final">
+                    <span>Balance Due:</span>
+                    <span style="color: #dc2626;">₹ {{ booking.computed_balance }}</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- 🎯 3. Dynamic Footer Note -->
+        <div class="footer-note">
+            <p>This is a computer-generated wedding booking invoice from {{ (studio.name if studio and studio.name else 'HIM STUDIO') }}.</p>
+        </div>
+    </div>
+</body>
+</html>

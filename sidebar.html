@@ -1,0 +1,62 @@
+<!-- templates/sidebar.html -->
+<div class="sidebar no-print">
+    <div>
+        <!-- 🏢 डायनामिक स्टूडियो हेडर -->
+        <div class="logo-box">
+            <span style="font-size: 18px;">📸</span>
+            <div style="overflow: hidden;">
+                <h1 title="{{ session.get('studio_name', 'DesiShutter') }}">
+                    {{ session.get('studio_name', 'DesiShutter') }}
+                </h1>
+                <span style="font-size: 8px; color: #64748b; font-weight: bold; text-transform: uppercase; display: block;">
+                    Premium Web ERP
+                </span>
+            </div>
+        </div>
+        
+        <!-- 🧭 मेन्यू नेविगेशन लिंक्स (Bubble CSS Classes के साथ) -->
+        <div class="nav-scroll" id="sidebar-nav">
+            {% if session.get('studio_id')|int == 1 %}
+            <a href="/saas_master" class="nav-btn" id="btn_saas_master" style="color: #a5b4fc; border: 1px solid rgba(99, 102, 241, 0.3); background: rgba(49, 46, 129, 0.2);">
+                <span>👑</span> SaaS Master Control
+            </a>
+            {% endif %}
+
+            <a href="/dashboard" class="nav-btn" id="btn_dashboard"><span>📊</span> Dashboard</a>
+            <a href="/new_bill" class="nav-btn" id="btn_new_bill"><span>📄</span> New Bill</a>
+            <a href="/all_bills" class="nav-btn" id="btn_all_bills"><span>📁</span> All Bills</a>
+            <a href="/token_counter" class="nav-btn" id="btn_token_counter"><span>🎫</span> Daily Token Counter</a>
+            <a href="/wedding" class="nav-btn" id="btn_wedding"><span>🎉</span> Event Booking</a>
+            <a href="/stock" class="nav-btn" id="btn_stock"><span>📦</span> Item / Product (Stock)</a>
+            <a href="/credit_ledger" class="nav-btn" id="btn_credit"><span>💳</span> Credit Ledger</a>
+            <a href="/purchases" class="nav-btn" id="btn_purchases"><span>🛒</span> Purchases</a>
+            <a href="/studio_expenses" class="nav-btn" id="btn_expenses"><span>💸</span> Studio Expenses</a>
+            <a href="/work_export" class="nav-btn" id="btn_export"><span>📦</span> Work Export Terminal</a>
+            <a href="/material_stock" class="nav-btn" id="btn_material"><span>📦</span> Material Stock</a>
+            <a href="/equipment_tracking" class="nav-btn" id="btn_equipment"><span>📸</span> Equipment Tracking</a>
+            <a href="/employee_corner" class="nav-btn" id="btn_employee"><span>👤</span> Employee Corner</a>
+            <a href="/report" class="nav-btn" id="btn_report"><span>📈</span> Report</a>
+            <a href="/change_password" class="nav-btn" id="btn_password"><span>🔐</span> Profile & Security</a>
+        </div>
+    </div>
+
+    <!-- 🚪 सुरक्षित एग्जिट बटन -->
+    <a href="/logout" onclick="return confirm('क्या आप सिस्टम से बाहर (Logout) जाना चाहते हैं?')" style="padding: 10px; background: transparent; color: #f43f5e; border: none; font-weight: bold; font-size: 11px; cursor: pointer; text-align: left; text-decoration: none; display: flex; align-items: center; gap: 8px;">
+        <span>🚪</span> Exit System
+    </a>
+</div>
+
+<!-- ⚡ एक्टिव पेज को स्वतः हाईलाइट करने की स्क्रिप्ट -->
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const currentPath = window.location.pathname;
+    const navLinks = document.querySelectorAll('#sidebar-nav a');
+    
+    navLinks.forEach(link => {
+        const linkPath = link.getAttribute('href');
+        if (linkPath === currentPath || (currentPath === '/' && (linkPath === '/' || linkPath === '/dashboard'))) {
+            link.classList.add('active');
+        }
+    });
+});
+</script>

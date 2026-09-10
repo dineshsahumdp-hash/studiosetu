@@ -1,0 +1,1448 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIM STUDIO - Employee Corner & Master Ledger</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'studio-glass': 'rgba(11, 18, 38, 0.75)',
+                        'studio-card': '#070d1e',
+                        'studio-border': '#172340',
+                        'studio-sidebar': '#03060f'
+                    },
+                    spacing: { '68': '17rem' }
+                }
+            }
+        }
+    </script>
+    <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background-color: #030712; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; min-height: 100vh; display: flex; overflow-x: hidden; }
+    ::-webkit-scrollbar { width: 5px; height: 5px; }
+    ::-webkit-scrollbar-track { background: #03060f; }
+    ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 6px; }
+
+    .fine-input {
+        height: 32px !important; padding: 4px 10px !important; font-size: 11.5px !important;
+        border-radius: 8px !important; background-color: #080f21 !important;
+        border: 1px solid #1a2846 !important; color: #ffffff !important; outline: none !important;
+        transition: border-color 0.2s;
+    }
+    .fine-input:focus { border-color: #06b6d4 !important; }
+    .bg-studio-glass { background-color: rgba(8, 16, 36, 0.85); backdrop-filter: blur(12px); }
+    .glow-cyan { box-shadow: 0 0 20px rgba(34, 211, 238, 0.12); }
+
+    .nav-btn {
+        display: flex; align-items: center; gap: 0.625rem; width: 100%; text-align: left;
+        padding: 0.75rem 1rem; border-radius: 0.75rem; color: #94a3b8; font-size: 0.75rem;
+        font-weight: 700; transition: all 0.2s; cursor: pointer; text-decoration: none;
+    }
+    .nav-btn:hover { background-color: rgba(15, 23, 42, 0.6); color: #f8fafc; }
+    .nav-btn.active {
+        background: linear-gradient(to right, rgba(6, 182, 212, 0.2), rgba(99, 102, 241, 0.1));
+        color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.3); font-weight: 800;
+    }
+
+    /* 📅 डार्क थीम के लिए कैलेंडर आइकन */
+    input[type="date"]::-webkit-calendar-picker-indicator {
+        filter: invert(1);
+        cursor: pointer;
+        opacity: 0.85;
+    }
+    input[type="date"]::-webkit-calendar-picker-indicator:hover {
+        opacity: 1;
+    }
+</style>
+</head>
+<body class="min-h-screen overflow-x-hidden flex">
+
+    <!-- SIDEBAR -->
+    <aside class="bg-studio-sidebar w-68 min-h-screen flex flex-col justify-between p-4 shrink-0 border-r border-slate-900 shadow-2xl z-10 no-print">
+        <div>
+            <div class="flex items-center gap-3 px-3 py-4 mb-4 border-b border-slate-900">
+                <span class="text-xl animate-pulse">📸</span>
+                <div class="leading-none">
+                    <h1 class="text-base font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400">HIM STUDIO</h1>
+                    <span class="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Premium Web ERP</span>
+                </div>
+            </div>
+            
+            <nav id="sidebar-nav" class="space-y-1 text-xs font-bold tracking-wide max-h-[78vh] overflow-y-auto pr-1 nav-scroll">
+                <a href="/dashboard" class="nav-btn" id="btn_dashboard"><span>📊</span> Dashboard</a>
+                <a href="/" class="nav-btn" id="btn_new_bill"><span>📄</span> New Bill</a>
+                <a href="/all_bills" class="nav-btn" id="btn_all_bills"><span>📁</span> All Bills</a>
+                <a href="/token_counter" class="nav-btn" id="btn-token-counter"><span>🎫</span> Daily Token Counter</a>
+                <a href="/wedding" class="nav-btn" id="btn_wedding"><span>💍</span> Event Booking</a>
+                <a href="/stock" class="nav-btn" id="btn_stock"><span>📦</span> Item / Product (Stock)</a>
+                <a href="/credit_ledger" class="nav-btn" id="btn_credit"><span>💳</span> Credit Ledger</a>
+                <a href="/purchases" class="nav-btn" id="btn_purchases"><span>🛒</span> Purchases</a>
+                <a href="/studio_expenses" class="nav-btn" id="btn_expenses"><span>💸</span> Studio Expenses</a>
+                <a href="/work_export" class="nav-btn" id="btn_export"><span>📦</span> Lab & Outsource Terminal</a>
+                <a href="/material_stock" class="nav-btn" id="btn_material"><span>📦</span> Material Stock</a>
+                <a href="/equipment_tracking" class="nav-btn" id="btn_equipment"><span>📸</span> Equipment Tracking</a>
+                <a href="/employee_corner" class="nav-btn active" id="btn_employee"><span>👤</span> Employee Corner</a>
+                <a href="/report" class="nav-btn" id="btn_report"><span>📈</span> Report</a>
+                <a href="/change_password" class="nav-btn" id="btn_password"><span>🔐</span> Profile & Security</a>
+            </nav>
+        </div>
+
+        <button onclick="if(confirm('सिस्टम से बाहर जाना चाहते हैं?')) window.location.href='/'" class="text-left px-4 py-3 text-rose-400 font-bold text-xs hover:bg-rose-950/20 rounded-xl transition cursor-pointer flex items-center gap-2">
+            <span>❌</span> Exit System
+        </button>
+    </aside>
+
+    <!-- MAIN BODY -->
+    <main class="flex-1 p-6 overflow-y-auto bg-[#030712] w-full min-w-0 space-y-5">
+        
+        <div class="border-b border-[#132347] pb-3">
+            <h2 class="text-base font-bold text-slate-100 uppercase tracking-wider flex items-center gap-2">
+                <span>👤</span> Employee Ledger & Smart Salary Management
+            </h2>
+            <span class="text-xs text-slate-400 font-mono">Staff Attendance, Dynamic Advance, Carryover & Wedding Incentive Hub</span>
+        </div>
+
+        <!-- NEW EMPLOYEE FORM -->
+        <div class="bg-studio-glass rounded-2xl p-5 border border-slate-800 shadow-xl glow-cyan space-y-3">
+            <span class="text-xs font-black tracking-widest text-cyan-400 uppercase block">👤 Staff Registration Engine</span>
+
+            <div class="grid grid-cols-12 gap-3 text-xs items-end bg-slate-950/60 p-4 rounded-xl border border-slate-900">
+                <div class="col-span-3">
+                    <label class="block text-slate-300 font-bold mb-1">Staff Name *:</label>
+                    <input type="text" id="emp_reg_name" class="fine-input w-full font-bold">
+                </div>
+                <div class="col-span-3">
+                    <label class="block text-slate-300 font-bold mb-1">Mobile No:</label>
+                    <input type="text" id="emp_reg_mob" maxlength="10" oninput="this.value=this.value.replace(/\D/g,'')" class="fine-input w-full font-mono text-cyan-300">
+                </div>
+                <div class="col-span-3">
+                    <label class="block text-slate-300 font-bold mb-1">Address:</label>
+                    <input type="text" id="emp_reg_addr" class="fine-input w-full">
+                </div>
+                <div class="col-span-3">
+                    <label class="block text-slate-300 font-bold mb-1">Role / Post:</label>
+                    <input type="text" id="emp_reg_role" list="role_suggestions" class="fine-input w-full text-cyan-300 font-bold">
+                    <datalist id="role_suggestions">
+                        <option value="Senior Photographer">
+                        <option value="Cinematographer">
+                        <option value="Video Editor">
+                        <option value="Photo Editor">
+                        <option value="Drone Operator">
+                    </datalist>
+                </div>
+
+                <div class="col-span-2">
+                    <label class="block text-emerald-400 font-bold mb-1">Monthly Salary (₹) *:</label>
+                    <input type="number" id="emp_reg_sal" class="fine-input w-full text-emerald-400 font-black text-right">
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-slate-300 font-bold mb-1">Join Date:</label>
+                    <input type="date" id="emp_reg_join_date" class="fine-input w-full font-bold cursor-pointer text-slate-200">
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-slate-400 font-bold mb-1">A/C No:</label>
+                    <input type="text" id="emp_reg_acc_no" class="fine-input w-full font-mono">
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-slate-400 font-bold mb-1">Bank Name:</label>
+                    <input type="text" id="emp_reg_bank_name" class="fine-input w-full">
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-slate-400 font-bold mb-1">IFSC Code:</label>
+                    <input type="text" id="emp_reg_ifsc" class="fine-input w-full uppercase font-mono">
+                </div>
+                <div class="col-span-2">
+                    <label class="block text-slate-400 font-bold mb-1">Branch Name:</label>
+                    <input type="text" id="emp_reg_branch" class="fine-input w-full">
+                </div>
+
+                <div class="col-span-12 flex justify-end pt-1">
+                    <button onclick="registerNewStaff()" class="bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 text-white font-black px-6 py-2 rounded-xl text-xs uppercase cursor-pointer shadow-lg transition">💾 Register Staff</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- EMPLOYEE GRID -->
+        <div class="bg-studio-glass rounded-2xl p-5 border border-slate-800 shadow-xl space-y-3 w-full">
+            <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+                <span class="text-xs font-black tracking-widest text-cyan-400 uppercase">🏢 REGISTERED EMPLOYEES LIST (DOUBLE CLICK ROW TO OPEN LEDGER)</span>
+                <div class="flex items-center gap-2 text-xs">
+                    <label class="text-slate-400 font-bold">View Status:</label>
+                    <select id="emp_view_status_filter" onchange="loadEmployeesFromDatabase()" class="fine-input font-bold text-cyan-300 cursor-pointer">
+                        <option value="Active">Active Employees Only</option>
+                        <option value="Resigned">Resigned / Inactive Staff</option>
+                        <option value="All">All Staff Records</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="overflow-hidden rounded-xl border border-slate-900 max-h-80 overflow-y-auto w-full">
+                <table class="min-w-full text-xs text-center border-collapse w-full">
+                    <thead class="bg-slate-950 text-slate-400 font-black uppercase sticky top-0 border-b border-slate-800 text-[11px]">
+                        <tr>
+                            <th class="p-3 w-16">STAFF ID</th>
+                            <th class="p-3 text-left pl-6">EMPLOYEE NAME</th>
+                            <th class="p-3 w-32">MOBILE NO.</th>
+                            <th class="p-3 text-left pl-6">ADDRESS</th>
+                            <th class="p-3 w-36">ROLE / POST</th>
+                            <th class="p-3 w-32 text-right pr-6">MONTHLY SALARY</th>
+                            <th class="p-3 text-left pl-6">BANK A/C DETAILS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="employeeTableBody" class="divide-y divide-slate-800/40 bg-slate-900/10 text-slate-300 font-mono text-xs cursor-pointer"></tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+<!-- 🔒 STRICT MASTER PASSWORD LOCK MODAL -->
+    <div id="empLockModal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-[9999] flex items-center justify-center p-4 select-none">
+        <div class="bg-slate-900 border border-slate-700 w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 text-center">
+            
+            <div class="w-14 h-14 bg-cyan-950/80 border border-cyan-700/60 rounded-2xl mx-auto flex items-center justify-center text-2xl shadow-inner">
+                🔐
+            </div>
+
+            <div>
+                <h3 class="text-sm font-black text-cyan-400 uppercase tracking-wider">Employee Security Shield</h3>
+                <p class="text-[11px] text-slate-400 mt-1"></p>
+            </div>
+
+            <div>
+                <input type="password" id="emp_master_pwd" placeholder="स्टूडियो लॉगिन पासवर्ड" class="w-full p-3 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs outline-none focus:border-cyan-500 text-center font-bold tracking-widest" autocomplete="off">
+            </div>
+
+            <div class="flex gap-2 pt-1">
+                <button onclick="cancelEmpAccess()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition cursor-pointer">
+                    Cancel Go Dashboard
+                </button>
+                <button onclick="verifyEmpPassword()" id="btn_verify_emp_pwd" class="flex-1 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-black tracking-wide shadow-lg transition cursor-pointer">
+                    Unlock
+                </button>
+            </div>
+
+            <div id="emp_lock_error_msg" class="text-[11px] text-rose-400 font-bold hidden"></div>
+        </div>
+    </div>
+
+    <!-- 👤 STAFF LEDGER MODAL -->
+    <div id="employee_wallet_modal" class="hidden fixed inset-0 bg-black/85 backdrop-blur-sm flex items-center justify-center z-50 no-print">
+        <div class="bg-[#080f21] border border-slate-700 rounded-3xl w-[1180px] p-6 space-y-4 shadow-2xl relative max-h-[96vh] overflow-y-auto">
+            
+            <!-- HEADER -->
+            <div class="flex justify-between items-center border-b border-slate-800 pb-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-base text-cyan-400">👤</span>
+                    <h3 class="text-sm font-black text-cyan-400 uppercase tracking-wider">
+                        STAFF LEDGER: <span id="pop_emp_name_title" class="text-white"></span>
+                    </h3>
+                </div>
+                <button type="button" onclick="closeEmployeeWalletModal()" class="w-7 h-7 rounded-lg bg-slate-800 hover:bg-rose-900 text-slate-300 font-bold text-xs flex items-center justify-center transition cursor-pointer">✕</button>
+            </div>
+
+            <!-- 🟢 15-DAY WEDDING ALERT BANNER -->
+            <div id="pop_wedding_15day_alert" class="hidden p-3 rounded-2xl bg-emerald-950/80 border border-emerald-500/70 text-emerald-200 text-xs font-bold space-y-1 shadow">
+                <span class="text-emerald-400 block uppercase tracking-wider">📸 आगामी 15 दिनों में वेडिंग शूटिंग असाइनमेंट:</span>
+                <div id="pop_wedding_15day_list" class="space-y-0.5 pl-4 font-mono text-[11px] text-emerald-100"></div>
+            </div>
+
+            <!-- 🔵 BACK-DATE SALARY ALERT BANNER (No Yellow, Soft Slate & Cyan) -->
+            <div id="pop_backdate_salary_alert" class="hidden p-3 rounded-2xl bg-slate-900/95 border border-cyan-500/50 text-slate-200 text-xs font-bold flex justify-between items-center shadow">
+                <div class="flex items-center gap-2">
+                    <span class="text-cyan-400 text-sm">ℹ️</span>
+                    <div>
+                        <span class="uppercase tracking-wider block text-cyan-400 font-black">पिछले महीने का बकाया वेतन नोटिस:</span>
+                        <span id="pop_backdate_salary_msg" class="font-mono text-[11px] text-slate-300"></span>
+                    </div>
+                </div>
+                <button onclick="goToBackDatePayment()" class="bg-cyan-700 hover:bg-cyan-600 text-white font-black px-3.5 py-1.5 rounded-xl text-xs uppercase cursor-pointer shadow transition flex items-center gap-1.5">
+                    <span>💳</span> Pay Back Date Salary
+                </button>
+            </div>
+
+            <!-- 🗓️ MONTH SELECTOR -->
+            <div class="flex justify-between items-center bg-slate-950 p-3 rounded-2xl border border-slate-800 text-xs">
+                <div class="flex items-center gap-4">
+                    <div class="flex items-center gap-2">
+                        <label class="text-slate-400 font-bold">Select Month:</label>
+                        <select id="pop_emp_month" onchange="onMonthOrYearChanged()" class="fine-input text-cyan-300 font-bold cursor-pointer w-28"></select>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <label class="text-slate-400 font-bold">Year:</label>
+                        <select id="pop_emp_year" onchange="onMonthOrYearChanged()" class="fine-input text-cyan-300 font-bold cursor-pointer w-24"></select>
+                    </div>
+                </div>
+                <div id="pop_prev_month_status" class="text-[11px] font-mono font-bold text-cyan-300 bg-cyan-950/60 px-3 py-1.5 rounded-xl border border-cyan-800/80">
+                    Status Loading...
+                </div>
+            </div>
+
+            <!-- 🛑 BACK-DATE SPECIAL NOTICE -->
+            <div id="backdate_view_badge" class="hidden p-2.5 rounded-xl bg-indigo-950/70 border border-indigo-500/50 text-indigo-200 text-xs font-bold text-center">
+                🗓️ आप पिछला महीना (Back Date) देख रहे हैं। उपस्थिति या नया एडवांस बंद है। केवल पिछला बकाया भुगतान व प्रिंट उपलब्ध है।
+            </div>
+
+            <!-- WORKSPACE -->
+            <div class="grid grid-cols-12 gap-4">
+                
+                <div class="col-span-8 space-y-3.5">
+                    <!-- PROFILE SUMMARY -->
+                    <div class="bg-[#0b1f3b] p-4 rounded-2xl space-y-1 text-xs text-white border border-blue-900/60 font-sans shadow-inner">
+                        <p><strong>Designation Post :</strong> <span id="pop_emp_role" class="text-cyan-300 font-bold"></span></p>
+                        <p><strong>Mobile Contact :</strong> <span id="pop_emp_mob" class="font-mono text-slate-200"></span></p>
+                        <p><strong>Joining Date :</strong> <span id="pop_emp_join_date" class="text-cyan-400 font-bold font-mono"></span></p>
+                        <p><strong>Base Salary Rate :</strong> ₹ <span id="pop_emp_base_sal" class="font-bold">0.00</span> / Month</p>
+                        <p><strong>Bank Account :</strong> <span id="pop_emp_bank_info" class="text-slate-300 italic"></span></p>
+                    </div>
+
+                    <!-- 💍 WEDDING INCENTIVE STAGING QUEUE (CONTAINER RESTORED) -->
+                    <div id="section_wedding_incentive" class="bg-slate-950 p-3.5 rounded-2xl border border-indigo-900/60 space-y-2 text-xs">
+                        <div class="flex items-center justify-between">
+                            <span class="text-[11px] font-black uppercase text-indigo-400 tracking-wider flex items-center gap-1.5">
+                                <span>💍</span> Wedding Assigned Incentives Queue (Pending Approval)
+                            </span>
+                            <span class="text-[9px] text-slate-500 font-mono">Click [➕ Add] to Credit in Salary</span>
+                        </div>
+                        <div id="staging_incentive_container" class="space-y-1.5 max-h-32 overflow-y-auto"></div>
+                    </div>
+
+                    <!-- 📅 ATTENDANCE -->
+                    <div id="section_attendance" class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 space-y-2 text-xs">
+                        <span class="text-[11px] text-cyan-400 font-black uppercase tracking-wider block">📅 ATTENDANCE MARKER (CURRENT MONTH)</span>
+                        <div class="grid grid-cols-12 gap-2 items-center">
+                            <div class="col-span-3">
+                                <label class="block text-slate-400 font-semibold mb-1 text-[10px]">From:</label>
+                                <input type="date" id="att_from_date" class="fine-input w-full text-white font-bold text-[11px]">
+                            </div>
+                            <div class="col-span-3">
+                                <label class="block text-slate-400 font-semibold mb-1 text-[10px]">To:</label>
+                                <input type="date" id="att_to_date" class="fine-input w-full text-white font-bold text-[11px]">
+                            </div>
+                            <div class="col-span-3">
+                                <label class="block text-slate-400 font-semibold mb-1 text-[10px]">Reason (कारण):</label>
+                                <input type="text" id="att_reason" placeholder="कारण लिखें..." class="fine-input w-full text-[11px]">
+                            </div>
+                            <div class="col-span-3 flex gap-1 pt-4">
+                                <button type="button" onclick="markAttendance('Present')" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-2 rounded-lg text-[9.5px] uppercase cursor-pointer transition">Present</button>
+                                <button type="button" onclick="markAttendance('Half-Day')" class="flex-1 bg-cyan-600 hover:bg-cyan-500 text-white font-bold py-2 rounded-lg text-[9.5px] uppercase cursor-pointer transition">Half-Day</button>
+                                <button type="button" onclick="markAttendance('Absent')" class="flex-1 bg-rose-600 hover:bg-rose-500 text-white font-bold py-2 rounded-lg text-[9.5px] uppercase cursor-pointer transition">Absent</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 💵 MONEY ENGINE (No Yellow Color) -->
+                    <div id="section_money_engine" class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 space-y-2.5 text-xs">
+                        <span class="text-[11px] text-emerald-400 font-black uppercase tracking-wider block">💵 SALARY PAYMENT & ADVANCE ENGINE</span>
+                        <div class="flex gap-2">
+                            <button onclick="handleMoneyAction('SETTLE')" class="flex-1 bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 rounded-xl text-xs cursor-pointer shadow transition flex items-center justify-center gap-1.5">
+                                <span>🤝</span> Settle Due Payment (चुकाएँ)
+                            </button>
+                            <button id="btn_give_adv" onclick="openGiveAdvancePrompt()" class="flex-1 bg-slate-800 hover:bg-slate-700 text-cyan-300 border border-slate-700 font-black py-2.5 rounded-xl text-xs cursor-pointer shadow transition flex items-center justify-center gap-1.5">
+                                <span>➕</span> Give Advance
+                            </button>
+                            <button id="btn_add_inc" onclick="openAddIncentivePrompt()" class="flex-1 bg-purple-600 hover:bg-purple-500 text-white font-black py-2.5 rounded-xl text-xs cursor-pointer shadow transition flex items-center justify-center gap-1.5">
+                                <span>⭐</span> Add Incentive
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- 📜 TRANSACTION LOGS TABLE -->
+                    <div class="bg-slate-950 p-3.5 rounded-2xl border border-slate-800 space-y-1.5">
+                        <span class="text-[10px] text-slate-400 font-black uppercase tracking-wider block">📜 MONTH TRANSACTION LOGS</span>
+                        <div class="overflow-hidden rounded-xl border border-slate-900 max-h-32 overflow-y-auto">
+                            <table class="w-full text-[11px] text-center font-mono">
+                                <thead class="bg-slate-900 text-slate-400 font-bold border-b border-slate-800 sticky top-0">
+                                    <tr>
+                                        <th class="p-2">DATE & TIME</th>
+                                        <th class="p-2">TRANSACTION TYPE / REMARKS</th>
+                                        <th class="p-2 text-right pr-4">AMOUNT (₹)</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="empTransactionTableBody" class="divide-y divide-slate-900 text-slate-300"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- RIGHT PANEL -->
+                <div class="col-span-4 bg-[#0a1428] p-4 rounded-2xl border border-slate-800 space-y-3.5 text-xs flex flex-col justify-between">
+                    <div class="space-y-3">
+                        <span class="text-xs font-black text-slate-300 uppercase tracking-wider block text-center border-b border-slate-800 pb-2">📊 SALARY CALCULATOR</span>
+
+                        <div class="space-y-2 font-mono text-[11.5px]">
+                            <div class="flex justify-between text-slate-300"><span>Per Day Rate:</span><span id="calc_per_day" class="font-bold">₹ 0.00</span></div>
+                            <div class="flex justify-between text-emerald-400"><span>Earned Salary:</span><span id="calc_earned" class="font-bold">₹ 0.00</span></div>
+                            <div class="flex justify-between text-cyan-400"><span>Total Incentive:</span><span id="calc_incentive" class="font-bold">+ ₹ 0.00</span></div>
+                            <div class="flex justify-between text-slate-300"><span>Net Advance:</span><span id="calc_advance" class="font-bold text-rose-400">- ₹ 0.00</span></div>
+                        </div>
+
+                        <div class="border-t border-slate-800 my-2"></div>
+
+                        <div class="text-center bg-slate-950 p-4 rounded-2xl border border-slate-800 shadow-inner">
+                            <span class="text-[10px] text-slate-400 uppercase font-bold tracking-wider block mb-1">NET PAYABLE BALANCE</span>
+                            <span id="calc_net_payable" class="text-xl text-rose-400 font-black font-mono">₹ 0.00</span>
+                        </div>
+
+                        <div class="space-y-1 pt-1">
+                            <span class="text-[10px] text-slate-400 font-bold uppercase block">ABSENT / HALF-DAY DETAILS:</span>
+                            <div id="calc_absent_list" class="bg-slate-950 p-2.5 rounded-xl border border-slate-900 max-h-24 overflow-y-auto text-[10px] font-mono text-slate-400 space-y-1">
+                                No Absents This Month!
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="space-y-2 pt-2 border-t border-slate-800">
+                        <button id="btn_toggle_emp_status" onclick="changeStaffStatusAction()" class="w-full bg-rose-900 hover:bg-rose-800 text-rose-200 font-black py-2.5 rounded-xl text-xs cursor-pointer transition shadow">
+                            👋 Register Resignation / Terminate
+                        </button>
+                        <button onclick="printStaffLedgerReport()" class="w-full bg-slate-800 hover:bg-slate-700 text-slate-200 font-black py-2 rounded-xl text-xs cursor-pointer transition flex items-center justify-center gap-1.5 border border-slate-700">
+                            <span>🖨️</span> Print Month Salary Slip
+                        </button>
+                        <button onclick="printFullLifetimeLedger()" class="w-full bg-indigo-950 hover:bg-indigo-900 text-indigo-300 border border-indigo-800 font-black py-2 rounded-xl text-xs cursor-pointer transition flex items-center justify-center gap-1.5 shadow">
+                            <span>📜</span> Print Lifetime Statement (Join to Today)
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT MASTER ENGINE -->
+    <script>
+let isEmpUnlocked = false;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const lockModal = document.getElementById('empLockModal');
+            lockModal.classList.remove('hidden');
+            document.getElementById('emp_master_pwd').focus();
+
+            // ESC ब्लॉक और Enter पर सबमिट
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' || e.keyCode === 27) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                if (e.key === 'Enter' && !isEmpUnlocked) {
+                    verifyEmpPassword();
+                }
+            }, true);
+
+            // बाहर क्लिक पर बंद न होना
+            lockModal.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        });
+
+        async function verifyEmpPassword() {
+            const pwdInput = document.getElementById('emp_master_pwd');
+            const pwd = pwdInput.value.trim();
+            const errMsg = document.getElementById('emp_lock_error_msg');
+            const btn = document.getElementById('btn_verify_emp_pwd');
+
+            if (!pwd) {
+                errMsg.innerText = "कृपया पासवर्ड दर्ज करें!";
+                errMsg.classList.remove('hidden');
+                pwdInput.focus();
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "जाँच हो रही है...";
+            errMsg.classList.add('hidden');
+
+            try {
+                const res = await fetch('/api/verify_master_password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: pwd })
+                });
+                const data = await res.json();
+
+                if (data.status === 'success') {
+                    isEmpUnlocked = true;
+                    document.getElementById('empLockModal').classList.add('hidden');
+                    
+                    const today = new Date().toISOString().split('T')[0];
+                    if (document.getElementById('emp_reg_join_date')) document.getElementById('emp_reg_join_date').value = today;
+                    if (document.getElementById('att_from_date')) document.getElementById('att_from_date').value = today;
+                    if (document.getElementById('att_to_date')) document.getElementById('att_to_date').value = today;
+                    loadEmployeesFromDatabase();
+                } else {
+                    errMsg.innerText = data.message || "❌ गलत पासवर्ड! अनधिकृत एक्सेस।";
+                    errMsg.classList.remove('hidden');
+                    pwdInput.value = '';
+                    pwdInput.focus();
+                }
+            } catch (e) {
+                errMsg.innerText = "सर्वर से संपर्क नहीं हो पाया!";
+                errMsg.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "अनलॉक करें";
+            }
+        }
+
+        function cancelEmpAccess() {
+            window.location.href = '/dashboard';
+        }
+        let activeEmployeeRecord = null;
+        let empJoinMonth = 1;
+        let empJoinYear = 2026;
+        let pendingBackDateInfo = null;
+
+        const MONTH_NAMES = ["01 - Jan", "02 - Feb", "03 - Mar", "04 - Apr", "05 - May", "06 - Jun", "07 - Jul", "08 - Aug", "09 - Sep", "10 - Oct", "11 - Nov", "12 - Dec"];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const today = new Date().toISOString().split('T')[0];
+            if (document.getElementById('emp_reg_join_date')) document.getElementById('emp_reg_join_date').value = today;
+            if (document.getElementById('att_from_date')) document.getElementById('att_from_date').value = today;
+            if (document.getElementById('att_to_date')) document.getElementById('att_to_date').value = today;
+            loadEmployeesFromDatabase();
+        });
+
+        async function loadEmployeesFromDatabase() {
+            const filterEl = document.getElementById('emp_view_status_filter');
+            const filter = filterEl ? filterEl.value : 'Active';
+            
+            try {
+                const res = await fetch(`/api/get_employees_list?status=${filter}`);
+                const data = await res.json();
+                
+                const tbody = document.getElementById('employeeTableBody');
+                if (!tbody) return;
+                tbody.innerHTML = '';
+
+                if (!data.data || data.data.length === 0) {
+                    tbody.innerHTML = `<tr><td colspan="7" class="p-6 text-slate-500 text-center font-bold">कोई कर्मचारी रिकॉर्ड नहीं मिला</td></tr>`;
+                    return;
+                }
+
+                data.data.forEach(emp => {
+                    const tr = document.createElement('tr');
+                    tr.className = "bg-slate-900/40 hover:bg-slate-900/70 transition cursor-pointer select-none";
+                    tr.onclick = () => openEmployeeWalletModal(emp);
+                    
+                    tr.innerHTML = `
+                        <td class="p-3 font-mono font-bold text-center">#${emp.id}</td>
+                        <td class="p-3 text-left pl-6 font-bold text-cyan-300">${emp.name}</td>
+                        <td class="p-3 text-center font-mono text-slate-300">${emp.mobile || '-'}</td>
+                        <td class="p-3 text-left pl-6 text-slate-400">${emp.address || '-'}</td>
+                        <td class="p-3 text-center"><span class="px-2.5 py-1 text-xs rounded-lg bg-slate-800 border border-slate-700 text-slate-300 font-bold">${emp.role || 'Staff'}</span></td>
+                        <td class="p-3 text-right pr-6 font-black text-emerald-400">₹ ${parseFloat(emp.salary || 0).toFixed(2)}</td>
+                        <td class="p-3 text-left pl-6 text-xs font-mono text-slate-400">${emp.acc_no ? emp.acc_no + ' (' + (emp.bank_name || 'Bank') + ')' : 'N/A'}</td>
+                    `;
+                    tbody.appendChild(tr);
+                });
+            } catch(e) { console.error(e); }
+        }
+
+        async function registerNewStaff() {
+            const name = document.getElementById('emp_reg_name').value.trim();
+            const sal = parseFloat(document.getElementById('emp_reg_sal').value) || 0;
+            if (!name || sal <= 0) { alert("Staff Name and valid salary are required!"); return; }
+
+            const payload = {
+                name: name,
+                mobile: document.getElementById('emp_reg_mob').value.trim(),
+                address: document.getElementById('emp_reg_addr').value.trim(),
+                role: document.getElementById('emp_reg_role').value.trim() || 'Senior Photographer',
+                salary: sal,
+                join_date: document.getElementById('emp_reg_join_date').value,
+                acc_no: document.getElementById('emp_reg_acc_no').value.trim(),
+                bank_name: document.getElementById('emp_reg_bank_name').value.trim(),
+                ifsc_code: document.getElementById('emp_reg_ifsc').value.trim(),
+                branch_name: document.getElementById('emp_reg_branch').value.trim()
+            };
+
+            try {
+                const res = await fetch('/api/register_employee', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    alert(data.message);
+                    document.getElementById('emp_reg_name').value = '';
+                    document.getElementById('emp_reg_mob').value = '';
+                    document.getElementById('emp_reg_addr').value = '';
+                    document.getElementById('emp_reg_sal').value = '';
+                    document.getElementById('emp_reg_acc_no').value = '';
+                    document.getElementById('emp_reg_bank_name').value = '';
+                    document.getElementById('emp_reg_ifsc').value = '';
+                    document.getElementById('emp_reg_branch').value = '';
+                    loadEmployeesFromDatabase();
+                } else alert(data.message);
+            } catch(e) { alert("Error registering staff!"); }
+        }
+
+        function setupJoiningDateFilters(joinDateStr) {
+            const currentYear = new Date().getFullYear();
+            empJoinMonth = 1;
+            empJoinYear = currentYear;
+
+            if (joinDateStr) {
+                const parts = joinDateStr.includes('/') ? joinDateStr.split('/') : joinDateStr.split('-');
+                if (parts.length === 3) {
+                    if (parts[0].length === 4) {
+                        empJoinYear = parseInt(parts[0]);
+                        empJoinMonth = parseInt(parts[1]);
+                    } else {
+                        empJoinMonth = parseInt(parts[1]);
+                        empJoinYear = parseInt(parts[2]);
+                    }
+                }
+            }
+
+            const yearSelect = document.getElementById('pop_emp_year');
+            if (yearSelect) {
+                yearSelect.innerHTML = '';
+                for (let y = empJoinYear; y <= currentYear + 1; y++) {
+                    const opt = document.createElement('option');
+                    opt.value = y;
+                    opt.innerText = y;
+                    yearSelect.appendChild(opt);
+                }
+                yearSelect.value = currentYear;
+            }
+            onYearChangeUpdateMonths();
+        }
+
+        function onYearChangeUpdateMonths() {
+            const yearEl = document.getElementById('pop_emp_year');
+            const monthSelect = document.getElementById('pop_emp_month');
+            if (!yearEl || !monthSelect) return;
+
+            const selectedYear = parseInt(yearEl.value) || new Date().getFullYear();
+            monthSelect.innerHTML = '';
+
+            const now = new Date();
+            const currentYear = now.getFullYear();
+            const currentMonth = now.getMonth() + 1;
+
+            const startMonth = (selectedYear === empJoinYear) ? empJoinMonth : 1;
+            let endMonth = 12;
+            if (selectedYear === currentYear) {
+                endMonth = currentMonth;
+            } else if (selectedYear > currentYear) {
+                endMonth = 0;
+            }
+
+            for (let m = startMonth; m <= endMonth; m++) {
+                const opt = document.createElement('option');
+                const mStr = String(m).padStart(2, '0');
+                opt.value = mStr;
+                opt.innerText = MONTH_NAMES[m - 1];
+                monthSelect.appendChild(opt);
+            }
+
+            const currentMonthStr = String(currentMonth).padStart(2, '0');
+            if (monthSelect.querySelector(`option[value="${currentMonthStr}"]`)) {
+                monthSelect.value = currentMonthStr;
+            } else if (monthSelect.options.length > 0) {
+                monthSelect.selectedIndex = monthSelect.options.length - 1;
+            }
+
+            onMonthOrYearChanged();
+        }
+
+        function onMonthOrYearChanged() {
+            if (!activeEmployeeRecord) return;
+
+            const isResigned = ['resigned', 'terminated', 'inactive'].includes((activeEmployeeRecord.status || '').toLowerCase());
+            
+            const attSection = document.getElementById('section_attendance');
+            const incSection = document.getElementById('section_wedding_incentive');
+            const moneySection = document.getElementById('section_money_engine');
+            const btnAdv = document.getElementById('btn_give_adv');
+            const btnInc = document.getElementById('btn_add_inc');
+            const btnSettle = document.querySelector('#employee_wallet_modal button[onclick*="SETTLE"]');
+            const backdateBadge = document.getElementById('backdate_view_badge');
+
+            if (isResigned) {
+                if (attSection) attSection.classList.add('hidden');
+                if (incSection) incSection.classList.add('hidden');
+                if (moneySection) moneySection.classList.add('hidden');
+                if (btnAdv) btnAdv.classList.add('hidden');
+                if (btnInc) btnInc.classList.add('hidden');
+                if (btnSettle) btnSettle.classList.add('hidden');
+                if (backdateBadge) backdateBadge.classList.add('hidden');
+            } else {
+                const now = new Date();
+                const curM = String(now.getMonth() + 1).padStart(2, '0');
+                const curY = String(now.getFullYear());
+                
+                const selM = document.getElementById('pop_emp_month')?.value || curM;
+                const selY = document.getElementById('pop_emp_year')?.value || curY;
+                const isBackDate = (selY < curY) || (selY === curY && selM < curM);
+
+                if (isBackDate) {
+                    if (attSection) attSection.classList.add('hidden');
+                    if (incSection) incSection.classList.add('hidden');
+                    if (moneySection) moneySection.classList.remove('hidden');
+                    if (btnAdv) btnAdv.classList.add('hidden');
+                    if (btnInc) btnInc.classList.add('hidden');
+                    if (btnSettle) btnSettle.classList.remove('hidden');
+                    if (backdateBadge) backdateBadge.classList.remove('hidden');
+                } else {
+                    if (attSection) attSection.classList.remove('hidden');
+                    if (incSection) incSection.classList.remove('hidden');
+                    if (moneySection) moneySection.classList.remove('hidden');
+                    if (btnAdv) btnAdv.classList.remove('hidden');
+                    if (btnInc) btnInc.classList.remove('hidden');
+                    if (btnSettle) btnSettle.classList.remove('hidden');
+                    if (backdateBadge) backdateBadge.classList.add('hidden');
+                }
+            }
+
+            if (typeof loadEmployeeSalarySummary === 'function') loadEmployeeSalarySummary();
+            if (typeof loadEmployeeTransactions === 'function') loadEmployeeTransactions();
+            if (typeof checkUpcoming15DaysWeddings === 'function') checkUpcoming15DaysWeddings();
+            if (typeof checkBackDatePendingSalary === 'function') checkBackDatePendingSalary();
+        }
+
+        function openEmployeeWalletModal(emp) {
+            activeEmployeeRecord = emp;
+            const modal = document.getElementById('employee_wallet_modal');
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.style.display = 'flex';
+            }
+
+            const isResigned = ['resigned', 'terminated', 'inactive'].includes((emp.status || '').toLowerCase());
+
+            document.getElementById('pop_emp_name_title').innerText = `${emp.name} ${isResigned ? '(RESIGNED / INACTIVE)' : ''}`;
+            document.getElementById('pop_emp_role').innerText = emp.role || 'Staff';
+            document.getElementById('pop_emp_mob').innerText = emp.mobile || 'N/A';
+            document.getElementById('pop_emp_join_date').innerText = emp.join_date || 'N/A';
+            document.getElementById('pop_emp_base_sal').innerText = parseFloat(emp.salary || 0).toFixed(2);
+
+            const bankInfo = emp.acc_no ? `A/C: ${emp.acc_no} | Bank: ${emp.bank_name || 'N/A'} | IFSC: ${emp.ifsc_code || 'N/A'}` : 'N/A';
+            document.getElementById('pop_emp_bank_info').innerText = bankInfo;
+
+            const statusBtn = document.getElementById('btn_toggle_emp_status');
+            if (statusBtn) {
+                if (isResigned) {
+                    statusBtn.innerHTML = '🔄 RE-JOIN / RE-ACTIVATE STAFF';
+                    statusBtn.className = 'w-full py-2.5 rounded-xl font-black text-xs uppercase bg-emerald-600 hover:bg-emerald-500 text-white shadow cursor-pointer transition';
+                } else {
+                    statusBtn.innerHTML = '👋 REGISTER RESIGNATION / TERMINATE';
+                    statusBtn.className = 'w-full py-2.5 rounded-xl font-black text-xs uppercase bg-rose-900 hover:bg-rose-800 text-rose-200 shadow cursor-pointer transition';
+                }
+            }
+
+            setupJoiningDateFilters(emp.join_date);
+        }
+
+        function closeEmployeeWalletModal() {
+            const modal = document.getElementById('employee_wallet_modal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.style.display = 'none';
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') closeEmployeeWalletModal();
+        });
+
+        async function checkUpcoming15DaysWeddings() {
+            if (!activeEmployeeRecord) return;
+            const alertBox = document.getElementById('pop_wedding_15day_alert');
+            const listContainer = document.getElementById('pop_wedding_15day_list');
+
+            try {
+                const res = await fetch(`/api/get_employee_upcoming_weddings?emp_name=${encodeURIComponent(activeEmployeeRecord.name)}&days=15`);
+                const data = await res.json();
+
+                if (data.status === 'success' && data.events && data.events.length > 0) {
+                    listContainer.innerHTML = data.events.map(ev => `
+                        <div>• <b>${ev.event_name}</b> — तारीख: <span class="underline">${ev.event_date}</span> (${ev.days_left} दिन शेष)</div>
+                    `).join('');
+                    alertBox.classList.remove('hidden');
+                } else {
+                    alertBox.classList.add('hidden');
+                }
+            } catch (err) { alertBox.classList.add('hidden'); }
+        }
+
+        async function checkBackDatePendingSalary() {
+            if (!activeEmployeeRecord) return;
+            const alertBox = document.getElementById('pop_backdate_salary_alert');
+            const msgBox = document.getElementById('pop_backdate_salary_msg');
+
+            const currentMonth = document.getElementById('pop_emp_month').value;
+            const currentYear = document.getElementById('pop_emp_year').value;
+
+            try {
+                const res = await fetch(`/api/get_employee_backdate_dues?emp_id=${activeEmployeeRecord.id}&cur_month=${currentMonth}&cur_year=${currentYear}`);
+                const data = await res.json();
+
+                if (data.status === 'success' && data.has_dues) {
+                    pendingBackDateInfo = data.due_info;
+                    msgBox.innerText = `महीना ${data.due_info.month}/${data.due_info.year} का कुल ₹ ${parseFloat(data.due_info.amount).toFixed(2)} वेतन भुगतान अभी बाकी है!`;
+                    alertBox.classList.remove('hidden');
+                } else {
+                    pendingBackDateInfo = null;
+                    alertBox.classList.add('hidden');
+                }
+            } catch (err) { alertBox.classList.add('hidden'); }
+        }
+
+        function goToBackDatePayment() {
+            if (!pendingBackDateInfo) return;
+            document.getElementById('pop_emp_year').value = pendingBackDateInfo.year;
+            document.getElementById('pop_emp_month').value = pendingBackDateInfo.month;
+            onMonthOrYearChanged();
+        }
+
+        async function loadEmployeeSalarySummary() {
+            if (!activeEmployeeRecord) return;
+
+            const cleanM = document.getElementById('pop_emp_month').value;
+            const cleanY = document.getElementById('pop_emp_year').value;
+
+            try {
+                const res = await fetch(`/api/get_employee_salary_summary?emp_id=${activeEmployeeRecord.id}&month=${cleanM}&year=${cleanY}`);
+                const data = await res.json();
+
+                if (data.status === 'success') {
+                    const sm = data.summary;
+
+                    document.getElementById('calc_per_day').innerText = `₹ ${parseFloat(sm.per_day_rate || 0).toFixed(2)}`;
+                    document.getElementById('calc_earned').innerText = `₹ ${parseFloat(sm.earned_salary || 0).toFixed(2)}`;
+                    document.getElementById('calc_incentive').innerText = `+ ₹ ${parseFloat(sm.total_incentive || 0).toFixed(2)}`;
+                    document.getElementById('calc_advance').innerText = `- ₹ ${parseFloat(sm.month_adv_balance || 0).toFixed(2)}`;
+                    document.getElementById('calc_net_payable').innerText = `₹ ${parseFloat(sm.net_payable || 0).toFixed(2)}`;
+
+                    document.getElementById('pop_prev_month_status').innerText = sm.is_settled ? 'Cleared & Settled' : `Due: ₹ ${parseFloat(sm.net_payable || 0).toFixed(2)}`;
+
+                  // 🎯 Settle बटन को स्थिति के अनुसार छिपाना या दिखाना
+                    const settleBtn = document.querySelector('#section_money_engine button[onclick*="SETTLE"]');
+                    if (settleBtn) {
+                        if (sm.is_settled || parseFloat(sm.net_payable || 0) <= 0) {
+                            settleBtn.style.display = 'none';
+                        } else {
+                            settleBtn.style.display = 'flex';
+                        }
+                    }
+
+                    const absentBox = document.getElementById('calc_absent_list');
+                    if (absentBox) {
+                        if (!data.absents_list || data.absents_list.length === 0) {
+                            absentBox.innerHTML = '<span class="text-slate-500 italic">No Absents This Month!</span>';
+                        } else {
+                            absentBox.innerHTML = data.absents_list.map(d => `<div class="text-[10px] text-rose-300">• ${d.attendance_date} (${d.status}${d.reason ? ': ' + d.reason : ''})</div>`).join('');
+                        }
+                    }
+
+                    // 🎯 वेडिंग इंसेंटिव बॉक्स रेंडरर
+                    const stagingBox = document.getElementById('staging_incentive_container');
+                    if (stagingBox) {
+                        stagingBox.innerHTML = '';
+                        if (!data.staging_incentives || data.staging_incentives.length === 0) {
+                            stagingBox.innerHTML = `<p class="text-[10px] text-slate-500 italic p-1.5 text-center">कोई पेंडिंग वेडिंग कमीशन / इंसेंटिव नहीं है</p>`;
+                        } else {
+                            data.staging_incentives.forEach(item => {
+                                stagingBox.innerHTML += `
+                                    <div class="flex justify-between items-center bg-slate-900/95 p-2.5 rounded-xl border border-indigo-900/80 text-[11px] gap-2 mb-1.5 shadow">
+                                        <div>
+                                            <span class="text-white font-bold block">• #${item.wedding_id} - ${item.event_name}</span>
+                                            <span class="text-[9.5px] text-slate-400 font-mono">${item.event_date} (काम संपन्न)</span>
+                                        </div>
+                                        <div class="flex items-center gap-1.5">
+                                            <span class="text-slate-400 text-[10px]">₹</span>
+                                            <input type="number" id="stg_amt_${item.id}" value="${item.suggested_amount || 500}" class="fine-input w-16 text-right font-bold text-emerald-400 text-[11px] py-0 px-1 h-7 rounded border border-slate-700 bg-slate-950">
+                                            <button onclick="handleStagingActionWithCustomAmt(${item.id}, 'ADD')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-2.5 py-1 rounded-lg text-[10px] font-bold cursor-pointer transition shadow">➕ Add</button>
+                                            <button onclick="handleStagingAction(${item.id}, 'CANCEL')" class="bg-rose-900 hover:bg-rose-800 text-rose-200 px-2 py-1 rounded-lg text-[10px] font-bold cursor-pointer transition">✕</button>
+                                        </div>
+                                    </div>`;
+                            });
+                        }
+                    }
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        async function loadEmployeeTransactions() {
+            if (!activeEmployeeRecord) return;
+            const cleanM = document.getElementById('pop_emp_month').value;
+            const cleanY = document.getElementById('pop_emp_year').value;
+
+            try {
+                const tbody = document.getElementById('empTransactionTableBody');
+                if (!tbody) return;
+                const res = await fetch(`/api/get_employee_transactions/${activeEmployeeRecord.id}?month=${cleanM}&year=${cleanY}`);
+                const data = await res.json();
+                
+                tbody.innerHTML = '';
+                if (data.status === 'success' && data.data && data.data.length > 0) {
+                    data.data.forEach(tx => {
+                        const tr = document.createElement('tr');
+                        const isAdv = String(tx.trans_type).includes('Advance');
+                        tr.innerHTML = `
+                            <td class="p-2 font-mono text-slate-400">${tx.trans_date}</td>
+                            <td class="p-2 font-bold ${isAdv ? 'text-slate-300' : 'text-emerald-400'}">${tx.trans_type}</td>
+                            <td class="p-2 text-right pr-4 font-black ${isAdv ? 'text-rose-400' : 'text-emerald-400'}">₹ ${parseFloat(tx.amount || 0).toFixed(2)}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="3" class="p-3 text-slate-500 text-center font-mono">कोई लेन-देन नहीं मिला</td></tr>`;
+                }
+            } catch(e) { console.error(e); }
+        }
+
+        async function handleStagingActionWithCustomAmt(stagingId, action) {
+            const inputEl = document.getElementById(`stg_amt_${stagingId}`);
+            const customAmt = inputEl ? parseFloat(inputEl.value) || 500 : 500;
+            await handleStagingAction(stagingId, action, customAmt);
+        }
+
+        async function handleStagingAction(stagingId, action, amount = 500) {
+            if (action === 'CANCEL' && !confirm("क्या आप वाकई इस इवेंट के लिए इंसेंटिव रद्द करना चाहते हैं?")) return;
+
+            try {
+                const res = await fetch('/api/handle_staging_incentive', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ staging_id: stagingId, action: action, amount: amount })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    alert(`✅ ${data.message}`);
+                    loadEmployeeSalarySummary();
+                    loadEmployeeTransactions();
+                } else alert(`त्रुटि: ${data.message}`);
+            } catch (e) { alert("इंसेंटिव प्रोसेस करने में समस्या आई!"); }
+        }
+
+        function openGiveAdvancePrompt() {
+            const amt = prompt("एडवांस राशि दर्ज करें (₹):");
+            if (amt && parseFloat(amt) > 0) submitMoneyAction('GIVE', parseFloat(amt), 0, 'Cash Advance');
+        }
+
+        function openAddIncentivePrompt() {
+            const amt = prompt("इंसेंटिव राशि दर्ज करें (₹):");
+            const rsn = prompt("इंसेंटिव का कारण लिखें:");
+            if (amt && parseFloat(amt) > 0) submitMoneyAction('INCENTIVE', 0, parseFloat(amt), rsn || 'Special Work');
+        }
+
+        async function handleMoneyAction(actionType) {
+            if (actionType === 'SETTLE') {
+                const netPayText = document.getElementById('calc_net_payable').innerText.replace('₹', '').trim();
+                const netAmt = parseFloat(netPayText) || 0;
+                if (netAmt <= 0) { alert("इस महीने कोई बकाया नहीं है!"); return; }
+                if (!confirm(`क्या आप ₹${netAmt.toFixed(2)} का वेतन भुगतान सेटल करना चाहते हैं?`)) return;
+                submitMoneyAction('SETTLE', netAmt, 0, 'Salary Settlement');
+            }
+        }
+
+        async function submitMoneyAction(actionType, amt, incAmt, reason) {
+            if (!activeEmployeeRecord) return;
+            const cleanM = document.getElementById('pop_emp_month').value;
+            const cleanY = document.getElementById('pop_emp_year').value;
+
+            try {
+                const res = await fetch('/api/handle_employee_money', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        emp_id: activeEmployeeRecord.id,
+                        action_type: actionType,
+                        month: cleanM,
+                        year: cleanY,
+                        amount: amt,
+                        inc_amount: incAmt,
+                        inc_reason: reason
+                    })
+                });
+                const data = await res.json();
+                
+                if (data.status === 'success') {
+                    alert(data.message);
+
+                    // 🎯 1. अगर सैलरी सेटल हुई है तो Settle बटन को तुरंत हाइड करें
+                    if (actionType === 'SETTLE') {
+                        const settleBtn = document.querySelector('#section_money_engine button[onclick*="SETTLE"]');
+                        if (settleBtn) {
+                            settleBtn.style.display = 'none';
+                        }
+                        // 🎯 2. स्क्रीन पर नेट पेयबल तुरंत ₹ 0.00 करें
+                        const netPayEl = document.getElementById('calc_net_payable');
+                        if (netPayEl) {
+                            netPayEl.innerText = '₹ 0.00';
+                            netPayEl.className = 'text-xl text-emerald-400 font-black font-mono';
+                        }
+                        const statusBadge = document.getElementById('pop_prev_month_status');
+                        if (statusBadge) {
+                            statusBadge.innerText = 'Cleared & Settled';
+                        }
+                    }
+
+                    // 🎯 3. डेटा और ट्रांज़ैक्शन टेबल को दोबारा लोड करें
+                    await loadEmployeeSalarySummary();
+                    await loadEmployeeTransactions();
+                    await checkBackDatePendingSalary();
+                } else {
+                    alert(data.message || "कार्रवाई विफल रही!");
+                }
+            } catch(e) { 
+                alert("Money Action Error!"); 
+            }
+        }
+
+        async function markAttendance(type) {
+            if (!activeEmployeeRecord) return;
+            const fromDt = document.getElementById('att_from_date').value;
+            const toDt = document.getElementById('att_to_date').value || fromDt;
+            const rsn = document.getElementById('att_reason').value.trim();
+
+            if (!fromDt) { alert("कृपया तारीख चुनें!"); return; }
+            if ((type === 'Half-Day' || type === 'Absent') && !rsn) {
+                alert(`🚨 ${type} लगाने के लिए 'कारण (Reason)' लिखना अनिवार्य है!`);
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/mark_employee_attendance', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ emp_id: activeEmployeeRecord.id, from_date: fromDt, to_date: toDt, status: type, reason: rsn })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    alert(`✅ ${data.message}`);
+                    document.getElementById('att_reason').value = '';
+                    loadEmployeeSalarySummary();
+                } else alert(data.message);
+            } catch (e) { alert("Attendance Error!"); }
+        }
+
+        async function changeStaffStatusAction() {
+            if (!activeEmployeeRecord) return;
+            const currentStatus = activeEmployeeRecord.status || 'Active';
+            const isResigned = ['resigned', 'terminated', 'inactive'].includes(currentStatus.toLowerCase());
+            const actionText = isResigned ? 'Re-Join (आज की तारीख से पुनः सक्रिय)' : 'Resign (इस्तीफ़ा दर्ज करें)';
+
+            if (!confirm(`क्या आप वाकई ${activeEmployeeRecord.name} को "${actionText}" करना चाहते हैं?`)) return;
+
+            try {
+                const res = await fetch('/api/change_employee_status', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ emp_id: activeEmployeeRecord.id, current_status: currentStatus })
+                });
+                const result = await res.json();
+                if (result.status === 'success') {
+                    alert(`✅ ${result.message}`);
+                    closeEmployeeWalletModal();
+                    loadEmployeesFromDatabase();
+                } else {
+                    alert(`त्रुटि: ${result.message}`);
+                }
+            } catch (err) { alert("Status Change Error!"); }
+        }
+
+        // -------------------------------------------------------------
+        // 1. 📄 मासिक वेतन पर्ची (MONTHLY SALARY SLIP - 1 PAGE COMPACT VOUCHER)
+        // -------------------------------------------------------------
+        function printStaffLedgerReport() {
+            if (!activeEmployeeRecord) return;
+
+            const name = activeEmployeeRecord.name || 'Staff';
+            const role = activeEmployeeRecord.role || 'Staff';
+            const mobile = activeEmployeeRecord.mobile || 'N/A';
+            const joinDate = activeEmployeeRecord.join_date || 'N/A';
+            const bankInfo = document.getElementById('pop_emp_bank_info')?.innerText || 'N/A';
+
+            const month = document.getElementById('pop_emp_month')?.value || '08';
+            const year = document.getElementById('pop_emp_year')?.value || '2026';
+
+            const baseSal = document.getElementById('pop_emp_base_sal')?.innerText || '0.00';
+            const perDay = document.getElementById('calc_per_day')?.innerText || '₹ 0.00';
+            const earned = document.getElementById('calc_earned')?.innerText || '₹ 0.00';
+            const incentive = document.getElementById('calc_incentive')?.innerText || '+ ₹ 0.00';
+            const advance = document.getElementById('calc_advance')?.innerText || '- ₹ 0.00';
+            const netPayable = document.getElementById('calc_net_payable')?.innerText || '₹ 0.00';
+            const txRows = document.getElementById('empTransactionTableBody')?.innerHTML || '<tr><td colspan="3" style="text-align:center; padding:10px;">कोई लेन-देन नहीं मिला</td></tr>';
+
+            const printWin = window.open('', '_blank', 'width=900,height=950');
+            printWin.document.write(`
+                <!DOCTYPE html>
+                <html lang="hi">
+                <head>
+                    <meta charset="UTF-8">
+                    <title>PaySlip_${name}_${month}_${year}</title>
+                    <style>
+                        @page { size: A4 portrait; margin: 12mm; }
+                        * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+                        body { background: #fff; color: #0f172a; }
+                        .voucher-card { border: 2px solid #0f172a; border-radius: 12px; padding: 22px; position: relative; }
+                        .header-row { display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #0f172a; padding-bottom: 12px; }
+                        .brand-title { font-size: 26px; font-weight: 900; letter-spacing: 2px; color: #0f172a; }
+                        .brand-sub { font-size: 11px; font-weight: 700; color: #475569; text-transform: uppercase; letter-spacing: 1px; }
+                        .slip-badge { background: #0f172a; color: #fff; padding: 5px 14px; border-radius: 6px; font-size: 13px; font-weight: 800; text-align: right; display: inline-block; }
+                        .period-txt { font-size: 12px; font-weight: 800; color: #0f172a; margin-top: 4px; text-align: right; }
+                        
+                        .emp-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 12px 14px; margin: 14px 0; font-size: 12px; }
+                        .emp-grid div { display: flex; justify-content: space-between; border-bottom: 1px dashed #cbd5e1; padding-bottom: 3px; }
+                        .emp-grid div:last-child { border-bottom: none; }
+                        .lbl { font-weight: 700; color: #475569; }
+                        .val { font-weight: 800; color: #0f172a; font-family: monospace; }
+                        
+                        table { width: 100%; border-collapse: collapse; margin-bottom: 12px; font-size: 12px; }
+                        th, td { border: 1px solid #cbd5e1; padding: 7px 10px; }
+                        th { background: #f1f5f9; font-weight: 800; text-transform: uppercase; color: #334155; font-size: 11px; }
+                        .text-right { text-align: right; }
+                        
+                        .net-box { background: #0f172a; color: #fff; border-radius: 8px; padding: 12px 18px; display: flex; justify-content: space-between; align-items: center; margin: 14px 0; }
+                        .net-lbl { font-size: 12px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+                        .net-val { font-size: 20px; font-weight: 900; color: #38bdf8; font-family: monospace; }
+                        
+                        .sign-container { display: flex; justify-content: space-between; margin-top: 45px; padding: 0 20px; }
+                        .sign-box { text-align: center; width: 180px; border-top: 1.5px solid #0f172a; padding-top: 6px; font-size: 11px; font-weight: 800; color: #334155; text-transform: uppercase; }
+                    </style>
+                </head>
+                <body>
+                    <div class="voucher-card">
+                        <div class="header-row">
+                            <div>
+                                <h1 class="brand-title">HIM STUDIO</h1>
+                                <p class="brand-sub">Professional Photo & Video Studio ERP</p>
+                            </div>
+                            <div>
+                                <span class="slip-badge">SALARY SLIP</span>
+                                <div class="period-txt">महीना: ${month} / ${year}</div>
+                            </div>
+                        </div>
+
+                        <div class="emp-grid">
+                            <div><span class="lbl">कर्मचारी का नाम:</span><span class="val">${name}</span></div>
+                            <div><span class="lbl">पद (Role):</span><span class="val">${role}</span></div>
+                            <div><span class="lbl">मोबाइल नंबर:</span><span class="val">${mobile}</span></div>
+                            <div><span class="lbl">जॉइनिंग तिथि:</span><span class="val">${joinDate}</span></div>
+                            <div style="grid-column: span 2;"><span class="lbl">बैंक विवरण:</span><span class="val">${bankInfo}</span></div>
+                        </div>
+
+                        <table>
+                            <thead>
+                                <tr><th>वेतन गणना विवरण</th><th>दर</th><th class="text-right">राशि (₹)</th></tr>
+                            </thead>
+                            <tbody>
+                                <tr><td>मूल मासिक वेतन (Base Salary)</td><td>प्रति माह</td><td class="text-right font-mono">₹ ${baseSal}</td></tr>
+                                <tr><td>अर्जित वेतन (Earned Salary)</td><td>Per Day: ${perDay}</td><td class="text-right font-mono" style="font-weight:800;">${earned}</td></tr>
+                                <tr><td>कुल इंसेंटिव (Incentives Added)</td><td>वेडिंग / एक्स्ट्रा</td><td class="text-right font-mono" style="color:#047857; font-weight:800;">${incentive}</td></tr>
+                                <tr><td>एडवांस कटौती (Advance Deducted)</td><td>महीने का एडवांस</td><td class="text-right font-mono" style="color:#b91c1c; font-weight:800;">${advance}</td></tr>
+                            </tbody>
+                        </table>
+
+                        <div class="net-box">
+                            <span class="net-lbl">कुल शुद्ध देय राशि (NET PAYABLE):</span>
+                            <span class="net-val">${netPayable}</span>
+                        </div>
+
+                        <h4 style="font-size: 11px; font-weight: 800; color: #475569; text-transform: uppercase; margin-bottom: 5px;">इस माह के लेन-देन (Month Logs):</h4>
+                        <table>
+                            <thead><tr><th>दिनांक व समय</th><th>विवरण / प्रकार</th><th class="text-right">राशि</th></tr></thead>
+                            <tbody>${txRows}</tbody>
+                        </table>
+
+                        <div class="sign-container">
+                            <div class="sign-box">कर्मचारी के हस्ताक्षर</div>
+                            <div class="sign-box">अधिकृत हस्ताक्षरकर्ता (HIM STUDIO)</div>
+                        </div>
+                    </div>
+                    <script>
+                        window.onload = function() { window.print(); setTimeout(() => window.close(), 500); };
+                    <\/script>
+                </body>
+                </html>
+            `);
+            printWin.document.close();
+        }
+
+        // -------------------------------------------------------------
+        // 2. 📜 लाइफटाइम लेजर स्टेटमेंट (LIFETIME STATEMENT - AUDIT SUMMARY & ALL LOGS)
+        // -------------------------------------------------------------
+        async function printFullLifetimeLedger() {
+            if (!activeEmployeeRecord) {
+                alert("कृपया पहले किसी कर्मचारी को चुनें!");
+                return;
+            }
+
+            try {
+                const res = await fetch(`/api/get_employee_lifetime_ledger/${activeEmployeeRecord.id}`);
+                const data = await res.json();
+
+                if (data.status !== 'success') {
+                    alert("डेटा लोड नहीं हो सका!");
+                    return;
+                }
+
+                const emp = data.employee || activeEmployeeRecord;
+                const txs = data.transactions || [];
+                const sm = data.summary || { total_advance: 0, total_incentive: 0, total_settled: 0 };
+
+                let txHtml = '';
+                if (txs.length > 0) {
+                    txHtml = txs.map((t, idx) => {
+                        const isAdv = String(t.trans_type || '').toLowerCase().includes('advance');
+                        const isSettle = String(t.trans_type || '').toLowerCase().includes('settle');
+                        const typeColor = isAdv ? '#b91c1c' : (isSettle ? '#0284c7' : '#059669');
+                        return `
+                            <tr>
+                                <td style="text-align:center; font-family:monospace; color:#64748b;">${idx + 1}</td>
+                                <td style="font-family:monospace;">${t.trans_date || '-'}</td>
+                                <td style="font-weight:800; color:${typeColor};">${t.trans_type || '-'}</td>
+                                <td>${t.remarks || '-'}</td>
+                                <td style="text-align:right; font-weight:800; font-family:monospace;">₹ ${parseFloat(t.amount || 0).toFixed(2)}</td>
+                            </tr>
+                        `;
+                    }).join('');
+                } else {
+                    txHtml = '<tr><td colspan="5" style="text-align:center; padding: 25px; color: #64748b;">जॉइनिंग से आज तक कोई लेन-देन इतिहास दर्ज नहीं है</td></tr>';
+                }
+
+                const printWin = window.open('', '_blank', 'width=950,height=1000');
+                printWin.document.write(`
+                    <!DOCTYPE html>
+                    <html lang="hi">
+                    <head>
+                        <meta charset="UTF-8">
+                        <title>LifetimeLedger_${emp.name}</title>
+                        <style>
+                            @page { size: A4 portrait; margin: 12mm; }
+                            * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+                            body { background: #fff; color: #0f172a; padding: 5px; }
+                            .ledger-card { border: 2px solid #064e3b; border-radius: 12px; padding: 22px; background: #fff; }
+                            
+                            .header-row { display: flex; justify-content: space-between; align-items: center; border-bottom: 2.5px solid #064e3b; padding-bottom: 12px; margin-bottom: 14px; }
+                            .brand-h1 { font-size: 26px; font-weight: 900; letter-spacing: 1.5px; color: #064e3b; }
+                            .brand-sub { font-size: 11px; font-weight: 700; color: #047857; text-transform: uppercase; letter-spacing: 1px; }
+                            .ledger-badge { background: #064e3b; color: #ecfdf5; font-size: 12px; font-weight: 800; padding: 6px 14px; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px; text-align: right; }
+                            .date-sub { font-size: 11px; color: #64748b; font-weight: 700; text-align: right; margin-top: 4px; }
+
+                            /* 4 KPI SUMMARY CARDS */
+                            .kpi-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-bottom: 16px; }
+                            .kpi-box { border-radius: 8px; padding: 10px 14px; text-align: center; border: 1px solid #cbd5e1; }
+                            .kpi-box.adv { background: #fef2f2; border-color: #fecaca; }
+                            .kpi-box.inc { background: #f0fdf4; border-color: #bbf7d0; }
+                            .kpi-box.set { background: #f0f9ff; border-color: #bae6fd; }
+                            .kpi-title { font-size: 10.5px; font-weight: 800; text-transform: uppercase; color: #475569; }
+                            .kpi-val { font-size: 18px; font-weight: 900; font-family: monospace; margin-top: 2px; }
+
+                            .emp-info { display: grid; grid-template-columns: repeat(2, 1fr); gap: 6px 16px; background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; font-size: 12px; }
+                            .emp-info div { display: flex; justify-content: space-between; border-bottom: 1px dashed #cbd5e1; padding-bottom: 3px; }
+                            .emp-info div:last-child { border-bottom: none; }
+                            .lbl { font-weight: 700; color: #475569; }
+                            .val { font-weight: 800; color: #0f172a; font-family: monospace; }
+
+                            table { width: 100%; border-collapse: collapse; font-size: 11.5px; }
+                            th, td { border: 1px solid #cbd5e1; padding: 6px 8px; }
+                            th { background: #064e3b; color: #ffffff; font-weight: 800; text-transform: uppercase; font-size: 10.5px; }
+                            tr:nth-child(even) { background-color: #f8fafc; }
+
+                            .sign-row { display: flex; justify-content: space-between; margin-top: 45px; padding: 0 25px; }
+                            .sign-box { text-align: center; width: 180px; border-top: 1.5px solid #064e3b; padding-top: 5px; font-size: 11px; font-weight: 800; color: #334155; text-transform: uppercase; }
+                        </style>
+                    </head>
+                    <body>
+                        <div class="ledger-card">
+                            <div class="header-row">
+                                <div>
+                                    <h1 class="brand-h1">HIM STUDIO</h1>
+                                    <p class="brand-sub">Master Staff Ledger & Lifetime Audit</p>
+                                </div>
+                                <div>
+                                    <div class="ledger-badge">LIFETIME STATEMENT</div>
+                                    <div class="date-sub">प्रिंटेड: ${new Date().toLocaleDateString('en-GB')}</div>
+                                </div>
+                            </div>
+
+                            <div class="emp-info">
+                                <div><span class="lbl">कर्मचारी का नाम:</span><span class="val">${emp.name} (#${emp.id})</span></div>
+                                <div><span class="lbl">पद (Role):</span><span class="val">${emp.role || 'Staff'}</span></div>
+                                <div><span class="lbl">मोबाइल संपर्क:</span><span class="val">${emp.mobile || 'N/A'}</span></div>
+                                <div><span class="lbl">जॉइनिंग तिथि:</span><span class="val">${emp.join_date || 'N/A'}</span></div>
+                                <div><span class="lbl">मासिक मूल वेतन:</span><span class="val">₹ ${parseFloat(emp.salary || 0).toFixed(2)}</span></div>
+                                <div><span class="lbl">बैंक खाता:</span><span class="val">${emp.acc_no ? emp.acc_no + ' (' + (emp.bank_name || 'Bank') + ')' : 'N/A'}</span></div>
+                            </div>
+
+                            <!-- 3 KPI STATS -->
+                            <div class="kpi-grid">
+                                <div class="kpi-box adv">
+                                    <div class="kpi-title" style="color:#b91c1c;">कुल एडवांस (Total Advances)</div>
+                                    <div class="kpi-val" style="color:#b91c1c;">₹ ${parseFloat(sm.total_advance || 0).toFixed(2)}</div>
+                                </div>
+                                <div class="kpi-box inc">
+                                    <div class="kpi-title" style="color:#047857;">कुल इंसेंटिव (Total Incentives)</div>
+                                    <div class="kpi-val" style="color:#047857;">₹ ${parseFloat(sm.total_incentive || 0).toFixed(2)}</div>
+                                </div>
+                                <div class="kpi-box set">
+                                    <div class="kpi-title" style="color:#0284c7;">कुल वेतन भुगतान (Total Settled)</div>
+                                    <div class="kpi-val" style="color:#0284c7;">₹ ${parseFloat(sm.total_settled || 0).toFixed(2)}</div>
+                                </div>
+                            </div>
+
+                            <h4 style="font-size: 11px; font-weight: 800; color: #064e3b; text-transform: uppercase; margin-bottom: 6px;">संपूर्ण लेन-देन इतिहास (Full Chronological Audit Log):</h4>
+                            <table>
+                                <thead>
+                                    <tr>
+                                        <th style="width:40px; text-align:center;">#</th>
+                                        <th style="width:140px;">दिनांक व समय</th>
+                                        <th style="width:130px;">लेन-देन प्रकार</th>
+                                        <th>विवरण / रिमार्क</th>
+                                        <th style="width:100px; text-align:right;">राशि (₹)</th>
+                                    </tr>
+                                </thead>
+                                <tbody>${txHtml}</tbody>
+                            </table>
+
+                            <div class="sign-row">
+                                <div class="sign-box">कर्मचारी के हस्ताक्षर</div>
+                                <div class="sign-box">अधिकृत हस्ताक्षरकर्ता (HIM STUDIO)</div>
+                            </div>
+                        </div>
+
+                        <script>
+                            window.onload = function() { window.print(); setTimeout(() => window.close(), 500); };
+                        <\/script>
+                    </body>
+                    </html>
+                `);
+                printWin.document.close();
+            } catch(e) { 
+                console.error(e);
+                alert("Statement Print Error!"); 
+            }
+        }
+
+        // 📜 लाइफटाइम फुल लेजर स्टेटमेंट प्रिंटर (Join Date से आज तक)
+async function printFullLifetimeLedger() {
+    if (!activeEmployeeRecord) {
+        alert("कृपया पहले किसी कर्मचारी को चुनें!");
+        return;
+    }
+
+    try {
+        const res = await fetch(`/api/get_employee_lifetime_ledger/${activeEmployeeRecord.id}`);
+        const data = await res.json();
+
+        if (data.status !== 'success') {
+            alert("डेटा लोड नहीं हो सका!");
+            return;
+        }
+
+        const emp = data.employee || activeEmployeeRecord;
+        const txs = data.transactions || [];
+
+        let txHtml = '';
+        if (txs.length > 0) {
+            txHtml = txs.map(t => {
+                const isAdv = String(t.trans_type || '').includes('Advance');
+                return `
+                    <tr>
+                        <td>${t.trans_date || '-'}</td>
+                        <td style="font-weight: bold; color: ${isAdv ? '#b91c1c' : '#047857'};">${t.trans_type || '-'}</td>
+                        <td style="text-align: right; font-weight: bold;">₹ ${parseFloat(t.amount || 0).toFixed(2)}</td>
+                    </tr>
+                `;
+            }).join('');
+        } else {
+            txHtml = '<tr><td colspan="3" style="text-align:center; padding: 15px; color: #64748b;">जॉइनिंग से आज तक कोई लेन-देन दर्ज नहीं है</td></tr>';
+        }
+
+        const printWin = window.open('', '_blank', 'width=900,height=950');
+        printWin.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>Lifetime Statement - ${emp.name}</title>
+                <style>
+                    body { font-family: 'Segoe UI', Arial, sans-serif; padding: 30px; color: #0f172a; background: #fff; line-height: 1.4; }
+                    .slip-card { border: 2px solid #0f172a; padding: 20px; border-radius: 8px; }
+                    .header { text-align: center; border-bottom: 2px solid #0f172a; padding-bottom: 10px; margin-bottom: 15px; }
+                    .header h2 { margin: 0; font-size: 24px; color: #0f172a; letter-spacing: 1px; text-transform: uppercase; }
+                    .header p { margin: 2px 0; font-size: 12px; color: #475569; font-weight: bold; }
+                    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 15px; font-size: 12px; }
+                    .info-grid div { background: #f8fafc; padding: 6px 10px; border-radius: 4px; border: 1px solid #cbd5e1; }
+                    table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 12px; }
+                    th, td { border: 1px solid #cbd5e1; padding: 7px 10px; text-align: left; }
+                    th { background-color: #f1f5f9; font-weight: bold; text-transform: uppercase; }
+                    .sign-row { display: flex; justify-content: space-between; margin-top: 45px; padding: 0 20px; }
+                    .sign-box { text-align: center; border-top: 1px dashed #64748b; width: 170px; padding-top: 5px; font-size: 11px; font-weight: bold; }
+                </style>
+            </head>
+            <body>
+                <div class="slip-card">
+                    <div class="header">
+                        <h2>HIM STUDIO</h2>
+                        <p>STAFF LIFETIME STATEMENT & MASTER LEDGER</p>
+                        <p>जॉइनिंग तिथि: <b>${emp.join_date || 'N/A'}</b> | जनरेटेड तिथि: <b>${new Date().toLocaleDateString()}</b></p>
+                    </div>
+                    <div class="info-grid">
+                        <div><b>कर्मचारी का नाम:</b> ${emp.name}</div>
+                        <div><b>पद (Designation):</b> ${emp.role || 'Staff'}</div>
+                        <div><b>मोबाइल नंबर:</b> ${emp.mobile || 'N/A'}</div>
+                        <div><b>मासिक मूल वेतन:</b> ₹ ${parseFloat(emp.salary || 0).toFixed(2)} / Month</div>
+                        <div style="grid-column: span 2;"><b>बैंक विवरण:</b> ${emp.acc_no ? emp.acc_no + ' (' + (emp.bank_name || 'Bank') + ')' : 'N/A'}</div>
+                    </div>
+                    <h4 style="margin: 15px 0 5px 0; font-size: 12px; text-transform: uppercase; color: #334155;">संपूर्ण लेन-देन इतिहास (Complete Lifetime Transaction History):</h4>
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>दिनांक व समय</th>
+                                <th>विवरण / प्रकार</th>
+                                <th style="text-align: right;">राशि (Amount)</th>
+                            </tr>
+                        </thead>
+                        <tbody>${txHtml}</tbody>
+                    </table>
+                    <div class="sign-row">
+                        <div class="sign-box">कर्मचारी के हस्ताक्षर</div>
+                        <div class="sign-box">अधिकृत हस्ताक्षरकर्ता (HIM STUDIO)</div>
+                    </div>
+                </div>
+                <script>
+                    window.onload = function() { window.print(); setTimeout(() => window.close(), 500); };
+                <\/script>
+            </body>
+            </html>
+        `);
+        printWin.document.close();
+    } catch(e) { 
+        console.error(e);
+        alert("Statement Print Error!"); 
+    }
+}
+(function handleUserInactivity() {
+    let idleTimer;
+    const IDLE_TIME_LIMIT = 30 * 60 * 1000; // ठीक 30 मिनट
+
+    function resetUserTimer() {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => {
+            alert("30 मिनट तक कोई गतिविधि न होने के कारण सुरक्षा कारणों से यह खाता लॉगआउट हो गया है।");
+            window.location.href = '/logout';
+        }, IDLE_TIME_LIMIT);
+    }
+
+    const trackedEvents = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'click'];
+    trackedEvents.forEach(evt => {
+        window.addEventListener(evt, resetUserTimer, { passive: true });
+    });
+
+    resetUserTimer();
+})();
+
+    </script>
+</body>
+</html>

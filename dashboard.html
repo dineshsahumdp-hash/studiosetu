@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ session.get('studio_name', 'HIM STUDIO') }} - Live Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .bg-studio-gradient { background: linear-gradient(135deg, #050814 0%, #0b1124 100%); }
+        .bg-studio-glass { background-color: rgba(11, 18, 38, 0.6); backdrop-filter: blur(14px); }
+        .bg-studio-sidebar { background-color: #03060f; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #03060f; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        
+        .nav-btn { display: flex; align-items: center; gap: 0.625rem; width: 100%; text-align: left; padding: 0.75rem 1rem; border-radius: 0.75rem; color: #94a3b8; font-size: 0.75rem; font-weight: 700; transition: all 0.2s; cursor: pointer; }
+        .nav-btn:hover { background-color: rgba(15, 23, 42, 0.6); color: #f8fafc; }
+        .nav-btn.active { background: linear-gradient(to right, rgba(6, 182, 212, 0.2), rgba(99, 102, 241, 0.1)); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.3); font-weight: 800; }
+        
+        .dash-card {
+            height: 135px;
+            min-height: 135px;
+            max-height: 135px;
+            background: rgba(15, 23, 42, 0.7);
+            border: 1px solid rgba(51, 65, 85, 0.7);
+            border-radius: 1rem;
+            padding: 0.75rem 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .quick-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+            padding: 7px 10px;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(51, 65, 85, 0.8);
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: bold;
+            color: #cbd5e1;
+            transition: all 0.2s;
+            text-decoration: none;
+        }
+        .quick-btn:hover {
+            border-color: #22d3ee;
+            color: #22d3ee;
+            background: rgba(34, 211, 238, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* 🎴 2-STEP 3D FLIP CSS (For Staff Card Only) */
+        .flip-container {
+            perspective: 1200px;
+            height: 135px;
+        }
+        .flipper-2step {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
+        }
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            border-radius: 1rem;
+            padding: 0.75rem 1rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+    </style>
+</head>
+<body class="bg-studio-gradient text-slate-200 flex min-h-screen font-sans overflow-hidden">
+
+    <!-- 📱 SIDEBAR NAVIGATION -->
+    <aside class="sidebar w-68 min-h-screen flex flex-col justify-between p-4 shrink-0 border-r border-slate-900 shadow-2xl z-10 no-print select-none">
+        <div>
+            <div class="flex items-center gap-3 px-3 py-4 mb-4 border-b border-slate-900">
+                <span class="text-xl animate-pulse">📸</span>
+                <div class="leading-none">
+                    <h1 class="text-base font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400">
+                        {{ session.get('studio_name', 'HIM STUDIO') }}
+                    </h1>
+                    <span class="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Premium Web ERP</span>
+                </div>
+            </div>
+            
+            <nav id="sidebar-nav" class="space-y-1 text-xs font-bold tracking-wide max-h-[78vh] overflow-y-auto pr-1 nav-scroll">
+                {% if session.get('studio_id')|int == 1 %}
+                <a href="/saas_master" class="nav-btn text-indigo-400 border border-indigo-500/30 bg-indigo-950/20 hover:bg-indigo-900/40" id="btn_saas_master">
+                    <span>👑</span> SaaS Master Control
+                </a>
+                {% endif %}
+
+                <a href="/" class="nav-btn active" id="btn_dashboard"><span>📊</span> Dashboard</a>
+                <a href="/new_bill" class="nav-btn" id="btn_new_bill"><span>📄</span> New Bill</a>
+                <a href="/all_bills" class="nav-btn" id="btn_all_bills"><span>📁</span> All Bills</a>
+                <a href="/token_counter" class="nav-btn" id="btn_token_counter"><span>🎫</span> Daily Token Counter</a>
+                <a href="/wedding" class="nav-btn" id="btn_wedding"><span>💍</span> Event Booking</a>
+                <a href="/stock" class="nav-btn" id="btn_stock"><span>📦</span> Item / Product (Stock)</a>
+                <a href="/credit_ledger" class="nav-btn" id="btn_credit"><span>💳</span> Credit Ledger</a>
+                <a href="/purchases" class="nav-btn" id="btn_purchases"><span>🛒</span> Purchases</a>
+                <a href="/studio_expenses" class="nav-btn" id="btn_expenses"><span>💸</span> Studio Expenses</a>
+                <a href="/work_export" class="nav-btn" id="btn_export"><span>📦</span> Work Export Terminal</a>
+                <a href="/material_stock" class="nav-btn" id="btn_material"><span>📦</span> Material Stock</a>
+                <a href="/equipment_tracking" class="nav-btn" id="btn_equipment"><span>📸</span> Equipment Tracking</a>
+                <a href="/employee_corner" class="nav-btn" id="btn_employee"><span>👤</span> Employee Corner</a>
+                <a href="/report" class="nav-btn" id="btn_report"><span>📈</span> Report</a>
+                <a href="/change_password" class="nav-btn" id="btn_password"><span>🔐</span> Profile & Security</a>
+            </nav>
+        </div>
+
+        <a href="/logout" onclick="return confirm('सिस्टम से बाहर जाना चाहते हैं?')" class="text-left px-4 py-3 text-rose-400 font-bold text-xs hover:bg-rose-950/20 rounded-xl transition cursor-pointer flex items-center gap-2">
+            <span>❌</span> Exit System
+        </a>
+    </aside>
+
+    <!-- 📊 MAIN DASHBOARD CONTAINER -->
+    <div class="flex-1 p-3.5 flex flex-col h-screen overflow-hidden">
+        <div class="bg-studio-glass border border-slate-800/80 rounded-2xl p-3.5 flex-1 flex flex-col shadow-2xl overflow-y-auto space-y-3 select-none">
+            
+            <!-- ⚡ QUICK ACTION BUTTONS BAR -->
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                <a href="/new_bill" class="quick-btn"><span>📄</span> + New Bill</a>
+                <a href="/token_counter" class="quick-btn"><span>🎫</span> + Token Counter</a>
+                <a href="/wedding" class="quick-btn"><span>💍</span> + Wedding Order</a>
+                <a href="/studio_expenses" class="quick-btn"><span>💸</span> + Add Expense</a>
+                <a href="/stock" class="quick-btn"><span>📦</span> + Update Stock</a>
+            </div>
+
+            <!-- 🎴 ROW 1: 3-WAY COLLECTION ROTATION, DELIVERIES & LOW STOCK -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                
+                <!-- 🎯 1. 3-STEP SMOOTH FADE COLLECTION (UPI ➔ CASH ➔ TOTAL) -->
+                <div class="dash-card relative overflow-hidden p-0 border-0">
+                    
+                    <!-- FACE 1: UPI -->
+                    <div id="face_coll_upi" class="absolute inset-0 p-3.5 flex flex-col justify-between border border-indigo-500/50 bg-gradient-to-br from-indigo-950/90 to-slate-900 shadow-xl rounded-2xl transition-opacity duration-500">
+                        <div class="flex justify-between items-center text-[11px] font-bold uppercase tracking-wider">
+                            <span class="text-indigo-300">📱 Today Collection (UPI)</span>
+                            <span class="animate-ping w-2 h-2 rounded-full bg-indigo-400"></span>
+                        </div>
+                        <div class="text-2xl font-black tracking-tight text-indigo-300 py-0.5 font-mono" id="dash_upi_val">₹ 0.00</div>
+                        <div class="flex justify-between items-center text-[9px] text-slate-400">
+                            <span>Online Bank Inflow</span>
+                            <span class="text-indigo-400 font-semibold uppercase">UPI Live</span>
+                        </div>
+                    </div>
+
+                    <!-- FACE 2: CASH -->
+                    <div id="face_coll_cash" class="absolute inset-0 p-3.5 flex flex-col justify-between border border-emerald-500/50 bg-gradient-to-br from-emerald-950/90 to-slate-900 shadow-xl rounded-2xl opacity-0 pointer-events-none transition-opacity duration-500">
+                        <div class="flex justify-between items-center text-[11px] font-bold uppercase tracking-wider">
+                            <span class="text-emerald-300">💵 Today Collection (Cash)</span>
+                            <span class="animate-ping w-2 h-2 rounded-full bg-emerald-400"></span>
+                        </div>
+                        <div class="text-2xl font-black tracking-tight text-emerald-300 py-0.5 font-mono" id="dash_cash_val">₹ 0.00</div>
+                        <div class="flex justify-between items-center text-[9px] text-slate-400">
+                            <span>Physical Cash Drawer</span>
+                            <span class="text-emerald-400 font-semibold uppercase">Cash In Hand</span>
+                        </div>
+                    </div>
+
+                    <!-- FACE 3: TOTAL REVENUE -->
+                    <div id="face_coll_total" class="absolute inset-0 p-3.5 flex flex-col justify-between border border-cyan-500/50 bg-gradient-to-br from-cyan-950/90 to-slate-900 shadow-xl rounded-2xl opacity-0 pointer-events-none transition-opacity duration-500">
+                        <div class="flex justify-between items-center text-[11px] font-bold uppercase tracking-wider">
+                            <span class="text-cyan-300">💰 Today Total Collection</span>
+                            <span class="animate-ping w-2 h-2 rounded-full bg-cyan-400"></span>
+                        </div>
+                        <div class="text-2xl font-black tracking-tight text-cyan-300 py-0.5 font-mono" id="dash_grand_val">₹ 0.00</div>
+                        <div class="flex justify-between items-center text-[9px] text-slate-400">
+                            <span>Gross Daily Revenue</span>
+                            <span class="text-cyan-400 font-semibold uppercase">Cash + UPI</span>
+                        </div>
+                    </div>
+
+                </div>
+
+                <!-- 🚚 2. TODAY DELIVERIES DUE -->
+                <div class="dash-card border-cyan-900/40">
+                    <div class="flex justify-between items-center text-[11px] font-bold text-cyan-400 uppercase tracking-wider border-b border-slate-800 pb-1">
+                        <span>📦 Today Deliveries Due</span>
+                        <span id="badge_delivery_count" class="px-2 py-0.5 bg-cyan-500/20 text-cyan-300 rounded-full text-[9px] font-black">0</span>
+                    </div>
+                    <div id="box_today_deliveries" class="overflow-y-auto max-h-[80px] text-xs divide-y divide-slate-800/60 pr-1">
+                        <div class="text-slate-500 italic py-4 text-center text-[10px]">आज कोई डिलीवरी पेंडिंग नहीं है।</div>
+                    </div>
+                </div>
+
+                <!-- ⚠️ 3. STOCK ALERTS -->
+                <div class="dash-card border-rose-900/40">
+                    <div class="flex justify-between items-center text-[11px] font-bold text-rose-400 uppercase tracking-wider border-b border-slate-800 pb-1">
+                        <span>📦 Stock Alerts</span>
+                        <span id="badge_stock_count" class="px-2 py-0.5 bg-rose-500/20 text-rose-300 rounded-full text-[9px] font-black">0</span>
+                    </div>
+                    <div id="box_low_stocks" class="overflow-y-auto max-h-[80px] text-xs divide-y divide-slate-800/60 pr-1 flex flex-col justify-center">
+                        <div class="text-slate-500 italic py-4 text-center text-[10px]">स्टॉक स्थिति जाँची जा रही है...</div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 📜 ROW 2: PROMISE DUES, WEDDING & STAFF -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                
+                <!-- 💵 4. TODAY PROMISE DATE DUES -->
+                <div class="dash-card border-cyan-500/40">
+                    <div class="flex justify-between items-center text-[11px] font-bold text-cyan-400 uppercase tracking-wider border-b border-slate-800 pb-1">
+                        <span class="flex items-center gap-1.5"><span>⏳</span> <span>Promise Collections</span></span>
+                        <span class="text-[9px] text-slate-400 font-semibold">आज वसूली</span>
+                    </div>
+                    <div id="box_promise_dues" class="overflow-y-auto max-h-[80px] text-xs space-y-1 pr-1">
+                        <div class="text-slate-500 italic py-4 text-center text-[10px]">आज किसी ग्राहक की प्रॉमिस डेट नहीं है।</div>
+                    </div>
+                </div>
+
+                <!-- 💍 5. UPCOMING WEDDING COUNTDOWNS -->
+                <div class="dash-card border-indigo-500/40">
+                    <div class="flex justify-between items-center text-[11px] font-bold text-indigo-400 uppercase tracking-wider border-b border-slate-800 pb-1">
+                        <span class="flex items-center gap-1.5"><span>💍</span> <span>Wedding Countdowns</span></span>
+                        <span class="text-[9px] text-slate-400 font-semibold">30 दिन</span>
+                    </div>
+                    <div id="box_upcoming_weddings" class="overflow-y-auto max-h-[80px] text-xs space-y-1 pr-1">
+                        <div class="text-slate-500 italic py-4 text-center text-[10px]">अगले 30 दिनों में कोई शादी तय नहीं है।</div>
+                    </div>
+                </div>
+
+                <!-- 👥 6. 3D FLIPPING STAFF STATUS CARD -->
+                <div class="flip-container">
+                    <div id="flipper_staff" class="flipper-2step">
+                        
+                        <!-- FACE 1: SUMMARY -->
+                        <div id="face_staff_1" class="card-face border border-slate-700 bg-slate-900/90 shadow-xl">
+                            <div class="flex justify-between items-center border-b border-slate-800 pb-1">
+                                <h3 class="text-[11px] font-bold text-cyan-400 uppercase tracking-wider flex items-center gap-1.5">
+                                    <span>👥</span> <span>Staff Summary</span>
+                                </h3>
+                                <span class="text-[9px] text-cyan-300 font-bold bg-cyan-950/60 px-2 py-0.5 rounded-full border border-cyan-800" id="staff_summary_tag">0 / 0</span>
+                            </div>
+                            <div id="box_staff_summary_content" class="h-full flex flex-col justify-center">
+                                <div class="grid grid-cols-2 gap-2 text-center py-1">
+                                    <div class="p-1 bg-emerald-950/40 border border-emerald-800/40 rounded-xl">
+                                        <div class="text-[9px] text-emerald-400 font-bold uppercase">Present</div>
+                                        <div class="text-base font-black text-emerald-300" id="emp_count_present">0</div>
+                                    </div>
+                                    <div class="p-1 bg-rose-950/40 border border-rose-800/40 rounded-xl">
+                                        <div class="text-[9px] text-rose-400 font-bold uppercase">On Leave</div>
+                                        <div class="text-base font-black text-rose-300" id="emp_count_absent">0</div>
+                                    </div>
+                                </div>
+                                <div class="text-[9px] text-slate-500 text-right">Active Staff Working Today</div>
+                            </div>
+                        </div>
+
+                        <!-- FACE 2: ACTIVE NAMES (180deg Back) -->
+                        <div id="face_staff_2" class="card-face border border-emerald-500/50 bg-slate-900/90 shadow-xl" style="transform: rotateY(180deg);">
+                            <div class="flex justify-between items-center border-b border-slate-800 pb-1">
+                                <h3 class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider flex items-center gap-1.5">
+                                    <span>✅</span> <span>Working Today</span>
+                                </h3>
+                                <span class="text-[9px] text-emerald-300 font-bold">Present</span>
+                            </div>
+                            <div id="box_active_emp_list" class="overflow-y-auto max-h-[70px] grid grid-cols-2 gap-1 py-1"></div>
+                            <div class="text-[9px] text-slate-500 text-right">Live Attendance</div>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- 📜 ROW 3: RECENT INVOICES STREAM & OUTSOURCE JOBS -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+                
+                <!-- 📄 RECENT INVOICES FEED (PENDING ONLY) -->
+                <div class="md:col-span-2 bg-slate-950/70 border border-slate-800 rounded-2xl p-3 flex flex-col justify-between">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-1.5 mb-2">
+                        <h3 class="text-[11px] font-black text-slate-300 uppercase tracking-wider flex items-center gap-1.5">
+                            <span>📄</span> <span>Recent Bookings & Invoices Live Feed (Pending)</span>
+                        </h3>
+                        <a href="/all_bills" class="text-[10px] text-cyan-400 font-bold hover:underline">All Bills →</a>
+                    </div>
+                    <div class="overflow-y-auto max-h-36 text-xs">
+                        <table class="w-full text-left">
+                            <thead class="bg-slate-900/80 text-slate-400 text-[10px]">
+                                <tr>
+                                    <th class="p-1.5">Bill #</th>
+                                    <th class="p-1.5">Customer Name</th>
+                                    <th class="p-1.5">Date</th>
+                                    <th class="p-1.5 text-right">Total</th>
+                                    <th class="p-1.5 text-right">Due</th>
+                                    <th class="p-1.5 text-center">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dash_recent_bills_body" class="divide-y divide-slate-800/60 text-[11px]">
+                                <tr><td colspan="6" class="text-center p-3 text-slate-500">लोडिंग बिल डाटा...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- 📦 OUTSOURCE & EQUIPMENT MINI MONITOR -->
+                <div class="bg-slate-950/70 border border-slate-800 rounded-2xl p-3 flex flex-col justify-between">
+                    <div class="flex justify-between items-center border-b border-slate-800 pb-1.5 mb-2">
+                        <h3 class="text-[11px] font-black text-indigo-300 uppercase tracking-wider flex items-center gap-1.5">
+                            <span>📦</span> <span>Lab & Equipment Hub</span>
+                        </h3>
+                        <a href="/work_export" class="text-[10px] text-indigo-400 hover:underline">Lab →</a>
+                    </div>
+                    <div class="space-y-2 text-xs">
+                        <div class="p-2 rounded-xl bg-slate-900/60 border border-slate-800 flex justify-between items-center">
+                            <div>
+                                <div class="font-bold text-slate-200 text-[11px]">Photo Lab Outsourcing</div>
+                                <div class="text-[9px] text-slate-400">एल्बम व प्रिंटिंग जॉब्स</div>
+                            </div>
+                            <a href="/work_export" class="px-2 py-1 bg-indigo-900/40 border border-indigo-700 text-indigo-300 rounded text-[9px] font-bold">Open Terminal</a>
+                        </div>
+                        <div class="p-2 rounded-xl bg-slate-900/60 border border-slate-800 flex justify-between items-center">
+                            <div>
+                                <div class="font-bold text-slate-200 text-[11px]">Camera & Lens Tracker</div>
+                                <div class="text-[9px] text-slate-400">रेंट व असाइनमेंट हिस्ट्री</div>
+                            </div>
+                            <a href="/equipment_tracking" class="px-2 py-1 bg-cyan-900/40 border border-cyan-700 text-cyan-300 rounded text-[9px] font-bold">Track Assets</a>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <!-- ⚙️ MASTER JAVASCRIPT ENGINE -->
+    <script>
+        let collStep = 0; // 0: UPI, 1: CASH, 2: TOTAL
+        let staffFlipped = false;
+        let hasActiveEmployees = true;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            loadLiveDashboard();
+            setInterval(fadeCollectionCard3Step, 3500); // 3-Step Fade हर 3.5 सेकंड में
+            setInterval(flipStaffCard, 3500);          // Staff Flip हर 3.5 सेकंड में
+        });
+
+        async function loadLiveDashboard() {
+            try {
+                const res = await fetch('/api/get_dashboard_live_data');
+                const data = await res.json();
+                if (data.status === 'success' || data.collection) {
+                    renderDashboard(data);
+                }
+            } catch(e) {
+                console.error("Dashboard Load Error:", e);
+            }
+        }
+
+        function renderDashboard(data) {
+            // 🎯 1. 100% सुरक्षित कलेक्शन पार्सिंग (New Bill & All Bills Sync)
+            const collection = data.collection || {};
+            let cashVal = parseFloat(collection.cash || 0);
+            let upiVal = parseFloat(collection.upi || 0);
+            let grandVal = parseFloat(collection.total || (cashVal + upiVal));
+
+            // स्क्रीन पर वैल्यू तुरंत बाइंड करें
+            document.getElementById('dash_upi_val').innerText = `₹ ${upiVal.toFixed(2)}`;
+            document.getElementById('dash_cash_val').innerText = `₹ ${cashVal.toFixed(2)}`;
+            document.getElementById('dash_grand_val').innerText = `₹ ${grandVal.toFixed(2)}`;
+
+            // 🚚 2. आज की डिलीवरी
+            const delBox = document.getElementById('box_today_deliveries');
+            const delList = data.today_deliveries || [];
+            document.getElementById('badge_delivery_count').innerText = delList.length;
+            if (delList.length > 0) {
+                delBox.innerHTML = delList.map(d => `
+                    <div class="py-1 flex justify-between items-center text-[11px]">
+                        <div><span class="font-bold text-slate-200">${d.customer_name || 'Customer'}</span><span class="text-slate-500 text-[9px] block font-mono">${d.mobile || '-'}</span></div>
+                        <div class="text-right"><span class="text-rose-400 font-bold">Due: ₹${parseFloat(d.balance_amount || 0).toFixed(0)}</span><span class="text-cyan-400 text-[9px] block font-bold">#${d.bill_no || d.id}</span></div>
+                    </div>
+                `).join('');
+            } else {
+                delBox.innerHTML = `<div class="text-slate-500 italic py-4 text-center text-[10px]">आज कोई डिलीवरी पेंडिंग नहीं है।</div>`;
+            }
+
+            // ⚠️ 3. स्टॉक अलर्ट
+            const stockBox = document.getElementById('box_low_stocks');
+            const stockBadge = document.getElementById('badge_stock_count');
+            const lowList = data.low_stocks || [];
+
+            if (data.has_no_stock || data.stock_status === 'EMPTY' || data.total_stock_count === 0) {
+                stockBadge.innerText = "0";
+                stockBadge.className = "px-2 py-0.5 bg-slate-800 text-slate-400 rounded-full text-[9px] font-black";
+                stockBox.innerHTML = `
+                    <div class="text-center py-2 space-y-0.5">
+                        <div class="text-cyan-400 font-bold text-[11px]">📦 No Stock Added</div>
+                        <div class="text-slate-500 text-[9px]">Please add stock in Item / Product Stock</div>
+                    </div>
+                `;
+            } else if (data.stock_status === 'ALERT' && lowList.length > 0) {
+                stockBadge.innerText = lowList.length;
+                stockBadge.className = "px-2 py-0.5 bg-rose-500/20 text-rose-300 rounded-full text-[9px] font-black border border-rose-500/30 animate-pulse";
+                stockBox.innerHTML = lowList.map(s => `
+                    <div class="py-1 flex justify-between items-center text-[11px]">
+                        <span class="font-semibold text-slate-300 truncate max-w-[130px]" title="${s.material_name}">📦 ${s.material_name}</span>
+                        <span class="px-1.5 py-0.5 bg-rose-500/20 text-rose-400 font-bold rounded text-[9px]">${s.current_qty} ${s.unit || 'Pcs'}</span>
+                    </div>
+                `).join('');
+            } else {
+                stockBadge.innerText = "OK";
+                stockBadge.className = "px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded-full text-[9px] font-black border border-emerald-500/30";
+                stockBox.innerHTML = `
+                    <div class="text-center py-2 space-y-0.5">
+                        <div class="text-emerald-400 font-black text-[11px] flex items-center justify-center gap-1">
+                            <span>✅</span> <span>Stock Full (स्टॉक पर्याप्त है)</span>
+                        </div>
+                        <div class="text-slate-400 text-[9px]">सभी कच्चा माल व प्रोडक्ट सुरक्षित मात्रा में हैं</div>
+                    </div>
+                `;
+            }
+
+            // ⏳ 4. प्रॉमिस उधारी
+            const promiseBox = document.getElementById('box_promise_dues');
+            const promiseList = data.today_promise_dues || [];
+            if (promiseList.length > 0) {
+                promiseBox.innerHTML = promiseList.map(p => `
+                    <div class="p-1 rounded-lg bg-slate-950/60 border border-slate-800 flex justify-between items-center text-[11px]">
+                        <div><div class="font-bold text-slate-200">${p.cname || p.customer_name}</div><div class="text-[9px] text-slate-400">${p.mob || p.mobile}</div></div>
+                        <div class="text-right"><div class="font-black text-cyan-400 text-xs">₹ ${parseFloat(p.due_amount || 0).toFixed(2)}</div><span class="text-[8px] text-cyan-500 font-bold uppercase">Due Today</span></div>
+                    </div>
+                `).join('');
+            } else {
+                promiseBox.innerHTML = `<div class="text-slate-500 italic py-4 text-center text-[10px]">आज किसी ग्राहक की प्रॉमिस डेट नहीं है।</div>`;
+            }
+
+            // 💍 5. वेडिंग काउंटडाउन
+            const wedBox = document.getElementById('box_upcoming_weddings');
+            const wedList = data.upcoming_weddings || [];
+            if (wedList.length > 0) {
+                wedBox.innerHTML = wedList.map(w => `
+                    <div class="p-1 rounded-lg bg-slate-950/60 border border-slate-800 flex justify-between items-center text-[11px]">
+                        <div><div class="font-bold text-slate-200">${w.customer_name}</div><div class="text-[9px] text-indigo-300">${w.event_name || 'Wedding Event'}</div></div>
+                        <div class="text-right"><span class="px-2 py-0.5 bg-indigo-600/30 border border-indigo-500/40 text-indigo-300 font-black rounded text-[10px]">${w.days_left === 0 ? '🔥 TODAY' : `${w.days_left}d Left`}</span></div>
+                    </div>
+                `).join('');
+            } else {
+                wedBox.innerHTML = `<div class="text-slate-500 italic py-4 text-center text-[10px]">अगले 30 दिनों में कोई शादी तय नहीं है।</div>`;
+            }
+
+            // 👥 6. स्टाफ सारांश
+            const staffContent = document.getElementById('box_staff_summary_content');
+            const staffTag = document.getElementById('staff_summary_tag');
+            const empList = data.emp_status_list || [];
+            const activeList = empList.filter(e => e.is_present);
+            const absentList = empList.filter(e => !e.is_present);
+
+            if (data.has_no_emp || data.total_employees === 0 || empList.length === 0) {
+                hasActiveEmployees = false;
+                staffTag.innerText = "0 / 0";
+                staffContent.innerHTML = `
+                    <div class="text-center py-3 space-y-0.5">
+                        <div class="text-cyan-400 font-bold text-[11px]">⚠️ No Employee Registered</div>
+                        <div class="text-slate-500 text-[9px]">Please register staff from Employee Corner</div>
+                    </div>
+                `;
+            } else {
+                hasActiveEmployees = true;
+                staffTag.innerText = `${activeList.length} / ${empList.length}`;
+                staffContent.innerHTML = `
+                    <div class="grid grid-cols-2 gap-2 text-center py-1">
+                        <div class="p-1 bg-emerald-950/40 border border-emerald-800/40 rounded-xl">
+                            <div class="text-[9px] text-emerald-400 font-bold uppercase">Present</div>
+                            <div class="text-base font-black text-emerald-300">${activeList.length}</div>
+                        </div>
+                        <div class="p-1 bg-rose-950/40 border border-rose-800/40 rounded-xl">
+                            <div class="text-[9px] text-rose-400 font-bold uppercase">On Leave</div>
+                            <div class="text-base font-black text-rose-300">${absentList.length}</div>
+                        </div>
+                    </div>
+                    <div class="text-[9px] text-slate-500 text-right">Active Staff Working Today</div>
+                `;
+
+                const activeBox = document.getElementById('box_active_emp_list');
+                if (activeList.length === 0) {
+                    activeBox.innerHTML = `<div class="col-span-2 text-center text-slate-500 py-2 text-[10px]">कोई स्टाफ़ उपस्थित नहीं</div>`;
+                } else {
+                    activeBox.innerHTML = activeList.map(e => `
+                        <div class="p-1 rounded bg-emerald-950/40 border border-emerald-800/40 text-[10px]">
+                            <div class="font-bold text-slate-200 truncate">${e.name}</div>
+                            <div class="text-[9px] text-emerald-400 truncate">${e.role || 'Staff'}</div>
+                        </div>
+                    `).join('');
+                }
+            }
+
+            // 📄 7. रीसेंट बुकिंग्स
+            const recentBody = document.getElementById('dash_recent_bills_body');
+            const recentList = data.recent_bookings || [];
+            if (recentList.length === 0) {
+                recentBody.innerHTML = `<tr><td colspan="6" class="text-center p-3 text-slate-500">कोई पेंडिंग बिल नहीं मिला</td></tr>`;
+            } else {
+                recentBody.innerHTML = recentList.map(b => {
+                    const tot = parseFloat(b.total_amount || 0).toFixed(0);
+                    const bal = parseFloat(b.balance_amount || 0).toFixed(0);
+                    return `
+                        <tr class="hover:bg-slate-900/40 transition">
+                            <td class="p-1.5 font-bold text-slate-400">#${b.bill_no}</td>
+                            <td class="p-1.5 font-semibold text-slate-200 truncate max-w-[120px]">${b.customer_name || '-'}</td>
+                            <td class="p-1.5 text-slate-500 text-[10px]">${b.bill_date || '-'}</td>
+                            <td class="p-1.5 text-right font-mono">₹${tot}</td>
+                            <td class="p-1.5 text-right font-mono font-bold ${parseFloat(bal) > 0 ? 'text-rose-400' : 'text-slate-500'}">₹${bal}</td>
+                            <td class="p-1.5 text-center">
+                                <span class="px-1.5 py-0.5 rounded text-[9px] font-black uppercase bg-cyan-500/20 text-cyan-300">${b.status}</span>
+                            </td>
+                        </tr>
+                    `;
+                }).join('');
+            }
+        }
+
+        // 🔄 3-STEP SMOOTH FADE COLLECTION ENGINE (UPI ➔ CASH ➔ TOTAL)
+        function fadeCollectionCard3Step() {
+            const fUpi = document.getElementById('face_coll_upi');
+            const fCash = document.getElementById('face_coll_cash');
+            const fTotal = document.getElementById('face_coll_total');
+            if (!fUpi || !fCash || !fTotal) return;
+
+            collStep = (collStep + 1) % 3;
+
+            // Fade Out All
+            fUpi.classList.add('opacity-0', 'pointer-events-none');
+            fCash.classList.add('opacity-0', 'pointer-events-none');
+            fTotal.classList.add('opacity-0', 'pointer-events-none');
+
+            // Fade In Active After Delay
+            setTimeout(() => {
+                if (collStep === 0) {
+                    fUpi.classList.remove('opacity-0', 'pointer-events-none');
+                } else if (collStep === 1) {
+                    fCash.classList.remove('opacity-0', 'pointer-events-none');
+                } else {
+                    fTotal.classList.remove('opacity-0', 'pointer-events-none');
+                }
+            }, 300); // 300ms transition delay
+        }
+
+        // 🔄 STAFF FLIP ENGINE (180 DEGREE)
+        function flipStaffCard() {
+            if (!hasActiveEmployees) return;
+            const flipper = document.getElementById('flipper_staff');
+            if (!flipper) return;
+            staffFlipped = !staffFlipped;
+            flipper.style.transform = staffFlipped ? "rotateY(180deg)" : "rotateY(0deg)";
+        }
+
+        // Auto Logout Inactivity
+        (function handleUserInactivity() {
+            let idleTimer;
+            const IDLE_TIME_LIMIT = 30 * 60 * 1000;
+            function resetUserTimer() {
+                clearTimeout(idleTimer);
+                idleTimer = setTimeout(() => {
+                    alert("30 मिनट तक कोई गतिविधि न होने के कारण सुरक्षा कारणों से यह खाता लॉगआउट हो गया है।");
+                    window.location.href = '/logout';
+                }, IDLE_TIME_LIMIT);
+            }
+            const trackedEvents = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'click'];
+            trackedEvents.forEach(evt => window.addEventListener(evt, resetUserTimer, { passive: true }));
+            resetUserTimer();
+        })();
+
+    </script>
+</body>
+</html>

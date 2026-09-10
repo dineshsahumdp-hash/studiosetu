@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIM STUDIO - Studio Expenses ERP</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'studio-glass': 'rgba(11, 18, 38, 0.7)',
+                        'studio-card': '#070d1e',
+                        'studio-border': '#172340',
+                        'studio-sidebar': '#03060f'
+                    },
+                    spacing: {
+                        '68': '17rem',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        * { box-sizing: border-box; }
+        .glow-cyan { box-shadow: 0 0 20px rgba(6, 182, 212, 0.12); }
+        .glow-indigo { box-shadow: 0 0 20px rgba(99, 102, 241, 0.12); }
+        
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: #03060f; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 8px; }
+
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+        input[type=number] { -moz-appearance: textfield; }
+        input[type="date"]::-webkit-calendar-picker-indicator {
+            filter: invert(1);
+            cursor: pointer;
+        }
+
+        .fine-input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            font-size: 0.75rem;
+            border-radius: 0.75rem;
+            background-color: #0a1224;
+            border: 1px solid #1a2947;
+            color: #ffffff;
+            outline: none;
+            transition: all 0.2s;
+        }
+        .fine-input:focus { border-color: #06b6d4; }
+
+        .nav-btn {
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            width: 100%;
+            text-align: left;
+            padding: 0.75rem 1rem;
+            border-radius: 0.75rem;
+            color: #94a3b8;
+            font-size: 0.75rem;
+            font-weight: 700;
+            transition: all 0.2s;
+            cursor: pointer;
+        }
+        .nav-btn:hover {
+            background-color: rgba(15, 23, 42, 0.6);
+            color: #f8fafc;
+        }
+        .nav-btn.active {
+            background: linear-gradient(to right, rgba(6, 182, 212, 0.2), rgba(99, 102, 241, 0.1));
+            color: #22d3ee;
+            border: 1px solid rgba(6, 182, 212, 0.3);
+            font-weight: 800;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+    </style>
+</head>
+<body class="bg-[#03060f] text-slate-200 min-h-screen font-sans m-0 p-0 overflow-x-hidden">
+
+    <div class="flex flex-row min-h-screen w-full">
+
+        <!-- ========================================== -->
+        <!-- 🧭 SIDEBAR NAVIGATION                      -->
+        <!-- ========================================== -->
+        <div class="bg-studio-sidebar w-68 min-h-screen flex flex-col justify-between p-4 shrink-0 border-r border-slate-900 shadow-2xl z-10 no-print">
+            <div>
+                <div class="flex items-center gap-3 px-3 py-4 mb-4 border-b border-slate-900">
+                    <span class="text-xl animate-pulse">📸</span>
+                    <div class="leading-none">
+                        <h1 class="text-base font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400">HIM STUDIO</h1>
+                        <span class="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Premium Web ERP</span>
+                    </div>
+                </div>
+                
+                <nav id="sidebar-nav" class="space-y-1 text-xs font-bold tracking-wide max-h-[78vh] overflow-y-auto pr-1 nav-scroll">
+                    <a href="/dashboard" class="nav-btn" id="btn_dashboard"><span>📊</span> Dashboard</a>
+                    <a href="/" class="nav-btn" id="btn_new_bill"><span>📄</span> New Bill</a>
+                    <a href="/all_bills" class="nav-btn" id="btn_all_bills"><span>📁</span> All Bills</a>
+                    <a href="/token_counter" class="nav-btn" id="btn-token-counter"><span>🎫</span> Daily Token Counter</a>
+                    <a href="/wedding" class="nav-btn" id="btn_wedding"><span>💍</span> Event Booking</a>
+                    <a href="/stock" class="nav-btn" id="btn_stock"><span>📦</span> Item / Product (Stock)</a>
+                    <a href="/credit_ledger" class="nav-btn" id="btn_credit"><span>💳</span> Credit Ledger</a>
+                    <a href="/purchases" class="nav-btn" id="btn_purchases"><span>🛒</span> Purchases</a>
+                    <a href="/studio_expenses" class="nav-btn" id="btn_expenses"><span>💸</span> Studio Expenses</a>
+                    <a href="/work_export" class="nav-btn" id="btn_export"><span>📦</span> Work Export Terminal</a>
+                    <a href="/material_stock" class="nav-btn" id="btn_material"><span>📦</span> Material Stock</a>
+                    <a href="/equipment_tracking" class="nav-btn" id="btn_equipment"><span>📸</span> Equipment Tracking</a>
+                    <a href="/employee_corner" class="nav-btn" id="btn_employee"><span>👤</span> Employee Corner</a>
+                    <a href="/report" class="nav-btn" id="btn_report"><span>📈</span> Report</a>
+                    <a href="/change_password" class="nav-btn" id="btn_password"><span>🔐</span> Profile & Security</a>
+                </nav>
+            </div>
+
+            <button class="text-left px-4 py-3 text-rose-400 font-bold text-xs hover:bg-rose-950/20 rounded-xl transition cursor-pointer flex items-center gap-2">
+                <span>❌</span> Exit System
+            </button>
+        </div>
+
+        <!-- ========================================== -->
+        <!-- 📄 MAIN CONTENT AREA                        -->
+        <!-- ========================================== -->
+        <main class="flex-1 p-6 overflow-y-auto bg-[#040816]">
+            <div class="max-w-full mx-auto space-y-6">
+                
+                <!-- TOP NAVIGATION TABS -->
+                <div class="flex items-center gap-3 border-b border-[#132347] pb-4 no-print">
+                    <button onclick="switchExpenseTab('Daily')" id="tab-exp-daily" class="exp-tab-btn px-5 py-2.5 rounded-xl font-extrabold text-xs bg-gradient-to-r from-cyan-500/20 to-indigo-500/10 text-cyan-400 border border-cyan-500/40 shadow-md cursor-pointer flex items-center gap-2 transition">
+                        <span>📝</span> Daily Expense Ledger
+                    </button>
+                    <button onclick="switchExpenseTab('Market')" id="tab-exp-market" class="exp-tab-btn px-5 py-2.5 rounded-xl font-bold text-xs text-slate-400 hover:bg-[#081024] hover:text-slate-200 transition cursor-pointer flex items-center gap-2">
+                        <span>🤝</span> Market / Private Credit Ledger
+                    </button>
+                    <button onclick="switchExpenseTab('Bank')" id="tab-exp-bank" class="exp-tab-btn px-5 py-2.5 rounded-xl font-bold text-xs text-slate-400 hover:bg-[#081024] hover:text-slate-200 transition cursor-pointer flex items-center gap-2">
+                        <span>🏦</span> Bank Loans & Amortization Matrix
+                    </button>
+                </div>
+
+                <!-- ================= PAGE 1: DAILY EXPENSE LEDGER ================= -->
+                <div id="subview-exp-daily" class="exp-subview space-y-6">
+                    <div class="bg-studio-glass rounded-2xl p-5 border border-studio-border shadow-xl glow-cyan w-full">
+                        <span class="text-xs font-black tracking-widest text-cyan-400 uppercase mb-4 block">📝 Daily Expense Input Registry</span>
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-3 text-xs items-end bg-[#050b1a]/90 p-4 rounded-xl border border-[#0f1b33] w-full">
+                            <div class="col-span-2">
+                                <label class="block text-slate-400 font-semibold mb-1.5 text-xs">Date:</label>
+                                <input type="date" id="exp_daily_date" class="fine-input font-bold cursor-pointer">
+                            </div>
+                            <div class="col-span-3">
+                                <label class="block text-slate-400 font-semibold mb-1.5 text-xs">Expense Category *:</label>
+                                <input list="exp_daily_cat_list" id="exp_daily_cat" placeholder="Select or Type..." class="fine-input font-bold text-cyan-300">
+                                <datalist id="exp_daily_cat_list">
+                                    <option value="Shop Rent"><option value="Electricity Bill"><option value="Tea & Refreshment"><option value="Salary & Wages"><option value="Equipment Repair">
+                                </datalist>
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-emerald-400 font-semibold mb-1.5 text-xs">Amount (₹) *:</label>
+                                <input type="number" id="exp_daily_amt" placeholder="" class="fine-input text-emerald-400 font-black text-right font-mono">
+                            </div>
+                            <div class="col-span-3">
+                                <label class="block text-slate-400 font-semibold mb-1.5 text-xs">Description Notes:</label>
+                                <input type="text" id="exp_daily_notes" placeholder="" class="fine-input">
+                            </div>
+                            <div class="col-span-2">
+                                <button type="button" onclick="saveDailyExpense()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-black py-2 rounded-xl text-xs uppercase cursor-pointer shadow-lg transition">💾 Save Expense</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-studio-glass rounded-2xl p-5 border border-studio-border shadow-xl space-y-4 w-full">
+                        <div class="flex items-center justify-between border-b border-[#132347] pb-3">
+                            <span class="text-xs text-slate-400 font-bold uppercase tracking-wider block">📋 Daily Expenses Report Grid (Double click row to view)</span>
+                            <div class="flex items-center gap-3 text-xs">
+                                <div class="flex items-center gap-1.5">
+                                    <label class="text-slate-400 font-bold">Year:</label>
+                                    <select id="exp_year_filter" onchange="loadDailyExpensesList()" class="fine-input text-cyan-400 font-black cursor-pointer"></select>
+                                </div>
+                                <div class="flex items-center gap-1.5">
+                                    <label class="text-slate-400 font-bold">Month / Filter:</label>
+                                    <select id="exp_month_filter" onchange="loadDailyExpensesList()" class="fine-input text-cyan-400 font-black cursor-pointer">
+                                        <option value="today">Today Only (1 Day)</option>
+                                        <option value="/01/">January</option><option value="/02/">February</option>
+                                        <option value="/03/">March</option><option value="/04/">April</option>
+                                        <option value="/05/">May</option><option value="/06/">June</option>
+                                        <option value="/07/">July</option><option value="/08/">August</option>
+                                        <option value="/09/">September</option><option value="/10/">October</option>
+                                        <option value="/11/">November</option><option value="/12/">December</option>
+                                        <option value="all">Full Year Data</option>
+                                    </select>
+                                </div>
+                                <button type="button" onclick="printDailyExpensesReport()" class="bg-cyan-600/20 hover:bg-cyan-600 text-cyan-400 hover:text-white border border-cyan-500/40 font-bold px-3 py-1.5 rounded-lg text-xs flex items-center gap-1.5 cursor-pointer transition">
+                                    <span>🖨️</span> Print PDF
+                                </button>
+                            </div>
+                        </div>
+
+                        <div class="overflow-hidden rounded-xl border border-[#0f1b33] max-h-[48vh] overflow-y-auto w-full">
+                            <table class="min-w-full text-xs text-center border-collapse">
+                                <thead class="bg-[#050b1c] text-slate-400 font-black uppercase sticky top-0 z-10 border-b border-[#142342] text-[11px]">
+                                    <tr>
+                                        <th class="py-3 px-3 w-16">ID</th>
+                                        <th class="py-3 px-3 w-32">DATE</th>
+                                        <th class="py-3 px-4 text-left pl-6">CATEGORY</th>
+                                        <th class="py-3 px-4 w-36 text-right pr-6">AMOUNT (₹)</th>
+                                        <th class="py-3 px-4 text-left pl-6">DESCRIPTION NOTES</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="dailyExpenseTableBody" class="divide-y divide-[#0f1c36] bg-[#060d1f]/60 text-slate-300 font-mono text-xs cursor-pointer"></tbody>
+                            </table>
+                        </div>
+
+                        <div class="bg-[#050b1a]/90 p-4 rounded-xl border border-[#0f1b33] flex justify-between items-center font-mono text-xs">
+                            <span class="text-slate-400 uppercase font-bold">SELECTED PERIOD TOTAL EXPENSE:</span>
+                            <span id="lbl_daily_period_total" class="text-cyan-400 font-black text-sm">₹ 0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= PAGE 2: MARKET / PRIVATE CREDIT ================= -->
+                <div id="subview-exp-market" class="exp-subview hidden space-y-6">
+                    <div class="bg-studio-glass rounded-2xl p-5 border border-studio-border shadow-xl glow-cyan w-full">
+                        <span class="text-xs font-black tracking-widest text-cyan-400 uppercase mb-4 block">🤝 Register Market / Private Credit Account</span>
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-3 text-xs items-end bg-[#050b1a]/90 p-4 rounded-xl border border-[#0f1b33] w-full">
+                            <div class="col-span-2">
+                                <label class="block text-slate-400 font-semibold mb-1.5 text-xs">Date Taken:</label>
+                                <input type="date" id="mkt_date" class="fine-input font-bold cursor-pointer">
+                            </div>
+                            <div class="col-span-3">
+                                <label class="block text-cyan-300 font-semibold mb-1.5 text-xs">Lender / Party Name *:</label>
+                                <input type="text" id="mkt_lender" placeholder="" class="fine-input font-bold text-cyan-300">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-slate-400 font-semibold mb-1.5 text-xs">PAN Number (Optional):</label>
+                                <input type="text" id="mkt_pan" placeholder="ABCDE1234F" class="fine-input font-mono uppercase font-bold text-slate-200">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-emerald-400 font-semibold mb-1.5 text-xs">Borrowed Loan Amt (₹) *:</label>
+                                <input type="number" id="mkt_amt" placeholder="" class="fine-input text-emerald-400 font-black text-right font-mono">
+                            </div>
+                            <div class="col-span-3">
+                                <label class="block text-slate-400 font-semibold mb-1.5 text-xs">Interest Rate / Remarks:</label>
+                                <input type="text" id="mkt_notes" placeholder="" class="fine-input">
+                            </div>
+                            <div class="col-span-12 flex justify-end mt-1">
+                                <button type="button" onclick="registerSahukarAccount()" class="bg-cyan-600 hover:bg-cyan-500 text-white font-black py-2 px-8 rounded-xl text-xs uppercase cursor-pointer shadow-lg transition">🤝 Register Account</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-studio-glass rounded-2xl p-5 border border-studio-border shadow-xl space-y-4 w-full">
+                        <span class="text-xs text-cyan-400 font-bold uppercase tracking-wider block">📊 Master Market Credit Accounts (Double click row to open Flexible Payment & Late Fee Sheet)</span>
+                        <div class="overflow-hidden rounded-xl border border-[#0f1b33] max-h-[48vh] overflow-y-auto w-full">
+                            <table class="min-w-full text-xs text-center border-collapse">
+                                <thead class="bg-[#050b1c] text-slate-400 font-black uppercase sticky top-0 z-10 border-b border-[#142342] text-[11px]">
+                                    <tr>
+                                        <th class="py-3 px-3 w-16">ID</th>
+                                        <th class="py-3 px-3 w-28">DATE</th>
+                                        <th class="py-3 px-4 text-left pl-6">LENDER / PARTY</th>
+                                        <th class="py-3 px-3 w-32 text-left pl-3">PAN NO</th>
+                                        <th class="py-3 px-3 w-36 text-right pr-4">TOTAL BORROWED (₹)</th>
+                                        <th class="py-3 px-3 w-32 text-right pr-4">TOTAL PAID (₹)</th>
+                                        <th class="py-3 px-3 w-36 text-right pr-4">OUTSTANDING DUE (₹)</th>
+                                        <th class="py-3 px-4 text-left pl-6">REMARKS / INTEREST</th>
+                                        <th class="py-3 px-3 w-28">STATUS</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="sahukarMasterTableBody" class="divide-y divide-[#0f1c36] bg-[#060d1f]/60 text-slate-300 font-mono text-xs cursor-pointer"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ================= PAGE 3: BANK LOANS ================= -->
+                <div id="subview-exp-bank" class="exp-subview hidden space-y-6">
+                    <div class="bg-studio-glass rounded-2xl p-5 border border-studio-border shadow-xl glow-indigo w-full">
+                        <span class="text-xs font-black tracking-widest text-indigo-400 uppercase mb-4 block">🏦 Register New Bank Loan Account Deck</span>
+                        <div class="grid grid-cols-1 md:grid-cols-12 gap-3 text-xs items-end bg-[#050b1a]/90 p-4 rounded-xl border border-[#0f1b33] w-full">
+                            <div class="col-span-2">
+                                <label class="block text-slate-400 font-semibold mb-1.5 text-xs">Bank Name *:</label>
+                                <input type="text" id="bank_name" placeholder="" class="fine-input font-bold">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-slate-400 font-semibold mb-1.5 text-xs">Branch Name:</label>
+                                <input type="text" id="bank_branch" placeholder="" class="fine-input font-bold">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-cyan-400 font-semibold mb-1.5 text-xs">IFSC Code:</label>
+                                <input type="text" id="bank_ifsc" placeholder="" class="fine-input font-mono uppercase font-bold text-cyan-300">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-emerald-400 font-semibold mb-1.5 text-xs">Loan Amount (₹) *:</label>
+                                <input type="number" id="bank_loan_amt" oninput="calcBankDisbursed()" placeholder="" class="fine-input text-emerald-400 font-black text-right font-mono">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-rose-400 font-semibold mb-1.5 text-xs">Deductions (₹):</label>
+                                <input type="number" id="bank_deductions" oninput="calcBankDisbursed()" placeholder="" class="fine-input text-rose-400 font-black text-right font-mono">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-cyan-400 font-semibold mb-1.5 text-xs">Net Disbursed (₹):</label>
+                                <span id="lbl_bank_disbursed" class="block fine-input text-cyan-400 font-black text-right leading-6 font-mono">0.00</span>
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-indigo-300 font-semibold mb-1.5 text-xs">Actual Monthly EMI *:</label>
+                                <input type="number" id="bank_emi" placeholder="" class="fine-input text-indigo-300 font-black text-right font-mono">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-slate-400 font-semibold mb-1.5 text-xs">Interest Rate (%):</label>
+                                <input type="number" id="bank_rate" placeholder="" class="fine-input text-center font-bold">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-slate-400 font-semibold mb-1.5 text-xs">Tenure (Months) *:</label>
+                                <input type="number" id="bank_tenure" placeholder="" class="fine-input text-center font-bold">
+                            </div>
+                            <div class="col-span-2">
+                                <label class="block text-slate-400 font-semibold mb-1.5 text-xs">Start Date:</label>
+                                <input type="date" id="bank_start_date" class="fine-input font-bold cursor-pointer">
+                            </div>
+                            <div class="col-span-4">
+                                <button type="button" onclick="registerBankLoanAccount()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2.5 rounded-xl text-xs uppercase cursor-pointer shadow-lg transition tracking-wider">🏦 Register Account</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-studio-glass rounded-2xl p-5 border border-studio-border shadow-xl space-y-4 w-full">
+                        <span class="text-xs text-indigo-400 font-bold uppercase tracking-wider block">📊 Master Loan Profiles Framework (Double click profile row to open Amortization Sheet Window)</span>
+                        <div class="overflow-hidden rounded-xl border border-[#0f1b33] max-h-[48vh] overflow-y-auto w-full">
+                            <table class="min-w-full text-xs text-center border-collapse">
+                                <thead class="bg-[#050b1c] text-slate-400 font-black uppercase sticky top-0 z-10 border-b border-[#142342] text-[11px]">
+                                    <tr>
+                                        <th class="py-3 px-3 w-14">ID</th>
+                                        <th class="py-3 px-4 text-left pl-6">BANK NAME</th>
+                                        <th class="py-3 px-4 text-left pl-6">BRANCH & IFSC</th>
+                                        <th class="py-3 px-3 w-32 text-right pr-3">SANCTIONED</th>
+                                        <th class="py-3 px-3 w-28 text-right pr-3">DEDUCTIONS</th>
+                                        <th class="py-3 px-3 w-32 text-right pr-3">NET DISBURSED</th>
+                                        <th class="py-3 px-3 w-36 text-right pr-3 text-rose-400 font-black">OUTSTANDING (DUE)</th>
+                                        <th class="py-3 px-3 w-28 text-right pr-3">MONTHLY EMI</th>
+                                        <th class="py-3 px-3 w-24">TENURE (M)</th>
+                                        <th class="py-3 px-3 w-24">STATUS</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="bankMasterTableBody" class="divide-y divide-[#0f1c36] bg-[#060d1f]/60 text-slate-300 font-mono text-xs cursor-pointer"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- ================= POPUP 1: DAILY EXPENSE DETAIL MODAL ================= -->
+    <div id="modal_daily_detail" class="fixed inset-0 bg-black/85 backdrop-blur-sm items-center justify-center p-4" style="display: none; z-index: 999999;">
+        <div class="bg-[#0a1224] border border-cyan-500/40 rounded-2xl w-full max-w-[440px] p-6 space-y-4 shadow-2xl relative glow-cyan text-xs">
+            <div class="flex justify-between items-center border-b border-[#172545] pb-3">
+                <h3 class="text-xs font-black text-cyan-400 uppercase tracking-wider">📝 Daily Expense Details</h3>
+                <button type="button" onclick="closeDailyModal()" class="text-slate-400 hover:text-white font-bold text-lg cursor-pointer">✕</button>
+            </div>
+            <div class="bg-[#06152b] p-4 rounded-xl space-y-2 text-white border border-[#0d274a] font-mono">
+                <p><strong>Expense ID :</strong> <span id="pop_daily_id" class="text-cyan-400 font-bold"></span></p>
+                <p><strong>Date :</strong> <span id="pop_daily_date" class="text-white"></span></p>
+                <p><strong>Category :</strong> <span id="pop_daily_cat" class="text-cyan-300 font-bold"></span></p>
+                <p><strong>Amount Paid :</strong> <span id="pop_daily_amt" class="text-emerald-400 font-black text-sm"></span></p>
+                <p><strong>Description Notes :</strong> <span id="pop_daily_notes" class="text-slate-300"></span></p>
+            </div>
+            <button type="button" onclick="closeDailyModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded-xl text-xs uppercase cursor-pointer">Close</button>
+        </div>
+    </div>
+
+    <!-- ================= POPUP 2: MARKET CREDIT PAYMENT / PENALTY / HISTORY MODAL ================= -->
+    <div id="modal_sahukar_sheet" class="fixed inset-0 bg-black/85 backdrop-blur-sm items-center justify-center p-4" style="display: none; z-index: 999999;">
+        <div class="bg-[#0a1224] border border-cyan-500/40 rounded-2xl w-full max-w-2xl p-6 space-y-4 shadow-2xl relative glow-cyan text-xs">
+            <div class="flex justify-between items-center border-b border-[#172545] pb-3">
+                <div>
+                    <h3 id="pop_mkt_title" class="text-sm font-black text-cyan-400 uppercase tracking-wider">🤝 Market Credit Account Sheet</h3>
+                    <span id="pop_mkt_subtitle" class="text-[11px] text-slate-400 font-mono"></span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" onclick="printMarketStatement()" class="bg-cyan-600/20 hover:bg-cyan-600 text-cyan-400 hover:text-white border border-cyan-500/30 px-3 py-1.5 rounded-lg text-xs font-black uppercase transition cursor-pointer">🖨️ Print Statement</button>
+                    <button type="button" onclick="closeSahukarModal()" class="text-slate-400 hover:text-white font-bold text-lg cursor-pointer">✕</button>
+                </div>
+            </div>
+
+            <!-- Quick Stats -->
+            <div class="grid grid-cols-3 gap-3 bg-[#04091a] p-4 rounded-xl border border-[#0f1b33] text-center font-mono">
+                <div>
+                    <span class="text-[10px] text-slate-400 uppercase block">Borrowed</span>
+                    <span id="pop_mkt_borrowed" class="text-cyan-400 font-black text-sm">₹ 0.00</span>
+                </div>
+                <div>
+                    <span class="text-[10px] text-slate-400 uppercase block">Total Paid</span>
+                    <span id="pop_mkt_paid" class="text-emerald-400 font-black text-sm">₹ 0.00</span>
+                </div>
+                <div>
+                    <span class="text-[10px] text-slate-400 uppercase block">Remaining Balance Due</span>
+                    <span id="pop_mkt_due" class="text-rose-400 font-black text-sm">₹ 0.00</span>
+                </div>
+            </div>
+
+            <!-- Dual Action Section: 1. Payment | 2. Late Fee Penalty -->
+            <div id="mkt_action_section" class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                <!-- Add Payment -->
+                <div class="bg-[#061226] p-3.5 rounded-xl border border-[#0d2242] space-y-2.5">
+                    <span class="text-xs font-black text-emerald-400 uppercase block">💵 Record Payment (Jamā)</span>
+                    <input type="number" id="pop_mkt_pay_amt" placeholder="Payment Amount (₹)..." class="fine-input text-emerald-400 font-black text-right font-mono">
+                    <input type="text" id="pop_mkt_pay_remarks" placeholder="Remarks (उदा. Cash / UPI)..." class="fine-input">
+                    <button type="button" onclick="submitSahukarPayment()" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black py-2 rounded-xl text-xs uppercase cursor-pointer">✔ Add Payment</button>
+                </div>
+
+                <!-- Add Late Fee Penalty -->
+                <div class="bg-[#180812] p-3.5 rounded-xl border border-[#3b1220] space-y-2.5">
+                    <span class="text-xs font-black text-rose-400 uppercase block">⚠️ Add Late Fee / Penalty (Due Badhayen)</span>
+                    <input type="number" id="pop_mkt_pen_amt" placeholder="Penalty Amount (₹)..." class="fine-input text-rose-400 font-black text-right font-mono">
+                    <input type="text" id="pop_mkt_pen_reason" placeholder="Reason (उदा. Late Charge)..." class="fine-input">
+                    <button type="button" onclick="submitSahukarPenalty()" class="w-full bg-rose-600 hover:bg-rose-500 text-white font-black py-2 rounded-xl text-xs uppercase cursor-pointer">➕ Apply Late Fee</button>
+                </div>
+            </div>
+
+            <!-- History Table -->
+            <div class="overflow-hidden rounded-xl border border-[#0f1b33] max-h-48 overflow-y-auto">
+                <table class="min-w-full text-center border-collapse">
+                    <thead class="bg-[#050b1c] text-slate-400 font-black uppercase sticky top-0 border-b border-[#142342] text-[10px]">
+                        <tr>
+                            <th class="p-2.5 w-12">#</th>
+                            <th class="p-2.5 w-32">DATE & TIME</th>
+                            <th class="p-2.5 text-right pr-4">AMOUNT (₹)</th>
+                            <th class="p-2.5 text-left pl-4">TYPE & REMARKS</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pop_mkt_history_tbody" class="divide-y divide-[#0f1c36] bg-[#060d1f]/60 text-slate-300 font-mono text-xs"></tbody>
+                </table>
+            </div>
+
+            <button type="button" onclick="closeSahukarModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded-xl text-xs uppercase cursor-pointer">Close Window</button>
+        </div>
+    </div>
+
+    <!-- ================= POPUP 3: BANK AMORTIZATION SCHEDULE & PENALTY MODAL ================= -->
+    <div id="modal_bank_schedule" class="fixed inset-0 bg-black/85 backdrop-blur-sm items-center justify-center p-4" style="display: none; z-index: 999999;">
+        <div class="bg-[#0a1224] border border-indigo-500/40 rounded-2xl w-full max-w-3xl p-6 space-y-4 shadow-2xl relative glow-indigo text-xs">
+            <div class="flex justify-between items-center border-b border-[#172545] pb-3">
+                <div>
+                    <h3 id="pop_bank_title" class="text-sm font-black text-indigo-400 uppercase tracking-wider">🏦 Bank Loan Amortization Matrix</h3>
+                    <span id="pop_bank_subtitle" class="text-[11px] text-slate-400 font-mono"></span>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button type="button" id="btn_full_settle_loan" onclick="settleFullBankLoan()" class="bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/30 px-3 py-1.5 rounded-lg text-xs font-black uppercase transition cursor-pointer">⚡ Full Loan Settlement</button>
+                    <button type="button" onclick="closeBankModal()" class="text-slate-400 hover:text-white font-bold text-lg cursor-pointer">✕</button>
+                </div>
+            </div>
+
+            <!-- Quick Stats & Remaining Balance -->
+            <div class="grid grid-cols-4 gap-3 bg-[#04091a] p-4 rounded-xl border border-[#0f1b33] text-center font-mono">
+                <div>
+                    <span class="text-[10px] text-slate-400 uppercase block">Sanctioned</span>
+                    <span id="pop_bank_sanctioned" class="text-cyan-400 font-black text-sm">₹ 0.00</span>
+                </div>
+                <div>
+                    <span class="text-[10px] text-slate-400 uppercase block">Monthly EMI</span>
+                    <span id="pop_bank_emi_val" class="text-indigo-300 font-black text-sm">₹ 0.00</span>
+                </div>
+                <div>
+                    <span class="text-[10px] text-slate-400 uppercase block">Total Paid EMI</span>
+                    <span id="pop_bank_paid_sum" class="text-emerald-400 font-black text-sm">₹ 0.00</span>
+                </div>
+                <div>
+                    <span class="text-[10px] text-rose-400 uppercase font-bold block">Remaining Balance Due</span>
+                    <span id="pop_bank_remaining_due" class="text-rose-400 font-black text-sm">₹ 0.00</span>
+                </div>
+            </div>
+
+            <!-- Add Bank Penalty / Late Fee Option -->
+            <div id="bank_penalty_section" class="bg-[#180812] p-3.5 rounded-xl border border-[#3b1220] flex items-center gap-2.5">
+                <span class="text-xs font-bold text-rose-400 shrink-0">➕ Add Bank Penalty / Bounce Fee:</span>
+                <input type="number" id="pop_bank_pen_amt" placeholder="Penalty ₹..." class="fine-input w-32 text-rose-400 font-black text-right font-mono">
+                <input type="text" id="pop_bank_pen_reason" placeholder="Reason (उदा. ECS Bounce / Late Charge)..." class="fine-input flex-1">
+                <button type="button" onclick="submitBankPenalty()" class="bg-rose-600 hover:bg-rose-500 text-white font-black px-4 py-2 rounded-xl text-xs uppercase cursor-pointer shrink-0">Apply Penalty</button>
+            </div>
+
+            <!-- Schedule Table -->
+            <div class="overflow-hidden rounded-xl border border-[#0f1b33] max-h-60 overflow-y-auto">
+                <table class="min-w-full text-center border-collapse">
+                    <thead class="bg-[#050b1c] text-slate-400 font-black uppercase sticky top-0 border-b border-[#142342] text-[10px]">
+                        <tr>
+                            <th class="p-2.5 w-20">EMI #</th>
+                            <th class="p-2.5 w-32">DUE DATE</th>
+                            <th class="p-2.5 text-right pr-4">EMI AMOUNT (₹)</th>
+                            <th class="p-2.5 w-32">PAID DATE</th>
+                            <th class="p-2.5 w-28">STATUS</th>
+                            <th class="p-2.5 w-32">ACTION</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pop_bank_schedule_tbody" class="divide-y divide-[#0f1c36] bg-[#060d1f]/60 text-slate-300 font-mono text-xs"></tbody>
+                </table>
+            </div>
+
+            <button type="button" onclick="closeBankModal()" class="w-full bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 rounded-xl text-xs uppercase cursor-pointer">Close Window</button>
+        </div>
+    </div>
+
+    <!-- ================= JAVASCRIPT LOGIC ENGINE ================= -->
+    <script>
+        let currentExpenseTab = 'Daily';
+        let activeSahukarRecord = null;
+        let activeBankRecord = null;
+
+        function populateExpenseYears() {
+            const yearSelect = document.getElementById('exp_year_filter');
+            if (!yearSelect) return;
+            
+            const currentYear = new Date().getFullYear();
+            yearSelect.innerHTML = '';
+            
+            for (let y = currentYear - 1; y <= currentYear + 3; y++) {
+                const opt = document.createElement('option');
+                opt.value = y.toString();
+                opt.innerText = y.toString();
+                if (y === currentYear) opt.selected = true;
+                yearSelect.appendChild(opt);
+            }
+        }
+
+        function switchExpenseTab(tabType) {
+            currentExpenseTab = tabType;
+            document.querySelectorAll('.exp-subview').forEach(el => el.classList.add('hidden'));
+            document.querySelectorAll('.exp-tab-btn').forEach(btn => {
+                btn.className = "exp-tab-btn px-5 py-2.5 rounded-xl font-bold text-xs text-slate-400 hover:bg-[#081024] hover:text-slate-200 transition cursor-pointer flex items-center gap-2";
+            });
+
+            const activeSub = document.getElementById(`subview-exp-${tabType.toLowerCase()}`);
+            const activeBtn = document.getElementById(`tab-exp-${tabType.toLowerCase()}`);
+            if (activeSub) activeSub.classList.remove('hidden');
+            if (activeBtn) {
+                activeBtn.className = "exp-tab-btn px-5 py-2.5 rounded-xl font-extrabold text-xs bg-gradient-to-r from-cyan-500/20 to-indigo-500/10 text-cyan-400 border border-cyan-500/40 shadow-md cursor-pointer flex items-center gap-2";
+            }
+
+            const todayISO = new Date().toISOString().split('T')[0];
+            if (tabType === 'Daily' && document.getElementById('exp_daily_date')) document.getElementById('exp_daily_date').value = todayISO;
+            if (tabType === 'Market' && document.getElementById('mkt_date')) document.getElementById('mkt_date').value = todayISO;
+            if (tabType === 'Bank' && document.getElementById('bank_start_date')) document.getElementById('bank_start_date').value = todayISO;
+
+            if (tabType === 'Daily') loadDailyExpensesList();
+            if (tabType === 'Market') loadSahukarMasterGrid();
+            if (tabType === 'Bank') loadBankMasterGrid();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            populateExpenseYears();
+            switchExpenseTab('Daily');
+        });
+
+        // --- 1. DAILY EXPENSES ---
+        async function saveDailyExpense() {
+            const rawDate = document.getElementById('exp_daily_date').value;
+            const cat = document.getElementById('exp_daily_cat').value.trim();
+            const amt = parseFloat(document.getElementById('exp_daily_amt').value) || 0;
+            const notes = document.getElementById('exp_daily_notes').value.trim();
+
+            if (!cat || amt <= 0) { alert("कृपया Category और Amount दर्ज करें!"); return; }
+
+            let formattedDate = "";
+            if (rawDate) {
+                const parts = rawDate.split('-');
+                if (parts.length === 3) formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+
+            try {
+                const res = await fetch('/api/save_daily_expense', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ exp_date: formattedDate, category: cat, amount: amt, notes: notes })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    document.getElementById('exp_daily_cat').value = '';
+                    document.getElementById('exp_daily_amt').value = '';
+                    document.getElementById('exp_daily_notes').value = '';
+                    loadDailyExpensesList();
+                } else alert(data.message);
+            } catch(e) { alert("सर्वर त्रुटि!"); }
+        }
+
+        async function loadDailyExpensesList() {
+            const year = document.getElementById('exp_year_filter')?.value || '2026';
+            const monthOpt = document.getElementById('exp_month_filter')?.value || 'today';
+            let finalFilter = monthOpt === 'today' ? 'today' : (monthOpt === 'all' ? year : monthOpt + year);
+
+            try {
+                const res = await fetch(`/api/get_daily_expenses?filter=${encodeURIComponent(finalFilter)}`);
+                const result = await res.json();
+                const tbody = document.getElementById('dailyExpenseTableBody');
+                if (!tbody) return;
+                tbody.innerHTML = '';
+                
+                let totalPeriodAmt = 0;
+                if (result.status === 'success' && Array.isArray(result.data) && result.data.length > 0) {
+                    result.data.forEach((row, idx) => {
+                        const amt = parseFloat(row.amount || 0);
+                        totalPeriodAmt += amt;
+                        const tr = document.createElement('tr');
+                        tr.className = (idx % 2 === 0 ? "bg-[#070e22]/50" : "bg-[#050a1a]/30") + " hover:bg-[#0e1b3d]/70 transition cursor-pointer select-none text-xs";
+                        tr.ondblclick = () => openDailyModal(row);
+                        tr.innerHTML = `
+                            <td class="py-3 px-3 font-bold text-slate-500">#${row.id}</td>
+                            <td class="py-3 px-3 font-mono text-cyan-300">${row.exp_date}</td>
+                            <td class="py-3 px-4 text-left pl-6 font-bold text-slate-200">${row.category}</td>
+                            <td class="py-3 px-4 text-right pr-6 font-black text-emerald-400">₹ ${amt.toFixed(2)}</td>
+                            <td class="py-3 px-4 text-left pl-6 text-slate-400">${row.notes || '-'}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-slate-500 text-center font-bold">कोई Daily Expense दर्ज नहीं है</td></tr>`;
+                }
+                document.getElementById('lbl_daily_period_total').innerText = `₹ ${totalPeriodAmt.toFixed(2)}`;
+            } catch(e) { console.error(e); }
+        }
+
+        function printDailyExpensesReport() {
+            const year = document.getElementById('exp_year_filter')?.value || '2026';
+            const monthOpt = document.getElementById('exp_month_filter')?.value || 'today';
+            let finalFilter = monthOpt === 'today' ? 'today' : (monthOpt === 'all' ? year : monthOpt + year);
+            window.open(`/print_daily_expenses?filter=${encodeURIComponent(finalFilter)}`, '_blank');
+        }
+
+        function openDailyModal(row) {
+            document.getElementById('pop_daily_id').innerText = `#${row.id}`;
+            document.getElementById('pop_daily_date').innerText = row.exp_date;
+            document.getElementById('pop_daily_cat').innerText = row.category;
+            document.getElementById('pop_daily_amt').innerText = `₹ ${parseFloat(row.amount).toFixed(2)}`;
+            document.getElementById('pop_daily_notes').innerText = row.notes || 'कोई नोट्स नहीं';
+            const modal = document.getElementById('modal_daily_detail');
+            if (modal) modal.style.setProperty('display', 'flex', 'important');
+        }
+
+        function closeDailyModal() {
+            const modal = document.getElementById('modal_daily_detail');
+            if (modal) modal.style.setProperty('display', 'none', 'important');
+        }
+
+        // --- 2. MARKET / PRIVATE CREDIT FUNCTIONS ---
+        async function registerSahukarAccount() {
+            const rawDate = document.getElementById('mkt_date').value;
+            const lender = document.getElementById('mkt_lender').value.trim();
+            const pan = document.getElementById('mkt_pan').value.trim().toUpperCase();
+            const amt = parseFloat(document.getElementById('mkt_amt').value) || 0;
+            const notes = document.getElementById('mkt_notes').value.trim();
+
+            if (!lender || amt <= 0) { alert("Lender/Party का नाम और उधारी राशि दर्ज करें!"); return; }
+
+            let formattedDate = "";
+            if (rawDate) {
+                const parts = rawDate.split('-');
+                if (parts.length === 3) formattedDate = `${parts[2]}/${parts[1]}/${parts[0]}`;
+            }
+
+            try {
+                const res = await fetch('/api/register_sahukar_account', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ date_taken: formattedDate, lender_name: lender, pan_number: pan, borrowed_amount: amt, notes: notes })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    document.getElementById('mkt_lender').value = '';
+                    document.getElementById('mkt_pan').value = '';
+                    document.getElementById('mkt_amt').value = '';
+                    document.getElementById('mkt_notes').value = '';
+                    loadSahukarMasterGrid();
+                } else alert(data.message);
+            } catch(e) { alert("सर्वर त्रुटि!"); }
+        }
+
+        async function loadSahukarMasterGrid() {
+    try {
+        const res = await fetch('/api/get_sahukar_accounts');
+        const data = await res.json();
+        if (data.status === 'success') {
+            const tbody = document.getElementById('sahukarMasterTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            if (!data.data || data.data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="9" class="py-6 text-slate-500 text-center font-bold">कोई खाता दर्ज नहीं है</td></tr>`;
+                return;
+            }
+            data.data.forEach((row, idx) => {
+                const tr = document.createElement('tr');
+                tr.className = (idx % 2 === 0 ? "bg-[#070e22]/50" : "bg-[#050a1a]/30") + " hover:bg-[#0e1b3d]/70 transition cursor-pointer select-none text-xs";
+                
+                // 🎯 यहाँ dblclick की जगह onclick कर दिया गया है (1-Click)
+                tr.onclick = () => openSahukarModal(row);
+                
+                const dueVal = parseFloat(row.outstanding_due || 0);
+                const statusTag = dueVal <= 0 
+                    ? `<span class="px-2.5 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-md text-[10px] font-bold">SETTLED</span>` 
+                    : `<span class="px-2.5 py-0.5 bg-rose-500/10 text-rose-400 border border-rose-500/30 rounded-md text-[10px] font-bold">ACTIVE DUE</span>`;
+
+                tr.innerHTML = `
+                    <td class="py-3 px-3 font-bold text-slate-500">#${row.id}</td>
+                    <td class="py-3 px-3 font-mono text-cyan-300">${row.date_taken}</td>
+                    <td class="py-3 px-4 text-left pl-6 font-bold text-cyan-300">${row.lender_name}</td>
+                    <td class="py-3 px-3 text-left pl-3 font-mono uppercase text-slate-400">${row.pan_number || '-'}</td>
+                    <td class="py-3 px-3 text-right pr-4 font-bold">₹ ${parseFloat(row.borrowed_amount).toFixed(2)}</td>
+                    <td class="py-3 px-3 text-right pr-4 text-emerald-400 font-bold">₹ ${parseFloat(row.total_paid).toFixed(2)}</td>
+                    <td class="py-3 px-3 text-right pr-4 text-rose-400 font-black">₹ ${dueVal.toFixed(2)}</td>
+                    <td class="py-3 px-4 text-left pl-6 text-slate-400">${row.notes || '-'}</td>
+                    <td class="py-3 px-3">${statusTag}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    } catch(e) {}
+}
+
+        async function openSahukarModal(row) {
+            activeSahukarRecord = row;
+            const dueVal = parseFloat(row.outstanding_due || 0);
+            const isSettled = dueVal <= 0;
+
+            document.getElementById('pop_mkt_title').innerText = `🤝 ${row.lender_name} - Ledger Sheet`;
+            document.getElementById('pop_mkt_subtitle').innerText = `Account #${row.id} | PAN: ${row.pan_number || 'N/A'} | Date Taken: ${row.date_taken}`;
+            document.getElementById('pop_mkt_borrowed').innerText = `₹ ${parseFloat(row.borrowed_amount).toFixed(2)}`;
+            document.getElementById('pop_mkt_paid').innerText = `₹ ${parseFloat(row.total_paid).toFixed(2)}`;
+            document.getElementById('pop_mkt_due').innerText = `₹ ${dueVal.toFixed(2)}`;
+            
+            const mktAction = document.getElementById('mkt_action_section');
+            if (mktAction) mktAction.style.display = isSettled ? 'none' : 'grid';
+
+            document.getElementById('pop_mkt_pay_amt').value = '';
+            document.getElementById('pop_mkt_pay_remarks').value = '';
+            document.getElementById('pop_mkt_pen_amt').value = '';
+            document.getElementById('pop_mkt_pen_reason').value = '';
+
+            await loadSahukarHistory(row.id);
+            const modal = document.getElementById('modal_sahukar_sheet');
+            if (modal) modal.style.setProperty('display', 'flex', 'important');
+        }
+
+        function closeSahukarModal() {
+            const modal = document.getElementById('modal_sahukar_sheet');
+            if (modal) modal.style.setProperty('display', 'none', 'important');
+            activeSahukarRecord = null;
+            loadSahukarMasterGrid();
+        }
+
+        function printMarketStatement() {
+            if (!activeSahukarRecord) return;
+            window.open(`/print_market_statement/${activeSahukarRecord.id}`, '_blank');
+        }
+
+        async function loadSahukarHistory(accountId) {
+            try {
+                const res = await fetch(`/api/get_sahukar_history/${accountId}`);
+                const data = await res.json();
+                const tbody = document.getElementById('pop_mkt_history_tbody');
+                if (!tbody) return;
+                tbody.innerHTML = '';
+                if (data.status === 'success' && data.data && data.data.length > 0) {
+                    data.data.forEach((h, idx) => {
+                        const tr = document.createElement('tr');
+                        const isPenalty = parseFloat(h.amount_paid) < 0;
+                        tr.innerHTML = `
+                            <td class="p-2.5 font-bold text-slate-500">${idx+1}</td>
+                            <td class="p-2.5 font-mono text-cyan-300">${h.pay_date}</td>
+                            <td class="p-2.5 text-right pr-4 font-black ${isPenalty ? 'text-rose-400' : 'text-emerald-400'}">${isPenalty ? '+ Late Fee ' : '- Paid '} ₹ ${Math.abs(parseFloat(h.amount_paid)).toFixed(2)}</td>
+                            <td class="p-2.5 text-left pl-4 ${isPenalty ? 'text-rose-300 font-bold' : 'text-slate-300'}">${h.remarks || '-'}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                } else {
+                    tbody.innerHTML = `<tr><td colspan="4" class="p-4 text-center text-slate-500 font-bold">कोई भुगतान/पेनल्टी इतिहास उपलब्ध नहीं है</td></tr>`;
+                }
+            } catch(e) {}
+        }
+
+        async function submitSahukarPayment() {
+            if (!activeSahukarRecord) return;
+            const amt = parseFloat(document.getElementById('pop_mkt_pay_amt').value) || 0;
+            const rem = document.getElementById('pop_mkt_pay_remarks').value.trim() || 'Cash Paid';
+
+            if (amt <= 0) { alert("कृपया वैध भुगतान राशि दर्ज करें!"); return; }
+
+            try {
+                const res = await fetch('/api/add_sahukar_payment', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ account_id: activeSahukarRecord.id, amount_paid: amt, remarks: rem })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    document.getElementById('pop_mkt_pay_amt').value = '';
+                    document.getElementById('pop_mkt_pay_remarks').value = '';
+                    
+                    const accRes = await fetch('/api/get_sahukar_accounts');
+                    const accData = await accRes.json();
+                    const updated = accData.data.find(x => x.id === activeSahukarRecord.id);
+                    if (updated) openSahukarModal(updated);
+                } else alert(data.message);
+            } catch(e) { alert("सर्वर त्रुटि!"); }
+        }
+
+        async function submitSahukarPenalty() {
+            if (!activeSahukarRecord) return;
+            const penAmt = parseFloat(document.getElementById('pop_mkt_pen_amt').value) || 0;
+            const reason = document.getElementById('pop_mkt_pen_reason').value.trim() || 'Late Fee Charge';
+
+            if (penAmt <= 0) { alert("कृपया वैध Late Fee पेनल्टी राशि दर्ज करें!"); return; }
+
+            try {
+                const res = await fetch('/api/add_sahukar_penalty', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ account_id: activeSahukarRecord.id, penalty_amount: penAmt, reason: reason })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    document.getElementById('pop_mkt_pen_amt').value = '';
+                    document.getElementById('pop_mkt_pen_reason').value = '';
+                    
+                    const accRes = await fetch('/api/get_sahukar_accounts');
+                    const accData = await accRes.json();
+                    const updated = accData.data.find(x => x.id === activeSahukarRecord.id);
+                    if (updated) openSahukarModal(updated);
+                } else alert(data.message);
+            } catch(e) { alert("सर्वर त्रुटि!"); }
+        }
+
+        // --- 3. BANK LOANS FUNCTIONS ---
+        function calcBankDisbursed() {
+            const loan = parseFloat(document.getElementById('bank_loan_amt').value) || 0;
+            const ded = parseFloat(document.getElementById('bank_deductions').value) || 0;
+            document.getElementById('lbl_bank_disbursed').innerText = Math.max(0, loan - ded).toFixed(2);
+        }
+
+        async function registerBankLoanAccount() {
+            const name = document.getElementById('bank_name').value.trim();
+            const branch = document.getElementById('bank_branch').value.trim() || 'Main Branch';
+            const ifsc = document.getElementById('bank_ifsc').value.trim();
+            const loanAmt = parseFloat(document.getElementById('bank_loan_amt').value) || 0;
+            const ded = parseFloat(document.getElementById('bank_deductions').value) || 0;
+            const emi = parseFloat(document.getElementById('bank_emi').value) || 0;
+            const tenure = parseInt(document.getElementById('bank_tenure').value) || 12;
+            const rate = parseFloat(document.getElementById('bank_rate').value) || 10.5;
+            const startDate = document.getElementById('bank_start_date').value;
+
+            if (!name || loanAmt <= 0 || emi <= 0) { alert("बैंक नाम, लोन राशि और वास्तविक EMI दर्ज करें!"); return; }
+
+            try {
+                const res = await fetch('/api/register_bank_account', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ bank_name: name, branch: branch, ifsc_code: ifsc, loan_amount: loanAmt, deductions: ded, emi: emi, tenure: tenure, interest_rate: rate, start_date: startDate })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    alert("✅ बैंक लोन खाता सफलतापूर्वक रजिस्टर हो गया!");
+                    document.getElementById('bank_name').value = '';
+                    document.getElementById('bank_branch').value = '';
+                    document.getElementById('bank_ifsc').value = '';
+                    document.getElementById('bank_loan_amt').value = '';
+                    document.getElementById('bank_deductions').value = '';
+                    document.getElementById('bank_emi').value = '';
+                    document.getElementById('bank_rate').value = '';
+                    document.getElementById('bank_tenure').value = '';
+                    document.getElementById('lbl_bank_disbursed').innerText = '0.00';
+                    loadBankMasterGrid();
+                } else alert(data.message);
+            } catch(e) { alert("सर्वर त्रुटि!"); }
+        }
+
+        async function loadBankMasterGrid() {
+    try {
+        const res = await fetch('/api/get_bank_accounts');
+        const data = await res.json();
+        if (data.status === 'success') {
+            const tbody = document.getElementById('bankMasterTableBody');
+            if (!tbody) return;
+            tbody.innerHTML = '';
+            if (!data.data || data.data.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="10" class="py-6 text-slate-500 text-center font-bold">कोई बैंक लोन खाता दर्ज नहीं है</td></tr>`;
+                return;
+            }
+            data.data.forEach((row, idx) => {
+                const tr = document.createElement('tr');
+                tr.className = (idx % 2 === 0 ? "bg-[#070e22]/50" : "bg-[#050a1a]/30") + " hover:bg-[#0e1b3d]/70 transition cursor-pointer select-none text-xs";
+                
+                // 🎯 यहाँ dblclick की जगह onclick कर दिया गया है (1-Click)
+                tr.onclick = () => openBankModal(row);
+
+                const statusTag = row.outstanding <= 0 
+                    ? `<span class="px-2.5 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 rounded-md text-[10px] font-bold">Closed</span>` 
+                    : `<span class="px-2.5 py-0.5 bg-cyan-500/10 text-cyan-400 border border-cyan-500/30 rounded-md text-[10px] font-bold">Active</span>`;
+
+                tr.innerHTML = `
+                    <td class="py-3 px-3 font-bold text-slate-500">#${row.id}</td>
+                    <td class="py-3 px-4 text-left pl-6 font-bold text-slate-200">${row.bank_name}</td>
+                    <td class="py-3 px-4 text-left pl-6 text-cyan-300">${row.branch} ${row.ifsc_code ? '(' + row.ifsc_code + ')' : ''}</td>
+                    <td class="py-3 px-3 text-right pr-3 font-bold">₹ ${parseFloat(row.loan_amount).toFixed(2)}</td>
+                    <td class="py-3 px-3 text-right pr-3 text-rose-400 font-bold">₹ ${parseFloat(row.deductions).toFixed(2)}</td>
+                    <td class="py-3 px-3 text-right pr-3 text-cyan-400 font-bold">₹ ${parseFloat(row.disbursed).toFixed(2)}</td>
+                    <td class="py-3 px-3 text-right pr-3 text-rose-400 font-black">₹ ${parseFloat(row.outstanding).toFixed(2)}</td>
+                    <td class="py-3 px-3 text-right pr-3 text-emerald-400 font-bold">₹ ${parseFloat(row.emi).toFixed(2)}</td>
+                    <td class="py-3 px-3 font-bold">${row.tenure} M</td>
+                    <td class="py-3 px-3">${statusTag}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+    } catch(e) {}
+}
+
+        async function openBankModal(row) {
+            activeBankRecord = row;
+            const isClosed = (parseFloat(row.outstanding || 0) <= 0) || (row.status === 'Closed');
+
+            document.getElementById('pop_bank_title').innerText = `🏦 ${row.bank_name} (${row.branch})`;
+            document.getElementById('pop_bank_subtitle').innerText = `Loan ID: #${row.id} | Status: ${isClosed ? 'Closed' : 'Active'}`;
+            document.getElementById('pop_bank_sanctioned').innerText = `₹ ${parseFloat(row.loan_amount).toFixed(2)}`;
+            document.getElementById('pop_bank_emi_val').innerText = `₹ ${parseFloat(row.emi).toFixed(2)}`;
+            
+            const penaltySection = document.getElementById('bank_penalty_section');
+            const fullSettleBtn = document.getElementById('btn_full_settle_loan');
+            
+            if (penaltySection) penaltySection.style.display = isClosed ? 'none' : 'flex';
+            if (fullSettleBtn) fullSettleBtn.style.display = isClosed ? 'none' : 'inline-block';
+
+            if (document.getElementById('pop_bank_pen_amt')) document.getElementById('pop_bank_pen_amt').value = '';
+            if (document.getElementById('pop_bank_pen_reason')) document.getElementById('pop_bank_pen_reason').value = '';
+
+            await loadBankSchedule(row.id);
+            const modal = document.getElementById('modal_bank_schedule');
+            if (modal) modal.style.setProperty('display', 'flex', 'important');
+        }
+
+        function closeBankModal() {
+            const modal = document.getElementById('modal_bank_schedule');
+            if (modal) modal.style.setProperty('display', 'none', 'important');
+            activeBankRecord = null;
+            loadBankMasterGrid();
+        }
+
+        async function loadBankSchedule(bankId) {
+            try {
+                const res = await fetch(`/api/get_bank_schedule/${bankId}`);
+                const data = await res.json();
+                const tbody = document.getElementById('pop_bank_schedule_tbody');
+                if (!tbody) return;
+                tbody.innerHTML = '';
+                
+                let totalPaidEmi = 0;
+                let totalUnpaidEmi = 0;
+
+                if (data.status === 'success' && data.schedule && data.schedule.length > 0) {
+                    data.schedule.forEach(s => {
+                        const amt = parseFloat(s.emi_amount || 0);
+                        const isPaid = s.status === 'Paid';
+                        
+                        if (isPaid) totalPaidEmi += amt;
+                        else totalUnpaidEmi += amt;
+
+                        const isPenalty = s.mode && s.mode.startsWith('Penalty:');
+                        const labelName = isPenalty ? `⚠️ ${s.mode}` : `Installment ${s.installment_no}`;
+
+                        const tr = document.createElement('tr');
+                        const actionBtn = isPaid 
+                            ? `<span class="text-emerald-400 font-bold text-xs">✔ PAID</span>`
+                            : `<button type="button" onclick="payBankEmi(${s.bank_id}, ${s.installment_no})" class="bg-indigo-600 hover:bg-indigo-500 text-white px-3 py-1.5 rounded-lg text-xs font-black uppercase cursor-pointer">Pay EMI</button>`;
+
+                        tr.innerHTML = `
+                            <td class="p-2.5 font-bold ${isPenalty ? 'text-rose-400' : 'text-slate-400'}">${labelName}</td>
+                            <td class="p-2.5 font-mono text-cyan-300">${s.due_date}</td>
+                            <td class="p-2.5 text-right pr-4 font-black ${isPenalty ? 'text-rose-400' : 'text-indigo-300'}">₹ ${amt.toFixed(2)}</td>
+                            <td class="p-2.5 font-mono text-slate-300">${s.payment_date || '-'}</td>
+                            <td class="p-2.5"><span class="px-2.5 py-0.5 ${isPaid ? 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/30' : 'bg-rose-500/10 text-rose-400 border border-rose-500/30'} rounded-md text-[10px] font-bold">${s.status}</span></td>
+                            <td class="p-2.5">${actionBtn}</td>
+                        `;
+                        tbody.appendChild(tr);
+                    });
+                }
+
+                document.getElementById('pop_bank_paid_sum').innerText = `₹ ${totalPaidEmi.toFixed(2)}`;
+                document.getElementById('pop_bank_remaining_due').innerText = `₹ ${totalUnpaidEmi.toFixed(2)}`;
+            } catch(e) {
+                console.error(e);
+            }
+        }
+
+        async function submitBankPenalty() {
+            if (!activeBankRecord) return;
+            if (activeBankRecord.status === 'Closed' || parseFloat(activeBankRecord.outstanding || 0) <= 0) {
+                alert("यह लोन पूर्ण रूप से चुकता (Closed) हो चुका है! इसमें पेनल्टी नहीं जोड़ी जा सकती।");
+                return;
+            }
+
+            const amt = parseFloat(document.getElementById('pop_bank_pen_amt').value) || 0;
+            const reason = document.getElementById('pop_bank_pen_reason').value.trim() || 'Late / Bounce Fee';
+
+            if (amt <= 0) { alert("कृपया वैध पेनल्टी राशि दर्ज करें!"); return; }
+
+            try {
+                const res = await fetch('/api/add_bank_penalty', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ bank_id: activeBankRecord.id, penalty_amount: amt, reason: reason })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    document.getElementById('pop_bank_pen_amt').value = '';
+                    document.getElementById('pop_bank_pen_reason').value = '';
+                    await loadBankSchedule(activeBankRecord.id);
+                    loadBankMasterGrid();
+                } else {
+                    alert(data.message);
+                }
+            } catch(e) { 
+                alert("सर्वर त्रुटि!"); 
+            }
+        }
+
+        async function payBankEmi(bankId, instNo) {
+            if (!confirm(`क्या आप Installment #${instNo} का भुगतान दर्ज करना चाहते हैं?`)) return;
+            try {
+                const res = await fetch('/api/settle_bank_emi', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ bank_id: bankId, installment_no: instNo, mode: 'Online Banking' })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    await loadBankSchedule(bankId);
+                    loadBankMasterGrid();
+                } else alert(data.message);
+            } catch(e) { alert("सर्वर त्रुटि!"); }
+        }
+
+        async function settleFullBankLoan() {
+            if (!activeBankRecord) return;
+            if (!confirm(`क्या आप इस पूरे बैंक लोन खाता #${activeBankRecord.id} को एक साथ Closed/Settled मार्क करना चाहते हैं?`)) return;
+
+            try {
+                const res = await fetch('/api/settle_full_bank_loan', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ bank_id: activeBankRecord.id })
+                });
+                const data = await res.json();
+                if (data.status === 'success') {
+                    alert("✅ पूरा बैंक लोन सफलतापूर्वक सेटल हो गया!");
+                    activeBankRecord.status = 'Closed';
+                    activeBankRecord.outstanding = 0;
+                    openBankModal(activeBankRecord);
+                    loadBankMasterGrid();
+                } else {
+                    alert(data.message);
+                }
+            } catch(e) { 
+                alert("सर्वर त्रुटि!"); 
+            }
+        }
+
+        // Dynamic Sidebar Active Tab Link Script
+        document.addEventListener("DOMContentLoaded", () => {
+            const currentPath = window.location.pathname;
+            const navLinks = document.querySelectorAll("#sidebar-nav a.nav-btn");
+
+            navLinks.forEach(link => {
+                const href = link.getAttribute("href");
+                link.classList.remove("active");
+
+                if (href === currentPath || (href !== "/" && currentPath.startsWith(href))) {
+                    link.classList.add("active");
+                }
+            });
+        });
+function printExpenseSheet() {
+    const filterVal = document.getElementById('expense_filter')?.value || 'today';
+    window.open(`/print_expense_report?filter=${encodeURIComponent(filterVal)}`, '_blank');
+}
+
+(function handleUserInactivity() {
+    let idleTimer;
+    const IDLE_TIME_LIMIT = 30 * 60 * 1000; // ठीक 30 मिनट
+
+    function resetUserTimer() {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => {
+            alert("30 मिनट तक कोई गतिविधि न होने के कारण सुरक्षा कारणों से यह खाता लॉगआउट हो गया है।");
+            window.location.href = '/logout';
+        }, IDLE_TIME_LIMIT);
+    }
+
+    const trackedEvents = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'click'];
+    trackedEvents.forEach(evt => {
+        window.addEventListener(evt, resetUserTimer, { passive: true });
+    });
+
+    resetUserTimer();
+})();
+
+    </script>
+</body>
+</html>

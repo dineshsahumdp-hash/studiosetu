@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HIM STUDIO - Financial & Business Report</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style>
+        .bg-studio-gradient { background: linear-gradient(135deg, #050814 0%, #0b1124 100%); }
+        .bg-studio-glass { background-color: rgba(11, 18, 38, 0.6); backdrop-filter: blur(14px); }
+        .bg-studio-sidebar { background-color: #03060f; }
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #03060f; }
+        ::-webkit-scrollbar-thumb { background: #1e293b; border-radius: 10px; }
+        .nav-btn { display: flex; align-items: center; gap: 0.625rem; width: 100%; text-align: left; padding: 0.75rem 1rem; border-radius: 0.75rem; color: #94a3b8; font-size: 0.75rem; font-weight: 700; transition: all 0.2s; cursor: pointer; }
+        .nav-btn:hover { background-color: rgba(15, 23, 42, 0.6); color: #f8fafc; }
+        .nav-btn.active { background: linear-gradient(to right, rgba(6, 182, 212, 0.2), rgba(99, 102, 241, 0.1)); color: #22d3ee; border: 1px solid rgba(6, 182, 212, 0.3); font-weight: 800; }
+        
+        .rep-card { background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(51, 65, 85, 0.7); border-radius: 1rem; padding: 1rem; display: flex; flex-direction: column; justify-content: space-between; }
+        
+        /* 🖨️ A4 प्रोफेशनल प्रिंटिंग स्टाइल */
+        @media screen {
+            #print_official_statement { display: none !important; }
+        }
+        @media print {
+            @page { size: A4 portrait; margin: 8mm; }
+            body { background: #ffffff !important; color: #000000 !important; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif !important; }
+            .no-print, .sidebar, .screen-view-container, #reportLockModal { display: none !important; }
+            #print_official_statement { 
+                display: block !important; 
+                width: 100% !important; 
+                border: 2px solid #1e293b; 
+                padding: 16px; 
+                box-sizing: border-box;
+                background: #ffffff !important;
+                color: #0f172a !important;
+            }
+        }
+    </style>
+</head>
+<body class="bg-studio-gradient text-slate-200 flex min-h-screen font-sans overflow-hidden">
+
+    <!-- 📱 SIDEBAR NAVIGATION (SCREEN ONLY) -->
+    <div class="bg-studio-sidebar w-68 min-h-screen flex flex-col justify-between p-4 shrink-0 border-r border-slate-900 shadow-2xl z-10 no-print select-none">
+        <div>
+            <div class="flex items-center gap-3 px-3 py-4 mb-4 border-b border-slate-900">
+                <span class="text-xl animate-pulse">📸</span>
+                <div class="leading-none">
+                    <h1 class="text-base font-black tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-indigo-400">HIM STUDIO</h1>
+                    <span class="text-[9px] text-slate-500 font-bold uppercase tracking-wider">Premium Web ERP</span>
+                </div>
+            </div>
+            
+            <nav class="space-y-1 text-xs font-bold tracking-wide max-h-[78vh] overflow-y-auto pr-1 nav-scroll">
+                <a href="/dashboard" class="nav-btn" id="btn_dashboard"><span>📊</span> Dashboard</a>
+                <a href="/" class="nav-btn" id="btn_new_bill"><span>📄</span> New Bill</a>
+                <a href="/all_bills" class="nav-btn" id="btn_all_bills"><span>📁</span> All Bills</a>
+                <a href="/token_counter" class="nav-btn" id="btn_token_counter"><span>🎫</span> Daily Token Counter</a>
+                <a href="/wedding" class="nav-btn" id="btn_wedding"><span>💍</span> Event Booking</a>
+                <a href="/stock" class="nav-btn" id="btn_stock"><span>📦</span> Item / Product (Stock)</a>
+                <a href="/credit_ledger" class="nav-btn" id="btn_credit"><span>💳</span> Credit Ledger</a>
+                <a href="/purchases" class="nav-btn" id="btn_purchases"><span>🛒</span> Purchases</a>
+                <a href="/studio_expenses" class="nav-btn" id="btn_expenses"><span>💸</span> Studio Expenses</a>
+                <a href="/work_export" class="nav-btn" id="btn_export"><span>📦</span> Work Export Terminal</a>
+                <a href="/material_stock" class="nav-btn" id="btn_material"><span>📦</span> Material Stock</a>
+                <a href="/equipment_tracking" class="nav-btn" id="btn_equipment"><span>📸</span> Equipment Tracking</a>
+                <a href="/employee_corner" class="nav-btn" id="btn_employee"><span>👤</span> Employee Corner</a>
+                <a href="/report" class="nav-btn active" id="btn_report"><span>📈</span> Report</a>
+                <a href="/change_password" class="nav-btn" id="btn_password"><span>🔐</span> Profile & Security</a>
+            </nav>
+        </div>
+        <a href="/" onclick="return confirm('सिस्टम से बाहर जाना चाहते हैं?')" class="text-left px-4 py-3 text-rose-400 font-bold text-xs hover:bg-rose-950/20 rounded-xl transition cursor-pointer flex items-center gap-2">
+            <span>❌</span> Exit System
+        </a>
+    </div>
+
+    <!-- 🖥️ SCREEN VIEW CONTAINER -->
+    <div class="screen-view-container flex-1 p-5 flex flex-col h-screen overflow-hidden no-print">
+        <div class="bg-studio-glass border border-slate-800/80 rounded-2xl p-4 flex-1 flex flex-col shadow-2xl overflow-y-auto space-y-4">
+            
+            <!-- 🔍 FILTER CONTROLS BAR -->
+            <div class="flex justify-between items-center bg-slate-900/80 p-3 rounded-xl border border-slate-800 flex-wrap gap-3">
+                <div class="flex items-center gap-3">
+                    <button onclick="setQuickFilter('today')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold transition">Today</button>
+                    <button onclick="setQuickFilter('this_month')" class="px-3 py-1.5 bg-cyan-900/40 border border-cyan-700 text-cyan-300 rounded-lg text-xs font-bold transition">This Month</button>
+                    <button onclick="setQuickFilter('last_month')" class="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-xs font-bold transition">Last Month</button>
+                </div>
+
+                <div class="flex items-center gap-3">
+                    <div class="flex items-center gap-2 text-xs">
+                        <span class="text-slate-400 font-semibold">From:</span>
+                        <input type="date" id="rep_from_date" class="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-white text-xs">
+                    </div>
+                    <div class="flex items-center gap-2 text-xs">
+                        <span class="text-slate-400 font-semibold">To:</span>
+                        <input type="date" id="rep_to_date" class="bg-slate-950 border border-slate-700 rounded-lg px-2.5 py-1 text-white text-xs">
+                    </div>
+                    <button onclick="fetchMasterReport()" class="px-4 py-1.5 bg-gradient-to-r from-cyan-600 to-indigo-600 hover:from-cyan-500 hover:to-indigo-500 text-white rounded-lg text-xs font-bold shadow-lg transition">🔍 Fetch Report</button>
+                    <button onclick="window.print()" class="px-4 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-bold transition flex items-center gap-1 shadow-lg">🖨️ Print Statement</button>
+                </div>
+            </div>
+
+            <!-- 💰 SCREEN METRICS CARDS -->
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-3.5">
+                <div class="rep-card border-cyan-500/40">
+                    <span class="text-[11px] font-bold text-cyan-400 uppercase">Gross Business (Sales)</span>
+                    <div class="text-2xl font-black text-white" id="m_gross_business">₹ 0.00</div>
+                    <span class="text-[10px] text-slate-400" id="m_bills_count">Total Orders: 0</span>
+                </div>
+
+                <div class="rep-card border-emerald-500/40">
+                    <span class="text-[11px] font-bold text-emerald-400 uppercase">Total Collected (Cash+UPI)</span>
+                    <div class="text-2xl font-black text-emerald-300" id="m_collected_rev">₹ 0.00</div>
+                    <div class="text-[10px] text-slate-400 flex justify-between">
+                        <span id="m_cash_in_hand">Cash: ₹0</span>
+                        <span id="m_upi_in_bank">UPI: ₹0</span>
+                    </div>
+                </div>
+
+                <div class="rep-card border-rose-500/40">
+                    <span class="text-[11px] font-bold text-rose-400 uppercase">Total Expenses</span>
+                    <div class="text-2xl font-black text-rose-300" id="m_total_expenses">₹ 0.00</div>
+                    <span class="text-[10px] text-slate-400">Studio + Salary + Lab</span>
+                </div>
+
+                <div class="rep-card border-indigo-500/50 bg-gradient-to-br from-indigo-950/80 to-slate-900">
+                    <span class="text-[11px] font-bold text-cyan-300 uppercase">Net Profit / Loss</span>
+                    <div class="text-2xl font-black text-white" id="m_net_profit">₹ 0.00</div>
+                    <span class="text-[10px] text-indigo-300 font-semibold">Revenue minus Expenses</span>
+                </div>
+            </div>
+
+            <!-- 📊 SCREEN BREAKDOWNS -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="rep-card border-slate-700">
+                    <h3 class="text-xs font-black text-slate-300 uppercase border-b border-slate-800 pb-2 mb-2">💸 Expense Distribution</h3>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between p-2 rounded bg-slate-950/60 border border-slate-800">
+                            <span class="text-slate-300">Studio Daily Expenses:</span>
+                            <span class="font-bold text-rose-400" id="m_exp_daily">₹ 0.00</span>
+                        </div>
+                        <div class="flex justify-between p-2 rounded bg-slate-950/60 border border-slate-800">
+                            <span class="text-slate-300">Staff Settled Salary:</span>
+                            <span class="font-bold text-rose-400" id="m_exp_salary">₹ 0.00</span>
+                        </div>
+                        <div class="flex justify-between p-2 rounded bg-slate-950/60 border border-slate-800">
+                            <span class="text-slate-300">Photo Lab & Outsource Paid:</span>
+                            <span class="font-bold text-rose-400" id="m_exp_lab">₹ 0.00</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="rep-card border-slate-700">
+                    <h3 class="text-xs font-black text-amber-400 uppercase border-b border-slate-800 pb-2 mb-2">⏳ Market Receivables & Discounts</h3>
+                    <div class="space-y-2 text-xs">
+                        <div class="flex justify-between p-2 rounded bg-slate-950/60 border border-slate-800">
+                            <span class="text-slate-300">Total Pending Market Dues:</span>
+                            <span class="font-bold text-amber-400" id="m_pending_dues">₹ 0.00</span>
+                        </div>
+                        <div class="flex justify-between p-2 rounded bg-slate-950/60 border border-slate-800">
+                            <span class="text-slate-300">Total Discounts Given:</span>
+                            <span class="font-bold text-slate-400" id="m_total_discounts">₹ 0.00</span>
+                        </div>
+                        <div class="flex justify-between p-2 rounded bg-slate-950/60 border border-slate-800">
+                            <span class="text-slate-300">Staff Advances Given:</span>
+                            <span class="font-bold text-slate-400" id="m_staff_advances">₹ 0.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 📑 SCREEN EXPENSE TABLE -->
+            <div class="bg-slate-950/60 rounded-xl border border-slate-800 p-3">
+                <h3 class="text-xs font-black text-slate-300 uppercase mb-2">📄 Daily Expense Logs (In Selected Range)</h3>
+                <div class="overflow-y-auto max-h-44 text-xs">
+                    <table class="w-full text-left">
+                        <thead class="bg-slate-900 text-slate-400 text-[11px]">
+                            <tr><th class="p-2">Date</th><th class="p-2">Category</th><th class="p-2">Notes</th><th class="p-2 text-right">Amount</th></tr>
+                        </thead>
+                        <tbody id="rep_expense_table_body" class="divide-y divide-slate-800 text-[11px]"></tbody>
+                    </table>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 🖨️ OFFICIAL A4 PRINT TEMPLATE SHEET (केवल प्रिंट के समय ही खुलेगी) -->
+    <div id="print_official_statement" style="display: none;">
+        <div style="display: flex; justify-content: space-between; align-items: flex-start; border-bottom: 2px solid #0f172a; padding-bottom: 8px; margin-bottom: 12px;">
+            <div>
+                <h1 style="font-size: 20px; font-weight: 900; margin: 0; color: #0f172a; letter-spacing: 0.5px;">HIM STUDIO</h1>
+                <p style="font-size: 11px; margin: 2px 0 0 0; color: #475569; font-weight: 600;">Financial Turnover & Profit-Loss Statement</p>
+            </div>
+            <div style="text-align: right; font-size: 11px; color: #334155; line-height: 1.4;">
+                <div><b>Statement Period:</b> <span id="p_date_range">-</span></div>
+                <div><b>Generated On:</b> <span id="p_gen_date">-</span></div>
+            </div>
+        </div>
+
+        <table style="width: 100%; border-collapse: collapse; border: 1.5px solid #0f172a; margin-bottom: 14px; font-size: 11.5px;">
+            <thead style="background: #f1f5f9; border-bottom: 1.5px solid #0f172a;">
+                <tr>
+                    <th style="padding: 6px 10px; text-align: left; border-right: 1px solid #cbd5e1;">FINANCIAL REVENUE HEAD</th>
+                    <th style="padding: 6px 10px; text-align: right; width: 140px;">AMOUNT (INR)</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                    <td style="padding: 6px 10px; border-right: 1px solid #e2e8f0;"><b>Gross Business Volume (Total Orders: <span id="p_orders_count">0</span>)</b></td>
+                    <td style="padding: 6px 10px; text-align: right; font-weight: bold;" id="p_gross_sales">₹ 0.00</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                    <td style="padding: 6px 10px; border-right: 1px solid #e2e8f0;">Customer Discounts (-)</td>
+                    <td style="padding: 6px 10px; text-align: right; color: #b91c1c;" id="p_discounts">₹ 0.00</td>
+                </tr>
+                <tr style="border-bottom: 1.5px solid #0f172a; background: #fafafa;">
+                    <td style="padding: 6px 10px; border-right: 1px solid #cbd5e1;"><b>Actual Collected Revenue (Cash: <span id="p_cash_split">0</span> | UPI: <span id="p_upi_split">0</span>)</b></td>
+                    <td style="padding: 6px 10px; text-align: right; font-weight: 900; color: #15803d;" id="p_collected">₹ 0.00</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                    <td style="padding: 6px 10px; border-right: 1px solid #e2e8f0;">Studio Daily Running Expenses (-)</td>
+                    <td style="padding: 6px 10px; text-align: right;" id="p_exp_daily">₹ 0.00</td>
+                </tr>
+                <tr style="border-bottom: 1px solid #e2e8f0;">
+                    <td style="padding: 6px 10px; border-right: 1px solid #e2e8f0;">Staff Settled Salary & Payouts (-)</td>
+                    <td style="padding: 6px 10px; text-align: right;" id="p_exp_salary">₹ 0.00</td>
+                </tr>
+                <tr style="border-bottom: 1.5px solid #0f172a;">
+                    <td style="padding: 6px 10px; border-right: 1px solid #e2e8f0;">Photo Lab & Outsource Vendor Paid (-)</td>
+                    <td style="padding: 6px 10px; text-align: right;" id="p_exp_lab">₹ 0.00</td>
+                </tr>
+                <tr style="border-bottom: 1.5px solid #0f172a; background: #f8fafc;">
+                    <td style="padding: 7px 10px; border-right: 1px solid #cbd5e1; font-weight: 900; color: #0f172a;">TOTAL DISBURSED EXPENSES</td>
+                    <td style="padding: 7px 10px; text-align: right; font-weight: 900; color: #b91c1c;" id="p_total_expenses">₹ 0.00</td>
+                </tr>
+                <tr style="background: #f0fdf4;">
+                    <td style="padding: 8px 10px; border-right: 1px solid #cbd5e1; font-size: 13px; font-weight: 900; color: #166534;">NET PROFIT / LOSS (Revenue - Expenses)</td>
+                    <td style="padding: 8px 10px; text-align: right; font-size: 14px; font-weight: 900; color: #166534;" id="p_net_profit">₹ 0.00</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div style="background: #f8fafc; border: 1px solid #cbd5e1; padding: 8px 12px; margin-bottom: 14px; font-size: 11px; display: flex; justify-content: space-between; border-radius: 4px;">
+            <span><b>Pending Market Receivables (Customer Dues):</b> <span style="font-weight: bold; color: #c2410c;" id="p_market_dues">₹ 0.00</span></span>
+            <span><b>Staff Advances Outstanding:</b> <span style="font-weight: bold;" id="p_advances">₹ 0.00</span></span>
+        </div>
+
+        <div style="font-size: 11px; font-weight: bold; margin-bottom: 4px; color: #0f172a;">ITEMIZED EXPENSE LOGS</div>
+        <table style="width: 100%; border-collapse: collapse; border: 1px solid #cbd5e1; font-size: 10.5px; margin-bottom: 24px;">
+            <thead style="background: #f1f5f9; border-bottom: 1px solid #cbd5e1;">
+                <tr>
+                    <th style="padding: 5px 8px; text-align: center; width: 40px; border-right: 1px solid #cbd5e1;">SI</th>
+                    <th style="padding: 5px 8px; text-align: left; width: 85px; border-right: 1px solid #cbd5e1;">Date</th>
+                    <th style="padding: 5px 8px; text-align: left; width: 140px; border-right: 1px solid #cbd5e1;">Expense Category</th>
+                    <th style="padding: 5px 8px; text-align: left; border-right: 1px solid #cbd5e1;">Notes / Remarks</th>
+                    <th style="padding: 5px 8px; text-align: right; width: 100px;">Amount</th>
+                </tr>
+            </thead>
+            <tbody id="p_expense_list_body"></tbody>
+        </table>
+
+        <div style="display: flex; justify-content: space-between; align-items: flex-end; font-size: 11px; color: #334155; margin-top: 35px;">
+            <div>
+                <div>__________________________</div>
+                <div style="margin-top: 4px; font-weight: bold;">Prepared / Verified by</div>
+            </div>
+            <div style="text-align: right;">
+                <div>__________________________</div>
+                <div style="margin-top: 4px; font-weight: 900; color: #0f172a;">Authorized Signature & Seal</div>
+                <div style="font-size: 9.5px; color: #64748b;">HIM STUDIO ERP</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🔒 STRICT MASTER PASSWORD LOCK MODAL (NO ESCAPE, NO OUTSIDE CLICK) -->
+    <div id="reportLockModal" class="fixed inset-0 bg-slate-950/95 backdrop-blur-md z-[9999] flex items-center justify-center p-4 select-none">
+        <div class="bg-slate-900 border border-slate-700 w-full max-w-sm rounded-3xl p-6 shadow-2xl space-y-4 text-center">
+            
+            <div class="w-14 h-14 bg-cyan-950/80 border border-cyan-700/60 rounded-2xl mx-auto flex items-center justify-center text-2xl shadow-inner">
+                🔐
+            </div>
+
+            <div>
+                <h3 class="text-sm font-black text-cyan-400 uppercase tracking-wider">Financial Security Shield</h3>
+                <p class="text-[11px] text-slate-400 mt-1">गोपनीय वित्तीय रिपोर्ट देखने हेतु स्टूडियो लॉगिन पासवर्ड दर्ज करें</p>
+            </div>
+
+            <div>
+                <input type="password" id="report_master_pwd" placeholder="स्टूडियो लॉगिन पासवर्ड" class="w-full p-3 rounded-xl bg-slate-950 border border-slate-700 text-white text-xs outline-none focus:border-cyan-500 text-center font-bold tracking-widest" autocomplete="off">
+            </div>
+
+            <div class="flex gap-2 pt-1">
+                <button onclick="cancelReportAccess()" class="flex-1 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-bold transition cursor-pointer">
+                    रद्द करें (Dashboard)
+                </button>
+                <button onclick="verifyReportPassword()" id="btn_verify_pwd" class="flex-1 py-2.5 bg-cyan-600 hover:bg-cyan-500 text-white rounded-xl text-xs font-black tracking-wide shadow-lg transition cursor-pointer">
+                    अनलॉक करें
+                </button>
+            </div>
+
+            <div id="lock_error_msg" class="text-[11px] text-rose-400 font-bold hidden"></div>
+        </div>
+    </div>
+
+    <!-- ⚙️ REPORT JAVASCRIPT ENGINE -->
+    <script>
+        let isReportUnlocked = false;
+
+        window.addEventListener('DOMContentLoaded', () => {
+            // 🔒 1. सख्त सुरक्षा: शुरुआत में मोडल ऑन रहेगा
+            const lockModal = document.getElementById('reportLockModal');
+            lockModal.classList.remove('hidden');
+            document.getElementById('report_master_pwd').focus();
+
+            // 🚫 ESC कुंजी को पूरी तरह ब्लॉक करना
+            window.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' || e.keyCode === 27) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    return false;
+                }
+                // Enter दबाने पर पासवर्ड सबमिट
+                if (e.key === 'Enter' && !isReportUnlocked) {
+                    verifyReportPassword();
+                }
+            }, true);
+
+            // 🚫 मोडल के बाहर कहीं भी क्लिक करने पर बंद न होने देना
+            lockModal.addEventListener('click', (e) => {
+                e.stopPropagation();
+            });
+        });
+
+        // पासवर्ड वेरिफिकेशन
+        async function verifyReportPassword() {
+            const pwdInput = document.getElementById('report_master_pwd');
+            const pwd = pwdInput.value.trim();
+            const errMsg = document.getElementById('lock_error_msg');
+            const btn = document.getElementById('btn_verify_pwd');
+
+            if (!pwd) {
+                errMsg.innerText = "कृपया पासवर्ड दर्ज करें!";
+                errMsg.classList.remove('hidden');
+                pwdInput.focus();
+                return;
+            }
+
+            btn.disabled = true;
+            btn.innerText = "जाँच हो रही है...";
+            errMsg.classList.add('hidden');
+
+            try {
+                const res = await fetch('/api/verify_master_password', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ password: pwd })
+                });
+                const data = await res.json();
+
+                if (data.status === 'success') {
+                    isReportUnlocked = true;
+                    document.getElementById('reportLockModal').classList.add('hidden');
+                    // पासवर्ड सही होने के बाद ही डेटा लोड होगा
+                    setQuickFilter('this_month');
+                } else {
+                    errMsg.innerText = data.message || "❌ गलत पासवर्ड! अनधिकृत एक्सेस।";
+                    errMsg.classList.remove('hidden');
+                    pwdInput.value = '';
+                    pwdInput.focus();
+                }
+            } catch (e) {
+                errMsg.innerText = "सर्वर से संपर्क नहीं हो पाया!";
+                errMsg.classList.remove('hidden');
+            } finally {
+                btn.disabled = false;
+                btn.innerText = "अनलॉक करें";
+            }
+        }
+
+        // रद्द करने पर बाहर निकालना
+        function cancelReportAccess() {
+            window.location.href = '/dashboard';
+        }
+
+        function setQuickFilter(type) {
+            if (!isReportUnlocked) return;
+            const today = new Date();
+            let from = '', to = '';
+
+            if (type === 'today') {
+                from = today.toISOString().split('T')[0];
+                to = from;
+            } else if (type === 'this_month') {
+                from = new Date(today.getFullYear(), today.getMonth(), 1).toISOString().split('T')[0];
+                to = today.toISOString().split('T')[0];
+            } else if (type === 'last_month') {
+                from = new Date(today.getFullYear(), today.getMonth() - 1, 1).toISOString().split('T')[0];
+                to = new Date(today.getFullYear(), today.getMonth(), 0).toISOString().split('T')[0];
+            }
+
+            document.getElementById('rep_from_date').value = from;
+            document.getElementById('rep_to_date').value = to;
+            fetchMasterReport();
+        }
+
+        async function fetchMasterReport() {
+            if (!isReportUnlocked) return;
+            const fromDate = document.getElementById('rep_from_date').value;
+            const toDate = document.getElementById('rep_to_date').value;
+
+            try {
+                const res = await fetch('/api/get_master_report', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ from_date: fromDate, to_date: toDate })
+                });
+                const json = await res.json();
+                if(json.status === 'success') {
+                    renderReportData(json);
+                }
+            } catch(e) {
+                console.error("Report Fetch Error:", e);
+            }
+        }
+
+        function renderReportData(data) {
+            const m = data.metrics;
+            const exp = data.expense_details;
+
+            // 🖥️ 1. स्क्रीन व्यू अपडेट
+            document.getElementById('m_gross_business').innerText = `₹ ${m.gross_business.toFixed(2)}`;
+            document.getElementById('m_bills_count').innerText = `Total Orders: ${m.total_bills_count}`;
+            document.getElementById('m_collected_rev').innerText = `₹ ${m.collected_revenue.toFixed(2)}`;
+            document.getElementById('m_cash_in_hand').innerText = `Cash: ₹${m.cash_in_hand.toFixed(0)}`;
+            document.getElementById('m_upi_in_bank').innerText = `UPI: ₹${m.upi_in_bank.toFixed(0)}`;
+            document.getElementById('m_total_expenses').innerText = `₹ ${m.total_expenses.toFixed(2)}`;
+            document.getElementById('m_net_profit').innerText = `₹ ${m.net_profit.toFixed(2)}`;
+
+            document.getElementById('m_exp_daily').innerText = `₹ ${exp.daily_expenses.toFixed(2)}`;
+            document.getElementById('m_exp_salary').innerText = `₹ ${exp.staff_payouts.toFixed(2)}`;
+            document.getElementById('m_exp_lab').innerText = `₹ ${exp.lab_paid.toFixed(2)}`;
+
+            document.getElementById('m_pending_dues').innerText = `₹ ${m.pending_dues.toFixed(2)}`;
+            document.getElementById('m_total_discounts').innerText = `₹ ${m.total_discounts.toFixed(2)}`;
+            document.getElementById('m_staff_advances').innerText = `₹ ${exp.staff_advances.toFixed(2)}`;
+
+            const screenTbody = document.getElementById('rep_expense_table_body');
+            screenTbody.innerHTML = (data.expense_list || []).length === 0 ? 
+                `<tr><td colspan="4" class="text-center p-3 text-slate-500">इस अवधि में कोई दैनिक खर्च दर्ज नहीं है</td></tr>` :
+                data.expense_list.map(e => `
+                    <tr class="hover:bg-slate-900/80 transition cursor-pointer" onclick="alert('दिनांक: ${e.date} | ${e.category} | ₹${e.amount.toFixed(2)}')">
+                        <td class="p-2 font-mono text-slate-400">${e.date}</td>
+                        <td class="p-2 font-bold text-slate-200">${e.category}</td>
+                        <td class="p-2 text-slate-400">${e.notes || '-'}</td>
+                        <td class="p-2 text-right font-bold text-rose-400">₹ ${e.amount.toFixed(2)}</td>
+                    </tr>
+                `).join('');
+
+            // 🖨️ 2. A4 प्रिंट शीट अपडेट
+            document.getElementById('p_date_range').innerText = `${data.from_date} to ${data.to_date}`;
+            document.getElementById('p_gen_date').innerText = new Date().toLocaleString();
+            document.getElementById('p_orders_count').innerText = m.total_bills_count;
+            document.getElementById('p_gross_sales').innerText = `₹ ${m.gross_business.toFixed(2)}`;
+            document.getElementById('p_discounts').innerText = `₹ ${m.total_discounts.toFixed(2)}`;
+            document.getElementById('p_cash_split').innerText = `₹${m.cash_in_hand.toFixed(0)}`;
+            document.getElementById('p_upi_split').innerText = `₹${m.upi_in_bank.toFixed(0)}`;
+            document.getElementById('p_collected').innerText = `₹ ${m.collected_revenue.toFixed(2)}`;
+            
+            document.getElementById('p_exp_daily').innerText = `₹ ${exp.daily_expenses.toFixed(2)}`;
+            document.getElementById('p_exp_salary').innerText = `₹ ${exp.staff_payouts.toFixed(2)}`;
+            document.getElementById('p_exp_lab').innerText = `₹ ${exp.lab_paid.toFixed(2)}`;
+            document.getElementById('p_total_expenses').innerText = `₹ ${m.total_expenses.toFixed(2)}`;
+            document.getElementById('p_net_profit').innerText = `₹ ${m.net_profit.toFixed(2)}`;
+            
+            document.getElementById('p_market_dues').innerText = `₹ ${m.pending_dues.toFixed(2)}`;
+            document.getElementById('p_advances').innerText = `₹ ${exp.staff_advances.toFixed(2)}`;
+
+            const printTbody = document.getElementById('p_expense_list_body');
+            printTbody.innerHTML = (data.expense_list || []).length === 0 ? 
+                `<tr><td colspan="5" style="padding: 6px; text-align: center; color: #64748b;">No expense logs in this period</td></tr>` :
+                data.expense_list.map((e, idx) => `
+                    <tr style="border-bottom: 1px solid #e2e8f0;">
+                        <td style="padding: 5px 8px; text-align: center; border-right: 1px solid #e2e8f0;">${idx+1}</td>
+                        <td style="padding: 5px 8px; border-right: 1px solid #e2e8f0;">${e.date}</td>
+                        <td style="padding: 5px 8px; border-right: 1px solid #e2e8f0; font-weight: 600;">${e.category}</td>
+                        <td style="padding: 5px 8px; border-right: 1px solid #e2e8f0; color: #475569;">${e.notes || '-'}</td>
+                        <td style="padding: 5px 8px; text-align: right; font-weight: bold;">₹ ${e.amount.toFixed(2)}</td>
+                    </tr>
+                `).join('');
+        }
+
+        // ऑटो इनएक्टिविटी लॉगआउट (30 मिनट)
+        (function handleUserInactivity() {
+            let idleTimer;
+            const IDLE_TIME_LIMIT = 30 * 60 * 1000;
+
+            function resetUserTimer() {
+                clearTimeout(idleTimer);
+                idleTimer = setTimeout(() => {
+                    alert("30 मिनट तक कोई गतिविधि न होने के कारण सुरक्षा कारणों से यह खाता लॉगआउट हो गया है।");
+                    window.location.href = '/logout';
+                }, IDLE_TIME_LIMIT);
+            }
+
+            const trackedEvents = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'click'];
+            trackedEvents.forEach(evt => {
+                window.addEventListener(evt, resetUserTimer, { passive: true });
+            });
+
+            resetUserTimer();
+        })();
+    </script>
+</body>
+</html>
