@@ -35,7 +35,7 @@
                 <a href="/new_bill" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer" id="btn_new_bill"><span>📄</span> New Bill</a>
                 <a href="/all_bills" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer" id="btn_all_bills"><span>📁</span> All Bills</a>
                 <a href="/token_counter" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer" id="btn-token-counter"><span>🎫</span> Daily Token Counter</a>
-                <a href="/wedding" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer" id="btn_wedding"><span>💍</span> Event Booking</a>
+                <a href="/wedding" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer" id="btn_wedding"><span>💍</span> Wedding Booking</a>
                 <a href="/stock" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer" id="btn_stock"><span>📦</span> Item / Product (Stock)</a>
                 <a href="/credit_ledger" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer" id="btn_credit"><span>💳</span> Credit Ledger</a>
                 <a href="/purchases" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer"><span>🛒</span> Purchases</a>
@@ -45,7 +45,7 @@
                 <a href="/equipment" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer"><span>📸</span> Equipment Tracking</a>
                 <a href="/employees" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer"><span>👤</span> Employee Corner</a>
                 <a href="/reports" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer"><span>📈</span> Report</a>
-                <a href="/change_password" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer"><span>🔐</span> Profile & Security</a>
+                <a href="/change_password" class="nav-btn w-full text-left px-4 py-3 rounded-xl text-slate-400 hover:bg-slate-900/60 hover:text-slate-100 transition flex items-center gap-2.5 cursor-pointer"><span>🔐</span> Change Password</a>
             </nav>
         </div>
         <a href="/" class="text-left px-4 py-3 text-rose-400 font-bold text-xs hover:bg-rose-950/20 rounded-xl transition cursor-pointer flex items-center gap-2"><span>❌</span> Exit System</a>
@@ -286,16 +286,9 @@
                     <span id="pop_wed_collected" class="block p-1.5 text-emerald-400 font-black text-xs bg-slate-900 border border-slate-700 rounded-lg text-center">₹ 0.00</span>
                 </div>
                 <div>
-                    <label class="block text-cyan-400 font-black text-[10px] mb-0.5">Add New Payment & Mode:</label>
+                    <label class="block text-cyan-400 font-black text-[10px] mb-0.5">Add New Payment (₹):</label>
                     <div class="flex gap-1">
-                        <input type="number" id="pop_wed_new_pay" oninput="livePopCalc()" value="0" class="flex-1 p-1.5 bg-indigo-950/50 border border-indigo-900 rounded-lg text-right font-bold text-white text-xs focus:outline-none" placeholder="Amount">
-                        
-                        <!-- 💳 पेमेंट मोड ड्रॉपडाउन (Cash / UPI) -->
-                        <select id="pop_wed_pay_mode" class="p-1 bg-slate-900 border border-slate-700 rounded-lg text-cyan-300 font-bold text-[11px] focus:outline-none">
-                            <option value="CASH">💵 Cash</option>
-                            <option value="UPI">📱 UPI</option>
-                        </select>
-
+                        <input type="number" id="pop_wed_new_pay" oninput="livePopCalc()" value="0" class="flex-1 p-1.5 bg-indigo-950/50 border border-indigo-900 rounded-lg text-right font-bold text-white text-xs focus:outline-none">
                         <button type="button" onclick="submitPartPaymentPopup()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-2.5 rounded-lg font-bold text-[10px] transition cursor-pointer">💾 Save</button>
                     </div>
                 </div>
@@ -814,37 +807,31 @@ function liveWeddingCalc() {
     }
 
     async function submitPartPaymentPopup() {
-    const bookingId = document.getElementById('pop_wed_hidden_id').value; // या bill_no
-    const amount = document.getElementById('pop_wed_new_pay').value;
-    const paymentMode = document.getElementById('pop_wed_pay_mode').value; // 'CASH' या 'UPI'
+        const payInput = document.getElementById('pop_wed_new_pay');
+        if (!payInput) return;
+        const newPayVal = parseFloat(payInput.value) || 0;
+        if (newPayVal <= 0) { alert("वैध राशि दर्ज करें!"); return; }
 
-    if (!amount || parseFloat(amount) <= 0) {
-        alert("कृपया वैध (Valid) राशि दर्ज करें!");
-        return;
-    }
-
-    try {
-        const res = await fetch('/api/add_wedding_payment', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ 
-                id: bookingId, 
-                amount: parseFloat(amount), 
-                payment_mode: paymentMode  // यह सीधे आपके ऊपर वाले फ्लस्क रूट में जाएगा
-            })
-        });
-        
-        const data = await res.json();
-        if (data.status === 'success') {
-            alert(data.message);
-            location.reload(); // पेज रीफ्रेश होकर नया बैलेंस दिखाएगा
-        } else {
-            alert("एरर: " + data.message);
+        try {
+            const res = await fetch('/api/add_wedding_payment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ id: selectedBillNo, amount: newPayVal, payment_mode: "Cash" })
+            });
+            const data = await res.json();
+            if (data.status === "success") {
+                alert("✅ पार्ट पेमेंट दर्ज हो गया!");
+                totalCollectedFromDb += newPayVal;
+                payInput.value = "0";
+                openWeddingActionPopup(selectedBillNo);
+                renderWeddingGrid();
+            } else {
+                alert("❌ " + data.message);
+            }
+        } catch (err) {
+            alert("🚨 सर्वर एरर!");
         }
-    } catch (e) {
-        console.error("Wedding Payment Error:", e);
     }
-}
 
     // 🎯 6. अपडेट व सेव करना
     async function processUpdateWeddingData(actionMode) {

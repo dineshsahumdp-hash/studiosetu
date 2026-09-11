@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-     <title>STUDIO SETU - Cloud Portal</title>
+    <title>HIM STUDIO - SaaS Cloud Portal</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -36,7 +36,7 @@
 
         .camera-bg {
             background: linear-gradient(135deg, rgba(15, 23, 42, 0.85) 0%, rgba(30, 58, 138, 0.5) 100%),
-                        url('https://images.unsplash.com/photo-1512790182412-b19e6d62bc39?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+                        url('https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
         }
 
         ::-webkit-scrollbar { width: 4px; }
@@ -48,10 +48,10 @@
     <!-- DUAL-FRAME SPLIT CONTAINER -->
     <div class="portal-card bg-slate-50 rounded-3xl w-full max-w-4xl min-h-[550px] flex flex-col md:flex-row overflow-hidden border border-white/20">
 
-        <!-- LEFT FRAME: Premium Lens Visual -->
+        <!-- LEFT FRAME: Camera Aperture Visual -->
         <div class="camera-bg md:w-5/12 p-8 flex flex-col justify-between text-white relative min-h-[200px] md:min-h-full">
             <div class="z-10">
-                <h1 class="font-black tracking-widest text-lg leading-tight uppercase text-white drop-shadow">STUDIO SETU</h1>
+                <h1 class="font-black tracking-widest text-lg leading-tight uppercase text-white drop-shadow">HIM STUDIO SAAS</h1>
                 <span class="text-[10px] text-cyan-300 font-bold tracking-wider uppercase">Cloud ERP Architecture</span>
             </div>
 
@@ -80,6 +80,7 @@
                         <span class="text-2xl">📸</span>
                     </div>
                     <h2 class="text-lg font-black text-slate-800 tracking-tight uppercase" id="form_main_title">STUDIO LOGIN</h2>
+                    <p class="text-[11px] text-slate-400" id="form_sub_title">कृपया अपना 10-अंकों का मोबाइल नंबर और पासवर्ड दर्ज करें</p>
                 </div>
 
                 <!-- Toggle Pills -->
@@ -88,7 +89,7 @@
                         Studio Login
                     </button>
                     <button type="button" id="tab_register" onclick="switchTab('register')" class="flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-800 transition-all cursor-pointer">
-                        Free Trial
+                        30-Day Free Trial
                     </button>
                 </div>
 
@@ -140,6 +141,7 @@
                         </div>
                     </div>
 
+                    <!-- Only Website (Optional) -->
                     <div>
                         <input type="text" id="reg_website" placeholder="Website / Portfolio Link (Optional - बिल पर प्रिंट होगा)" class="clean-input">
                     </div>
@@ -158,7 +160,7 @@
                     </div>
 
                     <div class="p-2 bg-emerald-50 border border-emerald-200 rounded-xl text-[11px] text-emerald-800 text-center font-semibold">
-                        🎁 <strong>Free Trial 30 Days:</strong> रजिस्ट्रेशन करते ही पूरा ERP तुरंत एक्टिवेट हो जाएगा।
+                        🎁 <strong>30-Day Free Trial:</strong> रजिस्ट्रेशन करते ही पूरा ERP तुरंत एक्टिवेट हो जाएगा।
                     </div>
 
                     <div class="flex items-start gap-1.5 text-[11px] text-slate-500">
@@ -169,7 +171,7 @@
                     </div>
 
                     <button type="submit" id="btn_reg_submit" class="w-full bg-emerald-600 hover:bg-emerald-500 text-white font-black tracking-wider py-3 rounded-xl shadow-md uppercase cursor-pointer transition text-xs mt-1">
-                        ACTIVATE FREE TRIAL & REGISTER
+                        ACTIVATE 30-DAY TRIAL & REGISTER
                     </button>
                 </form>
             </div>
@@ -177,7 +179,7 @@
             <!-- Footer -->
             <div class="pt-3 text-center border-t border-slate-200/80 mt-3">
                 <p class="text-[10px] text-slate-400 font-semibold tracking-wide">
-                   
+                    © 2026 HIM STUDIO ERP. All Rights Reserved.
                 </p>
             </div>
         </div>
@@ -197,7 +199,7 @@
             <div class="overflow-y-auto space-y-3 my-3 pr-2 text-xs text-slate-600 leading-relaxed">
                 <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
                     <strong class="text-blue-700">1. Service Scope / सेवा का दायरा:</strong>
-                    <p class="mt-0.5 text-slate-500">STUDIO SETU is a cloud-based ERP for photographic business record keeping and billing management. <br>यह सॉफ्टवेयर केवल फोटो और वीडियो स्टूडियो के डिजिटल रिकॉर्ड और बिलिंग प्रबंधन की सुविधा हेतु है。</p>
+                    <p class="mt-0.5 text-slate-500">HIM STUDIO SaaS is a cloud-based ERP for photographic business record keeping and billing management. <br>यह सॉफ्टवेयर केवल फोटो और वीडियो स्टूडियो के डिजिटल रिकॉर्ड और बिलिंग प्रबंधन की सुविधा हेतु है।</p>
                 </div>
 
                 <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
@@ -211,8 +213,8 @@
                 </div>
 
                 <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
-                    <strong class="text-blue-700">4. Free Trial & Auto-Lock / ट्रायल एवं ऑटो-लॉक:</strong>
-                    <p class="mt-0.5 text-slate-500">New accounts receive a free trial. After expiration, access locks automatically until renewed by subscription. <br>ट्रायल समाप्त होने के बाद सिस्टम ऑटोमैटिक लॉक हो जाएगा। जारी रखने के लिए रिन्यूअल अनिवार्य है।</p>
+                    <strong class="text-blue-700">4. 30-Day Free Trial & Auto-Lock / 30 दिन का ट्रायल एवं ऑटो-लॉक:</strong>
+                    <p class="mt-0.5 text-slate-500">New accounts receive a 30-day free trial. After expiration, access locks automatically until renewed by subscription. <br>30 दिन का ट्रायल समाप्त होने के बाद सिस्टम ऑटोमैटिक लॉक हो जाएगा। जारी रखने के लिए रिन्यूअल अनिवार्य है।</p>
                 </div>
 
                 <div class="p-3 bg-slate-50 rounded-xl border border-slate-100">
@@ -255,6 +257,7 @@
             const tabLogin = document.getElementById('tab_login');
             const tabReg = document.getElementById('tab_register');
             const mainTitle = document.getElementById('form_main_title');
+            const subTitle = document.getElementById('form_sub_title');
 
             if (tab === 'login') {
                 loginForm.classList.remove('hidden');
@@ -262,12 +265,14 @@
                 tabLogin.className = "flex-1 py-2 rounded-lg bg-white text-blue-600 shadow-sm font-bold transition-all cursor-pointer";
                 tabReg.className = "flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-800 font-bold transition-all cursor-pointer";
                 mainTitle.innerText = "STUDIO LOGIN";
+                subTitle.innerText = "कृपया अपना 10-अंकों का मोबाइल नंबर और पासवर्ड दर्ज करें";
             } else {
                 loginForm.classList.add('hidden');
                 regForm.classList.remove('hidden');
                 tabReg.className = "flex-1 py-2 rounded-lg bg-white text-emerald-600 shadow-sm font-bold transition-all cursor-pointer";
                 tabLogin.className = "flex-1 py-2 rounded-lg text-slate-500 hover:text-slate-800 font-bold transition-all cursor-pointer";
                 mainTitle.innerText = "NEW REGISTRATION";
+                subTitle.innerText = "अपने स्टूडियो के लिए 30 दिनों का फ्री ट्रायल शुरू करें";
             }
         }
 
@@ -375,7 +380,7 @@
 
                 const data = await res.json();
                 if (data.status === 'success') {
-                    alert(data.message || "रजिस्ट्रेशन सफल! ट्रायल एक्टिवेट हो गया है।");
+                    alert(data.message || "रजिस्ट्रेशन सफल! 30-दिन का ट्रायल एक्टिवेट हो गया है।");
                     document.getElementById('form_register').reset();
                     switchTab('login');
                     document.getElementById('login_mobile').value = mob;
@@ -388,7 +393,7 @@
                 alert("सर्वर से संपर्क नहीं हो पाया। कृपया पुनः प्रयास करें।");
             } finally {
                 btn.disabled = false;
-                btn.innerText = "ACTIVATE FREE TRIAL & REGISTER";
+                btn.innerText = "ACTIVATE 30-DAY TRIAL & REGISTER";
             }
         }
     </script>

@@ -14,7 +14,6 @@ from email import encoders
 from datetime import datetime, date, timedelta
 from functools import wraps
 
-
 from flask import Flask, render_template, request, jsonify, session, redirect, url_for, make_response, send_from_directory, send_file
 from werkzeug.security import generate_password_hash, check_password_hash
 from werkzeug.utils import secure_filename
@@ -985,7 +984,7 @@ def saas_login_studio():
                 LOGIN_ATTEMPTS[mobile] = {'count': 0, 'last_time': now_ts}
 
         # 👑 1. HIM STUDIO मास्टर ओनर डायरेक्ट बाईपास लॉगिन
-        if mobile == MASTER_MOBILE and (check_password_hash(generate_password_hash(MASTER_PASSWORD), auth_secret) or auth_secret in [MASTER_PASSWORD, '123456', '1234', '9691']):
+        if mobile == '9691158104' and auth_secret in ['admin123', '123456', '1234', '9691']:
             LOGIN_ATTEMPTS.pop(mobile, None)
             session.clear()
             session.permanent = True
@@ -3766,34 +3765,17 @@ def save_purchaser():
 @app.route('/api/upload_purchase_file', methods=['POST'])
 @login_required
 def upload_purchase_file():
-    if 'file' not in request.files: 
-        return jsonify({'status': 'error', 'message': 'No file part'}), 400
+    if 'file' not in request.files: return jsonify({'status': 'error', 'message': 'No file part'}), 400
     file = request.files['file']
-    if file.filename == '': 
-        return jsonify({'status': 'error', 'message': 'No selected file'}), 400
-    
-    original_name = secure_filename(file.filename)
-    ext = os.path.splitext(original_name)[1].lower()
-    
-    allowed_extensions = ['.jpg', '.jpeg', '.png', '.pdf', '.webp']
-    if ext not in allowed_extensions:
-        return jsonify({'status': 'error', 'message': 'Only JPG, PNG, WEBP or PDF files are allowed!'}), 400
-
-    upload_folder = os.path.join(UPLOADS_DIR, 'purchase_bills')
-    os.makedirs(upload_folder, exist_ok=True)
-    
-    # Generate unique filename to prevent collisions and save space/bandwidth
-    unique_filename = f"bill_{int(time.time())}_{secrets.token_hex(4)}{ext if ext == '.pdf' else '.jpg'}"
-    file_path = os.path.join(upload_folder, unique_filename)
-    
-    if ext == '.pdf':
+    if file.filename == '': return jsonify({'status': 'error', 'message': 'No selected file'}), 400
+    if file:
+        clean_name = secure_filename(file.filename)
+        upload_folder = os.path.join(UPLOADS_DIR, 'purchase_bills')
+        os.makedirs(upload_folder, exist_ok=True)
+        file_path = os.path.join(upload_folder, clean_name)
         file.save(file_path)
-    else:
-        compressed_io = compress_bill_image(file, max_size_kb=300)
-        with open(file_path, 'wb') as f:
-            f.write(compressed_io.read())
-            
-    return jsonify({'status': 'success', 'file_path': unique_filename})
+        return jsonify({'status': 'success', 'file_path': clean_name})
+    return jsonify({'status': 'error', 'message': 'Upload failed'}), 500
 
 @app.route('/api/save_purchase_bill', methods=['POST'])
 @login_required
@@ -3801,20 +3783,14 @@ def save_purchase_bill():
     cur_studio = get_current_studio_id()
     data = request.json or {}
     purchaser_id = data.get('purchaser_id')
-    if not purchaser_id: 
-        return jsonify({'status': 'error', 'message': 'Purchaser ID missing!'}), 400
-    
+    if not purchaser_id: return jsonify({'status': 'error', 'message': 'Purchaser ID missing!'}), 400
     conn = get_db_connection()
     cursor = conn.cursor()
     try:
-        cursor.execute(
-            "INSERT INTO purchase_bills (studio_id, purchaser_id, bill_date, bill_number, total_amount, file_path) VALUES (?, ?, ?, ?, ?, ?)", 
-            (cur_studio, purchaser_id, data.get('bill_date', ''), data.get('bill_number', ''), float(data.get('total_amount', 0)), data.get('file_path', ''))
-        )
+        cursor.execute("INSERT INTO purchase_bills (studio_id, purchaser_id, bill_date, bill_number, total_amount, file_path) VALUES (?, ?, ?, ?, ?, ?)", (cur_studio, purchaser_id, data.get('bill_date', ''), data.get('bill_number', ''), float(data.get('total_amount', 0)), data.get('file_path', '')))
         conn.commit()
         return jsonify({'status': 'success'})
     except Exception as e:
-        conn.rollback()
         return jsonify({'status': 'error', 'message': str(e)}), 500
     finally:
         conn.close()
@@ -5214,61 +5190,28 @@ def get_dashboard_live_data():
         # ----------------------------------------------------
         # 1. 📄 नए रेगुलर बिलों का आज का एडवांस (Bookings)
         # ----------------------------------------------------
-        # ----------------------------------------------------
-        # 📄 न्यू बिल और ऑल बिल्स का फाइनल और सटीक पेमेंट सिंक
-        # ----------------------------------------------------
         try:
             cursor.execute("""
                 SELECT 
-                    cash_paid, upi_paid, advance_amount, 
-                    bill_date, payment_history
+                    COALESCE(cash_paid, 0) as cp,
+                    COALESCE(upi_paid, 0) as up,
+                    COALESCE(advance_amount, 0) as adv,
+                    bill_date
                 FROM bookings
                 WHERE CAST(studio_id AS INTEGER) = ?
             """, (cur_studio,))
             
             for r in cursor.fetchall():
-                # डेटाबेस से रॉ वैल्यू सुरक्षित तरीके से निकालें (डिक्शनरी या इंडेक्स दोनों पर काम करेगा)
-                try:
-                    b_date = str(r['bill_date'] or '').strip()
-                    cp = float(r['cash_paid'] or 0)
-                    up = float(r['upi_paid'] or 0)
-                    adv = float(r['advance_amount'] or 0)
-                except Exception:
-                    # यदि कर्सर रो tuple के रूप में है
-                    b_date = str(r[3] or '').strip()
-                    cp = float(r[0] or 0)
-                    up = float(r[1] or 0)
-                    adv = float(r[2] or 0)
-
-                # A. अगर यह बिल आज ही बना है (New Bill / Initial Payment)
+                b_date = str(r['bill_date'] or '').strip()
                 if any(b_date.startswith(d) for d in [today_dash, today_slash]):
-                    if cp > 0:
+                    cp = float(r['cp'] or 0)
+                    up = float(r['up'] or 0)
+                    adv = float(r['adv'] or 0)
+                    if cp > 0 or up > 0:
                         total_cash += cp
-                    if up > 0:
                         total_upi += up
-                    if cp == 0 and up == 0 and adv > 0:
+                    elif adv > 0:
                         total_cash += adv
-
-                # B. All Bills या New Bill से बाद में जमा हुई किस्तें (JSON History)
-                raw_hist = r['payment_history'] if 'payment_history' in r.keys() else None
-                if raw_hist:
-                    try:
-                        hist_list = json.loads(raw_hist) if isinstance(raw_hist, str) else raw_hist
-                        if isinstance(hist_list, list):
-                            for h in hist_list:
-                                h_date_str = str(h.get('date', '') or h.get('date_time', '') or h.get('timestamp', '')).strip()
-                                
-                                # यदि किस्त आज जमा हुई है
-                                if any(h_date_str.startswith(d) for d in [today_dash, today_slash]):
-                                    h_amt = float(h.get('amount', 0) or 0)
-                                    h_mode = str(h.get('mode', h.get('payment_mode', h.get('type', 'CASH')))).upper()
-                                    
-                                    if any(kw in h_mode for kw in ['UPI', 'ONLINE', 'QR', 'SCAN', 'PHONEPE', 'PAYTM', 'GOOGLEPAY', 'GPAY', 'BANK', 'NEFT', 'RTGS']):
-                                        total_upi += h_amt
-                                    else:
-                                        total_cash += h_amt
-                    except Exception as json_err:
-                        print("JSON History Parse Error:", json_err)
         except Exception as e:
             print("Dashboard Bookings Error:", e)
 
@@ -6086,17 +6029,13 @@ def get_admin_studios_activity():
         conn = get_db_connection()
         cursor = conn.cursor()
 
-        # 📅 आज की तारीख और ठीक 7 दिन पहले की तारीख निकालना
-        today_date = datetime.now().date()
-        week_ago_date = today_date - timedelta(days=7)
-        
-        week_ago_str = week_ago_date.strftime('%Y-%m-%d')
-        today_str = today_date.strftime('%Y-%m-%d')
+        today_str = datetime.now().strftime('%Y-%m-%d')
+        today_indian = datetime.now().strftime('%d/%m/%Y')
 
         cursor.execute("""
             SELECT id, studio_name, owner_name, mobile, status, created_at 
             FROM saas_studios 
-            ORDER BY id ASC
+            ORDER BY id ASCd
         """)
         studios = cursor.fetchall()
 
@@ -6104,28 +6043,28 @@ def get_admin_studios_activity():
         for s in studios:
             s_id = s['id']
 
-            # 1. पिछले 7 दिनों के रेगुलर बिल्स (तारीख के आधार पर रेंज चेक)
+            # 1. आज के रेगुलर बिल्स
             cursor.execute("""
                 SELECT COUNT(*) FROM bookings 
-                WHERE studio_id = ? AND SUBSTR(bill_date, 1, 10) BETWEEN ? AND ?
-            """, (s_id, week_ago_str, today_str))
-            std_weekly = cursor.fetchone()[0] or 0
+                WHERE studio_id = ? AND (bill_date LIKE ? OR bill_date LIKE ?)
+            """, (s_id, f"{today_str}%", f"%{today_indian}%"))
+            std_today = cursor.fetchone()[0] or 0
 
-            # 2. पिछले 7 दिनों की वेडिंग बुकिंग्स
+            # 2. आज की वेडिंग बुकिंग्स
             cursor.execute("""
                 SELECT COUNT(*) FROM wedding_bookings 
-                WHERE studio_id = ? AND SUBSTR(created_at, 1, 10) BETWEEN ? AND ?
-            """, (s_id, week_ago_str, today_str))
-            wed_weekly = cursor.fetchone()[0] or 0
+                WHERE studio_id = ? AND (created_at LIKE ? OR created_at LIKE ?)
+            """, (s_id, f"{today_str}%", f"%{today_indian}%"))
+            wed_today = cursor.fetchone()[0] or 0
 
-            # 3. पिछले 7 दिनों के टोकन्स
+            # 3. आज के टोकन्स
             cursor.execute("""
                 SELECT COUNT(*) FROM daily_tokens 
-                WHERE studio_id = ? AND SUBSTR(token_date, 1, 10) BETWEEN ? AND ?
-            """, (s_id, week_ago_str, today_str))
-            tokens_weekly = cursor.fetchone()[0] or 0
+                WHERE studio_id = ? AND (token_date LIKE ? OR token_date LIKE ? OR created_at LIKE ?)
+            """, (s_id, f"{today_str}%", f"%{today_indian}%", f"{today_str}%"))
+            tokens_today = cursor.fetchone()[0] or 0
 
-            weekly_total_entries = std_weekly + wed_weekly + tokens_weekly
+            today_total_entries = std_today + wed_today + tokens_today
 
             # 4. लाइफटाइम टोटल (रेगुलर + वेडिंग)
             cursor.execute("SELECT COUNT(*) FROM bookings WHERE studio_id = ?", (s_id,))
@@ -6141,8 +6080,8 @@ def get_admin_studios_activity():
                 "owner_name": s['owner_name'],
                 "mobile": s['mobile'],
                 "is_active": 1 if st_val == 'Active' else 0,
-                "weekly_count": weekly_total_entries,
-                "status_label": "🟢 Active This Week" if weekly_total_entries > 0 else "⚪ Idle This Week",
+                "today_count": today_total_entries,
+                "status_label": "🟢 Active Today" if today_total_entries > 0 else "⚪ Idle Today",
                 "lifetime_bills": lifetime_bills
             })
 
@@ -6473,40 +6412,6 @@ def print_lab_statement(vendor_id):
     finally:
         if conn:
             conn.close()
-
-@app.errorhandler(404)
-def page_not_found(e):
-    if request.path.startswith('/api/'):
-        return jsonify({"status": "error", "message": "API endpoint not found (404)"}), 404
-    return """
-    <!DOCTYPE html>
-    <html lang="hi">
-    <head><meta charset="UTF-8"><title>404 - Page Not Found</title></head>
-    <body style="font-family:sans-serif; text-align:center; padding:50px; background:#f4f7f6;">
-        <h1 style="color:#e74c3c; font-size:48px;">404</h1>
-        <h2>⚠️ अरे गुरु, यह पेज नहीं मिला!</h2>
-        <p>आप जिस पते पर पहुँचना चाहते हैं, वह मौजूद नहीं है।</p>
-        <a href="/dashboard" style="background:#3498db; color:white; padding:10px 20px; text-decoration:none; border-radius:5px;">डैशबोर्ड पर वापस जाएं</a>
-    </body>
-    </html>
-    """, 404
-
-@app.errorhandler(500)
-def internal_server_error(e):
-    if request.path.startswith('/api/'):
-        return jsonify({"status": "error", "message": "Internal server error (500)"}), 500
-    return """
-    <!DOCTYPE html>
-    <html lang="hi">
-    <head><meta charset="UTF-8"><title>500 - Server Error</title></head>
-    <body style="font-family:sans-serif; text-align:center; padding:50px; background:#f4f7f6;">
-        <h1 style="color:#e74c3c; font-size:48px;">500</h1>
-        <h2>⚠️ सर्वर के अंदर कुछ गड़बड़ हो गई!</h2>
-        <p>चिंता की बात नहीं, इसे संभाल लिया गया है। कृपया पुनः प्रयास करें।</p>
-        <a href="/dashboard" style="background:#3498db; color:white; padding:10px 20px; text-decoration:none; border-radius:5px;">डैशबोर्ड पर जाएं</a>
-    </body>
-    </html>
-    """, 500
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5001, threaded=True)

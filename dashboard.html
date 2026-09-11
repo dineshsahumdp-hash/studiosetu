@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ session.get('studio_name', 'HIM STUDIO') }} - Live Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <style>
         .bg-studio-gradient { background: linear-gradient(135deg, #050814 0%, #0b1124 100%); }
         .bg-studio-glass { background-color: rgba(11, 18, 38, 0.6); backdrop-filter: blur(14px); }
@@ -52,10 +52,17 @@
             transform: translateY(-2px);
         }
 
-        /* 🎴 2-STEP 3D FLIP CSS (For Staff Card Only) */
+        /* 🎴 3D FLIP CSS */
         .flip-container {
             perspective: 1200px;
             height: 135px;
+        }
+        .flipper-3step {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            transform-style: preserve-3d;
         }
         .flipper-2step {
             position: relative;
@@ -104,7 +111,7 @@
                 <a href="/new_bill" class="nav-btn" id="btn_new_bill"><span>📄</span> New Bill</a>
                 <a href="/all_bills" class="nav-btn" id="btn_all_bills"><span>📁</span> All Bills</a>
                 <a href="/token_counter" class="nav-btn" id="btn_token_counter"><span>🎫</span> Daily Token Counter</a>
-                <a href="/wedding" class="nav-btn" id="btn_wedding"><span>💍</span> Event Booking</a>
+                <a href="/wedding" class="nav-btn" id="btn_wedding"><span>💍</span> Wedding Booking</a>
                 <a href="/stock" class="nav-btn" id="btn_stock"><span>📦</span> Item / Product (Stock)</a>
                 <a href="/credit_ledger" class="nav-btn" id="btn_credit"><span>💳</span> Credit Ledger</a>
                 <a href="/purchases" class="nav-btn" id="btn_purchases"><span>🛒</span> Purchases</a>
@@ -114,7 +121,7 @@
                 <a href="/equipment_tracking" class="nav-btn" id="btn_equipment"><span>📸</span> Equipment Tracking</a>
                 <a href="/employee_corner" class="nav-btn" id="btn_employee"><span>👤</span> Employee Corner</a>
                 <a href="/report" class="nav-btn" id="btn_report"><span>📈</span> Report</a>
-                <a href="/change_password" class="nav-btn" id="btn_password"><span>🔐</span> Profile & Security</a>
+                <a href="/change_password" class="nav-btn" id="btn_password"><span>🔐</span> Change Password</a>
             </nav>
         </div>
 
@@ -139,48 +146,50 @@
             <!-- 🎴 ROW 1: 3-WAY COLLECTION ROTATION, DELIVERIES & LOW STOCK -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
                 
-                <!-- 🎯 1. 3-STEP SMOOTH FADE COLLECTION (UPI ➔ CASH ➔ TOTAL) -->
-                <div class="dash-card relative overflow-hidden p-0 border-0">
-                    
-                    <!-- FACE 1: UPI -->
-                    <div id="face_coll_upi" class="absolute inset-0 p-3.5 flex flex-col justify-between border border-indigo-500/50 bg-gradient-to-br from-indigo-950/90 to-slate-900 shadow-xl rounded-2xl transition-opacity duration-500">
-                        <div class="flex justify-between items-center text-[11px] font-bold uppercase tracking-wider">
-                            <span class="text-indigo-300">📱 Today Collection (UPI)</span>
-                            <span class="animate-ping w-2 h-2 rounded-full bg-indigo-400"></span>
+                <!-- 🎯 1. 3D FLIPPING COLLECTION (UPI ➔ CASH ➔ TOTAL) -->
+                <div class="flip-container">
+                    <div id="flipper_coll" class="flipper-3step">
+                        
+                        <!-- FACE 1: UPI -->
+                        <div id="face_coll_upi" class="card-face border border-indigo-500/50 bg-gradient-to-br from-indigo-950/90 to-slate-900 shadow-xl">
+                            <div class="flex justify-between items-center text-[11px] font-bold uppercase tracking-wider">
+                                <span class="text-indigo-300">📱 Today Collection (UPI)</span>
+                                <span class="animate-ping w-2 h-2 rounded-full bg-indigo-400"></span>
+                            </div>
+                            <div class="text-2xl font-black tracking-tight text-indigo-300 py-0.5 font-mono" id="dash_upi_val">₹ 0.00</div>
+                            <div class="flex justify-between items-center text-[9px] text-slate-400">
+                                <span>Online Bank Inflow</span>
+                                <span class="text-indigo-400 font-semibold uppercase">UPI Live</span>
+                            </div>
                         </div>
-                        <div class="text-2xl font-black tracking-tight text-indigo-300 py-0.5 font-mono" id="dash_upi_val">₹ 0.00</div>
-                        <div class="flex justify-between items-center text-[9px] text-slate-400">
-                            <span>Online Bank Inflow</span>
-                            <span class="text-indigo-400 font-semibold uppercase">UPI Live</span>
-                        </div>
-                    </div>
 
-                    <!-- FACE 2: CASH -->
-                    <div id="face_coll_cash" class="absolute inset-0 p-3.5 flex flex-col justify-between border border-emerald-500/50 bg-gradient-to-br from-emerald-950/90 to-slate-900 shadow-xl rounded-2xl opacity-0 pointer-events-none transition-opacity duration-500">
-                        <div class="flex justify-between items-center text-[11px] font-bold uppercase tracking-wider">
-                            <span class="text-emerald-300">💵 Today Collection (Cash)</span>
-                            <span class="animate-ping w-2 h-2 rounded-full bg-emerald-400"></span>
+                        <!-- FACE 2: CASH (180deg Back) -->
+                        <div id="face_coll_cash" class="card-face border border-emerald-500/50 bg-gradient-to-br from-emerald-950/90 to-slate-900 shadow-xl hidden" style="transform: rotateY(180deg);">
+                            <div class="flex justify-between items-center text-[11px] font-bold uppercase tracking-wider">
+                                <span class="text-emerald-300">💵 Today Collection (Cash)</span>
+                                <span class="animate-ping w-2 h-2 rounded-full bg-emerald-400"></span>
+                            </div>
+                            <div class="text-2xl font-black tracking-tight text-emerald-300 py-0.5 font-mono" id="dash_cash_val">₹ 0.00</div>
+                            <div class="flex justify-between items-center text-[9px] text-slate-400">
+                                <span>Physical Cash Drawer</span>
+                                <span class="text-emerald-400 font-semibold uppercase">Cash In Hand</span>
+                            </div>
                         </div>
-                        <div class="text-2xl font-black tracking-tight text-emerald-300 py-0.5 font-mono" id="dash_cash_val">₹ 0.00</div>
-                        <div class="flex justify-between items-center text-[9px] text-slate-400">
-                            <span>Physical Cash Drawer</span>
-                            <span class="text-emerald-400 font-semibold uppercase">Cash In Hand</span>
-                        </div>
-                    </div>
 
-                    <!-- FACE 3: TOTAL REVENUE -->
-                    <div id="face_coll_total" class="absolute inset-0 p-3.5 flex flex-col justify-between border border-cyan-500/50 bg-gradient-to-br from-cyan-950/90 to-slate-900 shadow-xl rounded-2xl opacity-0 pointer-events-none transition-opacity duration-500">
-                        <div class="flex justify-between items-center text-[11px] font-bold uppercase tracking-wider">
-                            <span class="text-cyan-300">💰 Today Total Collection</span>
-                            <span class="animate-ping w-2 h-2 rounded-full bg-cyan-400"></span>
+                        <!-- FACE 3: TOTAL REVENUE -->
+                        <div id="face_coll_total" class="card-face border border-cyan-500/50 bg-gradient-to-br from-cyan-950/90 to-slate-900 shadow-xl hidden">
+                            <div class="flex justify-between items-center text-[11px] font-bold uppercase tracking-wider">
+                                <span class="text-cyan-300">💰 Today Total Collection</span>
+                                <span class="animate-ping w-2 h-2 rounded-full bg-cyan-400"></span>
+                            </div>
+                            <div class="text-2xl font-black tracking-tight text-cyan-300 py-0.5 font-mono" id="dash_grand_val">₹ 0.00</div>
+                            <div class="flex justify-between items-center text-[9px] text-slate-400">
+                                <span>Gross Daily Revenue</span>
+                                <span class="text-cyan-400 font-semibold uppercase">Cash + UPI</span>
+                            </div>
                         </div>
-                        <div class="text-2xl font-black tracking-tight text-cyan-300 py-0.5 font-mono" id="dash_grand_val">₹ 0.00</div>
-                        <div class="flex justify-between items-center text-[9px] text-slate-400">
-                            <span>Gross Daily Revenue</span>
-                            <span class="text-cyan-400 font-semibold uppercase">Cash + UPI</span>
-                        </div>
-                    </div>
 
+                    </div>
                 </div>
 
                 <!-- 🚚 2. TODAY DELIVERIES DUE -->
@@ -341,11 +350,12 @@
     <script>
         let collStep = 0; // 0: UPI, 1: CASH, 2: TOTAL
         let staffFlipped = false;
+        let isTotalRotationDeg = 0;
         let hasActiveEmployees = true;
 
         window.addEventListener('DOMContentLoaded', () => {
             loadLiveDashboard();
-            setInterval(fadeCollectionCard3Step, 3500); // 3-Step Fade हर 3.5 सेकंड में
+            setInterval(flipCollectionCard3Step, 3000); // 3D Flip हर 3 सेकंड में
             setInterval(flipStaffCard, 3500);          // Staff Flip हर 3.5 सेकंड में
         });
 
@@ -362,13 +372,11 @@
         }
 
         function renderDashboard(data) {
-            // 🎯 1. 100% सुरक्षित कलेक्शन पार्सिंग (New Bill & All Bills Sync)
-            const collection = data.collection || {};
-            let cashVal = parseFloat(collection.cash || 0);
-            let upiVal = parseFloat(collection.upi || 0);
-            let grandVal = parseFloat(collection.total || (cashVal + upiVal));
+            // 🎯 1. कलेक्शन पार्सिंग (UPI, CASH, TOTAL)
+            let cashVal = parseFloat(data.collection?.cash || 0);
+            let upiVal = parseFloat(data.collection?.upi || 0);
+            let grandVal = parseFloat(data.collection?.total || (cashVal + upiVal));
 
-            // स्क्रीन पर वैल्यू तुरंत बाइंड करें
             document.getElementById('dash_upi_val').innerText = `₹ ${upiVal.toFixed(2)}`;
             document.getElementById('dash_cash_val').innerText = `₹ ${cashVal.toFixed(2)}`;
             document.getElementById('dash_grand_val').innerText = `₹ ${grandVal.toFixed(2)}`;
@@ -388,7 +396,7 @@
                 delBox.innerHTML = `<div class="text-slate-500 italic py-4 text-center text-[10px]">आज कोई डिलीवरी पेंडिंग नहीं है।</div>`;
             }
 
-            // ⚠️ 3. स्टॉक अलर्ट
+            // ⚠️ 3. स्टॉक अलर्ट (No Stock / Full / Low <= 5)
             const stockBox = document.getElementById('box_low_stocks');
             const stockBadge = document.getElementById('badge_stock_count');
             const lowList = data.low_stocks || [];
@@ -424,7 +432,7 @@
                 `;
             }
 
-            // ⏳ 4. प्रॉमिस उधारी
+            // ⏳ 4. प्रॉमिस उधारी (Cyan Theme)
             const promiseBox = document.getElementById('box_promise_dues');
             const promiseList = data.today_promise_dues || [];
             if (promiseList.length > 0) {
@@ -498,7 +506,7 @@
                 }
             }
 
-            // 📄 7. रीसेंट बुकिंग्स
+            // 📄 7. रीसेंट बुकिंग्स फीड (केवल Pending)
             const recentBody = document.getElementById('dash_recent_bills_body');
             const recentList = data.recent_bookings || [];
             if (recentList.length === 0) {
@@ -523,33 +531,37 @@
             }
         }
 
-        // 🔄 3-STEP SMOOTH FADE COLLECTION ENGINE (UPI ➔ CASH ➔ TOTAL)
-        function fadeCollectionCard3Step() {
+        // 🔄 3-STEP REVOLVING 3D FLIP ENGINE (UPI ➔ CASH ➔ TOTAL)
+        function flipCollectionCard3Step() {
+            const flipper = document.getElementById('flipper_coll');
             const fUpi = document.getElementById('face_coll_upi');
             const fCash = document.getElementById('face_coll_cash');
             const fTotal = document.getElementById('face_coll_total');
-            if (!fUpi || !fCash || !fTotal) return;
+            if (!flipper || !fUpi || !fCash || !fTotal) return;
 
             collStep = (collStep + 1) % 3;
+            isTotalRotationDeg += 180;
+            flipper.style.transform = `rotateY(${isTotalRotationDeg}deg)`;
 
-            // Fade Out All
-            fUpi.classList.add('opacity-0', 'pointer-events-none');
-            fCash.classList.add('opacity-0', 'pointer-events-none');
-            fTotal.classList.add('opacity-0', 'pointer-events-none');
-
-            // Fade In Active After Delay
             setTimeout(() => {
+                fUpi.classList.add('hidden');
+                fCash.classList.add('hidden');
+                fTotal.classList.add('hidden');
+
                 if (collStep === 0) {
-                    fUpi.classList.remove('opacity-0', 'pointer-events-none');
+                    fUpi.classList.remove('hidden');
+                    fUpi.style.transform = (isTotalRotationDeg % 360 === 0) ? 'rotateY(0deg)' : 'rotateY(180deg)';
                 } else if (collStep === 1) {
-                    fCash.classList.remove('opacity-0', 'pointer-events-none');
+                    fCash.classList.remove('hidden');
+                    fCash.style.transform = (isTotalRotationDeg % 360 === 0) ? 'rotateY(0deg)' : 'rotateY(180deg)';
                 } else {
-                    fTotal.classList.remove('opacity-0', 'pointer-events-none');
+                    fTotal.classList.remove('hidden');
+                    fTotal.style.transform = (isTotalRotationDeg % 360 === 0) ? 'rotateY(0deg)' : 'rotateY(180deg)';
                 }
-            }, 300); // 300ms transition delay
+            }, 300);
         }
 
-        // 🔄 STAFF FLIP ENGINE (180 DEGREE)
+        // 🔄 STAFF FLIP ENGINE (NO EMPLOYEES PAR FLIP STOP)
         function flipStaffCard() {
             if (!hasActiveEmployees) return;
             const flipper = document.getElementById('flipper_staff');
@@ -557,22 +569,25 @@
             staffFlipped = !staffFlipped;
             flipper.style.transform = staffFlipped ? "rotateY(180deg)" : "rotateY(0deg)";
         }
+(function handleUserInactivity() {
+    let idleTimer;
+    const IDLE_TIME_LIMIT = 30 * 60 * 1000; // ठीक 30 मिनट
 
-        // Auto Logout Inactivity
-        (function handleUserInactivity() {
-            let idleTimer;
-            const IDLE_TIME_LIMIT = 30 * 60 * 1000;
-            function resetUserTimer() {
-                clearTimeout(idleTimer);
-                idleTimer = setTimeout(() => {
-                    alert("30 मिनट तक कोई गतिविधि न होने के कारण सुरक्षा कारणों से यह खाता लॉगआउट हो गया है।");
-                    window.location.href = '/logout';
-                }, IDLE_TIME_LIMIT);
-            }
-            const trackedEvents = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'click'];
-            trackedEvents.forEach(evt => window.addEventListener(evt, resetUserTimer, { passive: true }));
-            resetUserTimer();
-        })();
+    function resetUserTimer() {
+        clearTimeout(idleTimer);
+        idleTimer = setTimeout(() => {
+            alert("30 मिनट तक कोई गतिविधि न होने के कारण सुरक्षा कारणों से यह खाता लॉगआउट हो गया है।");
+            window.location.href = '/logout';
+        }, IDLE_TIME_LIMIT);
+    }
+
+    const trackedEvents = ['mousemove', 'mousedown', 'keydown', 'touchstart', 'scroll', 'click'];
+    trackedEvents.forEach(evt => {
+        window.addEventListener(evt, resetUserTimer, { passive: true });
+    });
+
+    resetUserTimer();
+})();
 
     </script>
 </body>
